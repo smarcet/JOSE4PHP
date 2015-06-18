@@ -1,0 +1,33 @@
+{
+  "name": "JOSE4PHP",
+  "version": "1.0.0",
+  "description": "JWT, JWS,JWE and JWK implementation in PHP",
+  "keywords": [
+    "JSON Web Token", "JSON Web Signature", "JSON Web Encryption",
+    "JWT", "JWS", "JWE", "JOSE", "OpenID Connect", "ID Token"
+  ],
+  "homepage": "https://github.com/smarcet",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Sebastian Marcet",
+      "email": "smarcet@gmail.com"
+    }
+  ],
+  "require": {
+    "phpseclib/phpseclib": "0.3.*",
+    "php": ">=5.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.7.*",
+    "mockery/mockery": "0.9.*"
+  },
+  "autoload": {
+    "classmap": [
+      "src/",
+      "tests/"
+    ]
+  },
+  "minimum-stability": "dev"
+}
