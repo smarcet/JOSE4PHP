@@ -57,7 +57,7 @@ class JsonObject implements \ArrayAccess, IJsonObject {
         $input = $this->toArray();
         $json  = json_encode($input);
         $json  = str_replace('\/','/', $json);
-        
+
         if (function_exists('json_last_error') && $errno = json_last_error()) {
             self::handleJsonError($errno);
         } elseif ($json === 'null' ) {
