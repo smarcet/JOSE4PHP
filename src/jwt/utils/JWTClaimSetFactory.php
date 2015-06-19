@@ -37,7 +37,7 @@ class JWTClaimSetFactory {
         $args = array();
 
         foreach(RegisteredJWTClaimNames::$registered_claim_set as $claim_name){
-            $value = isset($claims[$claim_name]) ? $claims[$claim_name] : null;
+            $value = isset($raw_claims[$claim_name]) ? $raw_claims[$claim_name] : null;
             $type  = RegisteredJWTClaimNames::$registered_claim_set_types[$claim_name];
             if(!is_null($value))
             {
@@ -45,7 +45,7 @@ class JWTClaimSetFactory {
                 $value    = $class->newInstanceArgs(array($value));
             }
             array_push($args, $value);
-            unset($claims[$claim_name]);
+            unset($raw_claims[$claim_name]);
         }
 
 
@@ -54,7 +54,7 @@ class JWTClaimSetFactory {
 
         // unregistered claims
 
-        foreach($claims as $k => $v){
+        foreach($raw_claims as $k => $v){
             $claim_set->addCustomClaim(new JWTClaim($k, new JsonValue($v)));
         }
 
