@@ -55,11 +55,13 @@ class JsonObject implements \ArrayAccess, IJsonObject {
     public function toJson()
     {
         $input = $this->toArray();
-        $json  = json_encode($input, JSON_UNESCAPED_SLASHES );
+        $json  = json_encode($input);
+        $json  = str_replace('\/','/', $json);
+        
         if (function_exists('json_last_error') && $errno = json_last_error()) {
             self::handleJsonError($errno);
         } elseif ($json === 'null' ) {
-            throw new JsonParseException('Null result with non-null input');
+            throw new JsonParseException('Null resul with non-null input');
         }
         return $json;
     }
