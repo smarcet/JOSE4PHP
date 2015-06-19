@@ -48,7 +48,7 @@ final class JOSEHeaderFactory {
         // unregistered headers
 
         foreach($raw_headers as $k => $v){
-            $basic_header->addCustomHeader(new JOSEHeaderParam($k, new JsonValue($v)));
+            $basic_header->addHeader(new JOSEHeaderParam($k, new JsonValue($v)));
         }
 
         return $basic_header;

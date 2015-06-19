@@ -32,32 +32,13 @@ use utils\StringOrURI;
  * Parameters in both the cases where the JWT is a JWS and where it is a
  * JWE.
  */
-interface IJOSEHeader extends IJsonObject, \ArrayAccess {
+interface IJOSEHeader extends IReadOnlyJOSEHeader {
 
-    /**
-     * @return StringOrURI
-     */
-    public function getAlgorithm();
-
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
 
     /**
      * @param JOSEHeaderParam $header_param
      * @return void
      */
-    public function addCustomHeader(JOSEHeaderParam $header_param);
+    public function addHeader(JOSEHeaderParam $header_param);
 
 }

@@ -89,7 +89,7 @@ class JsonWebTokenTest extends PHPUnit_Framework_TestCase {
             null,
             new NumericDate($lifetime)
         );
-        $claim_set->addCustomClaim(new JWTClaim("http://example.com/is_root", new JsonValue(true)));
+        $claim_set->addClaim(new JWTClaim("http://example.com/is_root", new JsonValue(true)));
 
         $json    = $claim_set->toJson();
         $res     = $base64_representation->encode($json);
@@ -107,14 +107,15 @@ class JsonWebTokenTest extends PHPUnit_Framework_TestCase {
     public function testUnsecuredJWT(){
 
         $claim_set = JWTClaimSetFactory::build(array(
-            RegisteredJWTClaimNames::Issuer => 'joe',
+            RegisteredJWTClaimNames::Issuer         => 'joe',
             RegisteredJWTClaimNames::ExpirationTime => 1300819380,
-            "http://example.com/is_root" => true
+            "http://example.com/is_root"            => true,
+            'groups'                                => array('admin', 'sudo', 'devs')
         ));
 
         $unsecured_jwt = new UnsecuredJWT($claim_set);
         $res           = $unsecured_jwt->serialize();
-        $should        = 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJqb2UiLCJleHAiOjEzMDA4MTkzODAsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.';
+        $should        = 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJqb2UiLCJleHAiOjEzMDA4MTkzODAsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlLCJncm91cHMiOlsiYWRtaW4iLCJzdWRvIiwiZGV2cyJdfQ.';
 
         $this->assertTrue( $res == $should);
     }

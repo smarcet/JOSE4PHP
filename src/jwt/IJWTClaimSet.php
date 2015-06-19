@@ -11,12 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+
 namespace jwt;
 
-use utils\IJsonObject;
-use utils\NumericDate;
-use utils\StringOrURI;
-use jwt\exceptions\ClaimAlreadyExistsException;
 /**
  * Interface IJWTClaimSet
  * @package jwt
@@ -35,54 +32,52 @@ use jwt\exceptions\ClaimAlreadyExistsException;
  * the absence of such requirements, all claims that are not understood
  * by implementations MUST be ignored.
  */
-interface IJWTClaimSet extends IJsonObject, \ArrayAccess {
+interface IJWTClaimSet extends IReadOnlyJWTClaimSet {
 
     /**
-     * @return StringOrURI
+     * @param string $issuer
+     * @return void
      */
-    public function getIssuer();
+    public function setIssuer($issuer);
 
     /**
-     * @return StringOrURI
+     * @param string $audience
+     * @return void
      */
-    public function getSubject();
+    public function setAudience($audience);
 
     /**
-     * @return StringOrURI
+     * @param string $subject
+     * @return void
      */
-    public function getAudience();
+    public function setSubject($subject);
 
     /**
-     * @return NumericDate
+     * @param int $minutes
+     * @return void
      */
-    public function getExpirationTime();
+    public function setExpirationTimeMinutesInTheFuture($minutes);
 
     /**
-     * @return NumericDate
+     * @return void
      */
-    public function getNotBefore();
-
+    public function setGeneratedJwtId();
 
     /**
-     * @return NumericDate
+     * @return void
      */
-    public function getIssuedAt();
-
+    public function setIssuedAtToNow();
 
     /**
-     * @return string
+     * @param int $minutes
+     * @return void
      */
-    public function getJWTID();
-
+    public function setNotBeforeMinutesInThePast($minutes);
 
     /**
      * @param JWTClaim $claim
      * @throws ClaimAlreadyExistsException
      */
-    public function addCustomClaim(JWTClaim $claim);
+    public function addClaim(JWTClaim $claim);
 
-    /**
-     * @return JWTClaim[]
-     */
-    public function getClaims();
 }

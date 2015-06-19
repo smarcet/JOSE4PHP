@@ -55,7 +55,7 @@ class JWTClaimSetFactory {
         // unregistered claims
 
         foreach($raw_claims as $k => $v){
-            $claim_set->addCustomClaim(new JWTClaim($k, new JsonValue($v)));
+            $claim_set->addClaim(new JWTClaim($k, new JsonValue($v)));
         }
 
         return $claim_set;

@@ -37,16 +37,16 @@ final class JWTClaimSet
      * @param StringOrURI $audience
      * @param NumericDate $issued_at
      * @param NumericDate $expiration_time
-     * @param JsonValue $id
+     * @param JsonValue   $id
      * @param NumericDate $nbf
      */
-    public function __construct(StringOrURI $issuer,
-                                StringOrURI $subject = null,
-                                StringOrURI $audience = null,
-                                NumericDate $issued_at = null,
+    public function __construct(StringOrURI $issuer          = null,
+                                StringOrURI $subject         = null,
+                                StringOrURI $audience        = null,
+                                NumericDate $issued_at       = null,
                                 NumericDate $expiration_time = null,
-                                JsonValue   $id = null,
-                                NumericDate $nbf = null){
+                                JsonValue   $id              = null,
+                                NumericDate $nbf             = null){
 
         $this->set[RegisteredJWTClaimNames::Issuer]         = $issuer;
         $this->set[RegisteredJWTClaimNames::Subject]        = $subject;
@@ -117,7 +117,7 @@ final class JWTClaimSet
      * @param JWTClaim $claim
      * @throws ClaimAlreadyExistsException
      */
-    public function addCustomClaim(JWTClaim $claim)
+    public function addClaim(JWTClaim $claim)
     {
         if(isset($this->set[$claim->getName()]))
             throw new ClaimAlreadyExistsException($claim->getName());
@@ -131,5 +131,66 @@ final class JWTClaimSet
     public function getClaims()
     {
         // TODO: Implement getClaims() method.
+    }
+
+    /**
+     * @param string $issuer
+     * @return void
+     */
+    public function setIssuer($issuer)
+    {
+        // TODO: Implement setIssuer() method.
+    }
+
+    /**
+     * @param string $audience
+     * @return void
+     */
+    public function setAudience($audience)
+    {
+        // TODO: Implement setAudience() method.
+    }
+
+    /**
+     * @param string $subject
+     * @return void
+     */
+    public function setSubject($subject)
+    {
+        // TODO: Implement setSubject() method.
+    }
+
+    /**
+     * @param int $minutes
+     * @return void
+     */
+    public function setExpirationTimeMinutesInTheFuture($minutes)
+    {
+        // TODO: Implement setExpirationTimeMinutesInTheFuture() method.
+    }
+
+    /**
+     * @return void
+     */
+    public function setGeneratedJwtId()
+    {
+        // TODO: Implement setGeneratedJwtId() method.
+    }
+
+    /**
+     * @return void
+     */
+    public function setIssuedAtToNow()
+    {
+        // TODO: Implement setIssuedAtToNow() method.
+    }
+
+    /**
+     * @param int $minutes
+     * @return void
+     */
+    public function setNotBeforeMinutesInThePast($minutes)
+    {
+        // TODO: Implement setNotBeforeMinutesInThePast() method.
     }
 }
