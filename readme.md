@@ -1,5 +1,9 @@
 # JOSE4PHP
 
+JWE/JWS/JWK/JWE Implementation
+
+[![Build Status](https://travis-ci.org/smarcet/JOSE4PHP.svg)](https://travis-ci.org/smarcet/JOSE4PHP)
+
 ## Prerequisites
 
     * LAMP/LEMP environment
