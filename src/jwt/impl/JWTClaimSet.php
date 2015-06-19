@@ -29,7 +29,8 @@ use utils\StringOrURI;
  */
 final class JWTClaimSet
     extends JsonObject
-    implements IJWTClaimSet {
+    implements IJWTClaimSet
+{
 
     /**
      * @param StringOrURI $issuer
@@ -37,27 +38,28 @@ final class JWTClaimSet
      * @param StringOrURI $audience
      * @param NumericDate $issued_at
      * @param NumericDate $expiration_time
-     * @param JsonValue   $id
+     * @param JsonValue $id
      * @param NumericDate $nbf
      */
-    public function __construct(StringOrURI $issuer          = null,
-                                StringOrURI $subject         = null,
-                                StringOrURI $audience        = null,
-                                NumericDate $issued_at       = null,
+    public function __construct(StringOrURI $issuer = null,
+                                StringOrURI $subject = null,
+                                StringOrURI $audience = null,
+                                NumericDate $issued_at = null,
                                 NumericDate $expiration_time = null,
-                                JsonValue   $id              = null,
-                                NumericDate $nbf             = null){
+                                JsonValue $id = null,
+                                NumericDate $nbf = null)
+    {
 
-        $this->set[RegisteredJWTClaimNames::Issuer]         = $issuer;
-        $this->set[RegisteredJWTClaimNames::Subject]        = $subject;
-        $this->set[RegisteredJWTClaimNames::Audience]       = $audience;
-        $this->set[RegisteredJWTClaimNames::IssuedAt]       = $issued_at;
+        $this->set[RegisteredJWTClaimNames::Issuer] = $issuer;
+        $this->set[RegisteredJWTClaimNames::Subject] = $subject;
+        $this->set[RegisteredJWTClaimNames::Audience] = $audience;
+        $this->set[RegisteredJWTClaimNames::IssuedAt] = $issued_at;
         $this->set[RegisteredJWTClaimNames::ExpirationTime] = $expiration_time;
-        $this->set[RegisteredJWTClaimNames::JWTID]          = $id;
-        $this->set[RegisteredJWTClaimNames::NotBefore]      = $nbf;
+        $this->set[RegisteredJWTClaimNames::JWTID] = $id;
+        $this->set[RegisteredJWTClaimNames::NotBefore] = $nbf;
     }
 
-       /**
+    /**
      * @return StringOrURI
      */
     public function getIssuer()
@@ -119,7 +121,7 @@ final class JWTClaimSet
      */
     public function addClaim(JWTClaim $claim)
     {
-        if(isset($this->set[$claim->getName()]))
+        if (isset($this->set[$claim->getName()]))
             throw new ClaimAlreadyExistsException($claim->getName());
 
         $this->set[$claim->getName()] = $claim->getValue();
@@ -166,7 +168,7 @@ final class JWTClaimSet
      */
     public function setExpirationTimeMinutesInTheFuture($minutes)
     {
-        // TODO: Implement setExpirationTimeMinutesInTheFuture() method.
+        $this->setExpirationTime($this->offsetFromNow($minutes));
     }
 
     /**
@@ -191,6 +193,35 @@ final class JWTClaimSet
      */
     public function setNotBeforeMinutesInThePast($minutes)
     {
-        // TODO: Implement setNotBeforeMinutesInThePast() method.
+        $this->setNotBefore($this->offsetFromNow(-1 * $minutes));
+    }
+
+    /**
+     * @param int $offset_minutes
+     * @return NumericDate
+     */
+    private function offsetFromNow($offset_minutes)
+    {
+        $numeric_date = NumericDate::now();
+        $seconds = $offset_minutes * 60;
+        $numeric_date->addSeconds($seconds);
+        return $numeric_date;
+    }
+
+    /**
+     * @param NumericDate $expiration_time
+     * @return void
+     */
+    public function setExpirationTime(NumericDate $expiration_time){
+
+        $this->set[RegisteredJWTClaimNames::ExpirationTime] = $expiration_time;
+    }
+
+    /**
+     * @param NumericDate $not_before
+     * @return void
+     */
+    public function setNotBefore(NumericDate $not_before){
+        $this->set[RegisteredJWTClaimNames::NotBefore] = $not_before;
     }
 }

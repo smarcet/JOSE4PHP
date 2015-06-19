@@ -22,19 +22,19 @@ namespace utils;
 class JsonValue {
 
     /**
-     * @var int|string|array|boolean|IJsonObject
+     * @var int|string|array|bool|IJsonObject
      */
     protected $value;
 
     /**
-     * @param int|string|array|boolean|IJsonObject $value
+     * @param int|string|array|bool|IJsonObject $value
      */
     public function __construct($value){
         $this->value = $value;
     }
 
     /**
-     * @return int|string|array|boolean|IJsonObject
+     * @return int|string|array|bool|IJsonObject
      */
     public function getValue(){
         return $this->value;

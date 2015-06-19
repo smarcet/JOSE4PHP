@@ -13,6 +13,7 @@
  **/
 
 namespace jwt;
+use utils\NumericDate;
 
 /**
  * Interface IJWTClaimSet
@@ -79,5 +80,17 @@ interface IJWTClaimSet extends IReadOnlyJWTClaimSet {
      * @throws ClaimAlreadyExistsException
      */
     public function addClaim(JWTClaim $claim);
+
+    /**
+     * @param NumericDate $expiration_time
+     * @return void
+     */
+    public function setExpirationTime(NumericDate $expiration_time);
+
+    /**
+     * @param NumericDate $not_before
+     * @return void
+     */
+    public function setNotBefore(NumericDate $not_before);
 
 }

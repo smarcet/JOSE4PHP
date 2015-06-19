@@ -26,19 +26,74 @@ namespace utils;
  * [RFC3339] for details regarding date/times in general and UTC in
  * particular.
  */
-class NumericDate extends JsonValue {
+class NumericDate extends JsonValue
+{
 
     /**
      * @return int
      */
-    public function getEpoch(){
+    public function getValue()
+    {
         return (int)$this->value;
     }
 
     /**
      * @return \DateTime
      */
-    public function getDateTime(){
+    public function getDateTime()
+    {
         return new \DateTime("@$this->value");
+    }
+
+    /**
+     * @return NumericDate
+     */
+    public static function now()
+    {
+        return new NumericDate(time());
+    }
+
+    /**
+     * @param NumericDate $when
+     * @return bool
+     */
+    public function isBefore(NumericDate $when)
+    {
+        return $this->value < $when->getValue();
+    }
+
+    /**
+     * @param NumericDate $when
+     * @return bool
+     */
+    public function isOnOrAfter(NumericDate $when)
+    {
+        return !$this->isBefore($when);
+    }
+
+    /**
+     * @param NumericDate $when
+     * @return bool
+     */
+    public function isAfter(NumericDate $when)
+    {
+        return $this->value > $when->getValue();
+    }
+
+    /**
+     * @param int $seconds
+     */
+    public function addSeconds($seconds)
+    {
+        $this->value += $seconds;
+    }
+
+    /**
+     * @param int $seconds_from_epoch
+     * @return NumericDate
+     */
+    public static function fromSeconds($seconds_from_epoch)
+    {
+         return new NumericDate($seconds_from_epoch);
     }
 }
