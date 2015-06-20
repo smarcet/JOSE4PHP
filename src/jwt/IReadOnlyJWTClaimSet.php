@@ -13,10 +13,9 @@
  **/
 namespace jwt;
 
-use utils\IJsonObject;
-use utils\NumericDate;
-use utils\StringOrURI;
-use jwt\exceptions\ClaimAlreadyExistsException;
+use utils\json_types\IJsonObject;
+use utils\json_types\NumericDate;
+use utils\json_types\StringOrURI;
 
 /**
  * Interface IReadOnlyJWTClaimSet

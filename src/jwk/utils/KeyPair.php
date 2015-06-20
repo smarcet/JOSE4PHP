@@ -12,36 +12,41 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+namespace jwk\utils;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class KeyPair
+ * @package jwk\utils
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+final class KeyPair {
 
     /**
-     * @return StringOrURI
+     * @var PrivateKey
      */
-    public function getAlgorithm();
+    private $private_key;
+    /**
+     * @var PublicKey
+     */
+    private $public_key;
 
     /**
-     * @return JsonValue
+     * @param PublicKey $public_key
+     * @param PrivateKey $private_key
      */
-    public function getKeyID();
+    public function __construct(PublicKey $public_key, PrivateKey $private_key){
+
+        $this->private_key = $private_key;
+        $this->public_key   = $public_key;
+    }
 
     /**
-     * @return StringOrURI
+     * @return PublicKey
      */
-    public function getContentType();
+    public function getPublic(){ return $this->public_key; }
 
     /**
-     * @return StringOrURI
+     * @return PrivateKey
      */
-    public function getType();
+    public function getPrivate(){ return $this->private_key; }
 
 }

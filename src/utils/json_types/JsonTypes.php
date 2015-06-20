@@ -12,36 +12,17 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+namespace utils\json_types;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class JsonTypes
+ * @package utils\json_types
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+final class JsonTypes {
 
-    /**
-     * @return StringOrURI
-     */
-    public function getAlgorithm();
-
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
+    const JsonArray   = 'utils\json_types\JsonArray';
+    const JsonValue   = 'utils\json_types\JsonValue';
+    const NumericDate = 'utils\json_types\NumericDate';
+    const StringOrURI = 'utils\json_types\StringOrURI';
 
 }

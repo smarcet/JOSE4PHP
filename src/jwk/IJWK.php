@@ -12,36 +12,16 @@
  * limitations under the License.
  **/
 
-namespace jwt;
+namespace jwk;
+
 
 use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Interface IJWK
+ * @package jwk
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
 
-    /**
-     * @return StringOrURI
-     */
-    public function getAlgorithm();
-
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
+interface IJWK extends IReadOnlyJWK  {
 
 }

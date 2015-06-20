@@ -17,7 +17,7 @@ namespace jwt\utils;
 use jwt\IJWTClaimSet;
 use jwt\JWTClaim;
 use jwt\RegisteredJWTClaimNames;
-use utils\JsonValue;
+use utils\json_types\JsonValue;
 use \ReflectionClass;
 
 /**

@@ -12,41 +12,20 @@
  * limitations under the License.
  **/
 
-namespace utils;
+namespace utils\json_types;
 
 /**
- * Class StringOrURI
+ * Interface IJsonObject
  * @package utils
- * A JSON string value, with the additional requirement that while
- * arbitrary string values MAY be used, any value containing a ":"
- * character MUST be a URI [RFC3986].  StringOrURI values are
- * compared as case-sensitive strings with no transformations or
- * canonicalizations applied.
  */
-class StringOrURI extends JsonValue {
-
-    public function getString(){
-        return $this->value;
-    }
-
+interface IJsonObject {
     /**
      * @return string
      */
-    public function getUri(){
-        return '';
-    }
+    public function toJson();
 
     /**
-     * @return bool
+     * @return array
      */
-    public function isString(){
-        return true;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isUri(){
-        return false;
-    }
+    public function toArray();
 }

@@ -13,8 +13,9 @@
  **/
 
 namespace jwt\impl;
+
 use jwt\IJWTClaimSet;
-use utils\StringOrURI;
+use utils\json_types\StringOrURI;
 
 /**
  * Class UnsecuredJWT

@@ -12,36 +12,27 @@
  * limitations under the License.
  **/
 
-namespace jwt;
+namespace jwk\impl;
 
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+
+use jwk\IJWK;
+use jwk\IJWKFactory;
+use jwk\IJWKSpecification;
+use \jwk\utils\rsa\RSAFacade;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class RSAJWKFactory
+ * @package jwk\impl
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+final class RSAJWKFactory implements IJWKFactory {
 
     /**
-     * @return StringOrURI
+     * @param IJWKSpecification $spec
+     * @return IJWK
      */
-    public function getAlgorithm();
-
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
-
+    static public function build(IJWKSpecification $spec)
+    {
+            $keys = RSAFacade::getInstance()->buildKeyPair($spec->getKeyLenInBits());
+            return RSAJWK::fromKeys($keys);
+    }
 }

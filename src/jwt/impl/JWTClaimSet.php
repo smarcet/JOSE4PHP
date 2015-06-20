@@ -16,12 +16,13 @@ namespace jwt\impl;
 
 use jwt\exceptions\ClaimAlreadyExistsException;
 use jwt\IJWTClaimSet;
+use jwt\IJWTIdGenerator;
 use jwt\JWTClaim;
 use jwt\RegisteredJWTClaimNames;
 use utils\JsonObject;
-use utils\JsonValue;
-use utils\NumericDate;
-use utils\StringOrURI;
+use utils\json_types\JsonValue;
+use utils\json_types\NumericDate;
+use utils\json_types\StringOrURI;
 
 /**
  * Class JWTClaimSet
@@ -132,34 +133,38 @@ final class JWTClaimSet
      */
     public function getClaims()
     {
-        // TODO: Implement getClaims() method.
+       $claims = array();
+       foreach($this->set as $k => $v){
+           array_push($claims, new JWTClaim($k, $v));
+       }
+       return $claims;
     }
 
     /**
-     * @param string $issuer
+     * @param StringOrURI $issuer
      * @return void
      */
     public function setIssuer($issuer)
     {
-        // TODO: Implement setIssuer() method.
+        $this->set[RegisteredJWTClaimNames::Issuer] = $issuer;
     }
 
     /**
-     * @param string $audience
+     * @param StringOrURI $audience
      * @return void
      */
     public function setAudience($audience)
     {
-        // TODO: Implement setAudience() method.
+        $this->set[RegisteredJWTClaimNames::Audience] = $audience;
     }
 
     /**
-     * @param string $subject
+     * @param StringOrURI $subject
      * @return void
      */
     public function setSubject($subject)
     {
-        // TODO: Implement setSubject() method.
+        $this->set[RegisteredJWTClaimNames::Subject] = $subject;
     }
 
     /**
@@ -172,11 +177,12 @@ final class JWTClaimSet
     }
 
     /**
+     * @param IJWTIdGenerator $generator
      * @return void
      */
-    public function setGeneratedJwtId()
+    public function setGeneratedJwtId(IJWTIdGenerator $generator)
     {
-        // TODO: Implement setGeneratedJwtId() method.
+        $generator->generateUniqueId($this);
     }
 
     /**
@@ -184,7 +190,7 @@ final class JWTClaimSet
      */
     public function setIssuedAtToNow()
     {
-        // TODO: Implement setIssuedAtToNow() method.
+        $this->setIssued(NumericDate::now());
     }
 
     /**
@@ -223,5 +229,23 @@ final class JWTClaimSet
      */
     public function setNotBefore(NumericDate $not_before){
         $this->set[RegisteredJWTClaimNames::NotBefore] = $not_before;
+    }
+
+    /**
+     * @param NumericDate $issued
+     * @return void
+     */
+    public function setIssued(NumericDate $issued)
+    {
+        $this->set[RegisteredJWTClaimNames::IssuedAt] = $issued;
+    }
+
+    /**
+     * @param JsonValue $jwt_id
+     * @return void
+     */
+    public function setJwtId(JsonValue $jwt_id)
+    {
+        $this->set[RegisteredJWTClaimNames::JWTID] = $jwt_id;
     }
 }

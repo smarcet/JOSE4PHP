@@ -12,36 +12,30 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+namespace jwk;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class JSONWebKeyKeyOperationsValues
+ * @package jwk
+ *
+ * https://tools.ietf.org/html/rfc7517#section-4.3
+ * (key_ops)
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+final class JSONWebKeyKeyOperationsValues {
 
-    /**
-     * @return StringOrURI
-     */
-    public function getAlgorithm();
+    const ComputeDigitalSignatureOrMAC = 'sign';
 
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
+    const VerifyDigitalSignatureOrMAC = 'verify';
 
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
+    const EncryptContent = 'encrypt';
 
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
+    const DecryptContentAndValidateDecryption = 'decrypt';
 
+    const EncryptKey = 'wrapKey';
+
+    const DecryptKeyAndValidateDecryption = 'unwrapKey';
+
+    const DeriveKey = 'deriveKey';
+
+    const DeriveBitsNotToBeUsedAsKey = 'deriveBits';
 }

@@ -12,11 +12,11 @@
  * limitations under the License.
  **/
 
-namespace utils;
+namespace utils\json_types;
 
 /**
  * Class JsonArray
- * @package utils
+ * @package utils\json_types
  */
 class JsonArray extends JsonValue implements \ArrayAccess {
 

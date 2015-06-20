@@ -12,11 +12,11 @@
  * limitations under the License.
  **/
 
-namespace utils;
+namespace utils\json_types;
 
 /**
  * Class NumericDate
- * @package utils
+ * @package utils\json_types
  * A JSON numeric value representing the number of seconds from
  * 1970-01-01T00:00:00Z UTC until the specified UTC date/time,
  * ignoring leap seconds.  This is equivalent to the IEEE Std 1003.1,

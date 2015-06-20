@@ -12,36 +12,9 @@
  * limitations under the License.
  **/
 
-namespace jwt;
+namespace jwk\utils\rsa\exceptions;
 
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
 
-/**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
- */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
-
-    /**
-     * @return StringOrURI
-     */
-    public function getAlgorithm();
-
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
+class RSABadPEMFormat extends \Exception {
 
 }

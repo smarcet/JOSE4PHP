@@ -12,36 +12,32 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+namespace utils\json_types;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class JsonValue
+ * https://tools.ietf.org/html/rfc7159
+ * @package utils\json_types
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+class JsonValue {
 
     /**
-     * @return StringOrURI
+     * @var int|string|array|bool|IJsonObject
      */
-    public function getAlgorithm();
+    protected $value;
 
     /**
-     * @return JsonValue
+     * @param int|string|array|bool|IJsonObject $value
      */
-    public function getKeyID();
+    public function __construct($value){
+        $this->value = $value;
+    }
 
     /**
-     * @return StringOrURI
+     * @return int|string|array|bool|IJsonObject
      */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
+    public function getValue(){
+        return $this->value;
+    }
 
 }

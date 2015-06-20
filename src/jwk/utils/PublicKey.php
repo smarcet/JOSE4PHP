@@ -12,32 +12,9 @@
  * limitations under the License.
  **/
 
-namespace utils;
+namespace jwk\utils;
 
-/**
- * Class JsonValue
- * https://tools.ietf.org/html/rfc7159
- * @package utils
- */
-class JsonValue {
 
-    /**
-     * @var int|string|array|bool|IJsonObject
-     */
-    protected $value;
-
-    /**
-     * @param int|string|array|bool|IJsonObject $value
-     */
-    public function __construct($value){
-        $this->value = $value;
-    }
-
-    /**
-     * @return int|string|array|bool|IJsonObject
-     */
-    public function getValue(){
-        return $this->value;
-    }
+interface PublicKey {
 
 }

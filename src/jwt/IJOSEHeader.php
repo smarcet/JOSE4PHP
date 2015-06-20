@@ -15,9 +15,9 @@
 namespace jwt;
 
 
-use utils\IJsonObject;
-use utils\JsonValue;
-use utils\StringOrURI;
+use utils\json_types\IJsonObject;
+use utils\json_types\JsonValue;
+use utils\json_types\StringOrURI;
 
 /**
  * Interface IJOSEHeader

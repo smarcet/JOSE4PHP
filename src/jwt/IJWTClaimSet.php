@@ -13,7 +13,10 @@
  **/
 
 namespace jwt;
-use utils\NumericDate;
+
+use utils\json_types\JsonValue;
+use utils\json_types\NumericDate;
+use utils\json_types\StringOrURI;
 
 /**
  * Interface IJWTClaimSet
@@ -36,19 +39,19 @@ use utils\NumericDate;
 interface IJWTClaimSet extends IReadOnlyJWTClaimSet {
 
     /**
-     * @param string $issuer
+     * @param StringOrURI $issuer
      * @return void
      */
     public function setIssuer($issuer);
 
     /**
-     * @param string $audience
+     * @param StringOrURI $audience
      * @return void
      */
     public function setAudience($audience);
 
     /**
-     * @param string $subject
+     * @param StringOrURI $subject
      * @return void
      */
     public function setSubject($subject);
@@ -60,14 +63,27 @@ interface IJWTClaimSet extends IReadOnlyJWTClaimSet {
     public function setExpirationTimeMinutesInTheFuture($minutes);
 
     /**
+     * @param IJWTIdGenerator $generator
      * @return void
      */
-    public function setGeneratedJwtId();
+    public function setGeneratedJwtId(IJWTIdGenerator $generator);
 
     /**
      * @return void
      */
     public function setIssuedAtToNow();
+
+    /**
+     * @param NumericDate $issued
+     * @return void
+     */
+    public function setIssued(NumericDate $issued);
+
+    /**
+     * @param JsonValue $jwt_id
+     * @return void
+     */
+    public function setJwtId(JsonValue $jwt_id);
 
     /**
      * @param int $minutes

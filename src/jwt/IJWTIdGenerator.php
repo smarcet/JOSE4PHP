@@ -14,34 +14,15 @@
 
 namespace jwt;
 
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
-
 /**
- * Interface IReadOnlyJOSEHeader
+ * Interface IJWTIdGenerator
  * @package jwt
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+interface IJWTIdGenerator {
 
     /**
-     * @return StringOrURI
+     * @param IJWTClaimSet $claim_set
+     * @return void
      */
-    public function getAlgorithm();
-
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
-
+    public function generateUniqueId(IJWTClaimSet $claim_set);
 }

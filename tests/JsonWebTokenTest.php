@@ -14,9 +14,9 @@
 
 use \jwt\impl\JWTClaimSet;
 use \jwt\JWTClaim;
-use \utils\StringOrURI;
-use \utils\JsonValue;
-use \utils\NumericDate;
+use \utils\json_types\StringOrURI;
+use \utils\json_types\JsonValue;
+use \utils\json_types\NumericDate;
 use \utils\Base64UrlRepresentation;
 use \jwt\impl\UnsecuredJWT;
 use \jwt\utils\JWTClaimSetFactory;

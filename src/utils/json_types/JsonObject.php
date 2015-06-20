@@ -14,6 +14,8 @@
 
 namespace utils;
 use utils\exceptions\JsonParseException;
+use utils\json_types\IJsonObject;
+use utils\json_types\JsonValue;
 
 /**
  * Class JsonObject

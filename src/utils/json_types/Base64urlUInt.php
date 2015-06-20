@@ -12,36 +12,21 @@
  * limitations under the License.
  **/
 
-namespace jwt;
+namespace utils\json_types;
 
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+
+use utils\Base64UrlRepresentation;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class Base64urlUInt
+ * @package utils\json_types
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+class Base64urlUInt extends JsonValue {
 
-    /**
-     * @return StringOrURI
-     */
-    public function getAlgorithm();
-
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
+    public function toBigInt(){
+        $b64 = new Base64UrlRepresentation();
+        $hex = bin2hex($b64->decode($this->value));
+        return new \Math_BigInteger('0x'.$hex, 16);
+    }
 
 }

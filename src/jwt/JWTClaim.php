@@ -14,7 +14,7 @@
 
 namespace jwt;
 
-use utils\JsonValue;
+use utils\json_types\JsonValue;
 
 /**
  * Class JWTClaim

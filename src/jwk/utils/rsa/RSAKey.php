@@ -11,20 +11,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-namespace utils;
+
+namespace jwk\utils\rsa;
 
 /**
- * Interface IJsonObject
- * @package utils
+ * Interface RSAKey
+ * @package jwk\utils\rsa
  */
-interface IJsonObject {
-    /**
-     * @return string
-     */
-    public function toJson();
+interface RSAKey {
 
     /**
-     * @return array
+     * Returns The "n" (modulus)
+     * @return \Math_BigInteger
      */
-    public function toArray();
+    public function getModulus();
 }

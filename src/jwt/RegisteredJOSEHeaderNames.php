@@ -13,6 +13,7 @@
  **/
 
 namespace jwt;
+use utils\json_types\JsonTypes;
 
 /**
  * Class RegisteredJOSEHeaderNames
@@ -210,10 +211,10 @@ final class RegisteredJOSEHeaderNames {
     );
 
     public static $registered_basic_headers_set_types = array (
-        self::Algorithm   => '\utils\StringOrURI' ,
-        self::Type        => '\utils\StringOrURI',
-        self::ContentType => '\utils\StringOrURI',
-        self::KeyID       => '\utils\JsonValue'
+        self::Algorithm   => JsonTypes::StringOrURI ,
+        self::Type        => JsonTypes::StringOrURI,
+        self::ContentType => JsonTypes::StringOrURI,
+        self::KeyID       => JsonTypes::JsonValue
     );
 
 

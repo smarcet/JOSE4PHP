@@ -14,10 +14,13 @@
 
 namespace jwt\utils;
 
-
 use jwt\IJOSEHeader;
 use jwt\RegisteredJOSEHeaderNames;
 
+/**
+ * Class JOSEHeaderFactory
+ * @package jwt\utils
+ */
 final class JOSEHeaderFactory {
 
     /**

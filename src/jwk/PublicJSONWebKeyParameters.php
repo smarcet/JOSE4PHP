@@ -12,36 +12,19 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+namespace jwk;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class PublicJSONWebKeyParameters
+ * @package jwk
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+final class PublicJSONWebKeyParameters extends JSONWebKeyParameters {
 
-    /**
-     * @return StringOrURI
-     */
-    public function getAlgorithm();
+    const X_509CertificateChain = 'x5c';
 
-    /**
-     * @return JsonValue
-     */
-    public function getKeyID();
+    const X_509Url = 'x5u';
 
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
+    const X_509CertificateSHA_1_Thumbprint = 'x5t';
 
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
-
+    const X_509CertificateSHA_256_Thumbprint = 'x5t#S256';
 }

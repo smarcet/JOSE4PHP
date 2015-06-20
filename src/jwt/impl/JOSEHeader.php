@@ -18,8 +18,8 @@ use jwt\IJOSEHeader;
 use jwt\JOSEHeaderParam;
 use jwt\RegisteredJOSEHeaderNames;
 use utils\JsonObject;
-use utils\JsonValue;
-use utils\StringOrURI;
+use utils\json_types\JsonValue;
+use utils\json_types\StringOrURI;
 
 /**
  * Class JOSEHeader

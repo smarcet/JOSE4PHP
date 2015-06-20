@@ -12,36 +12,22 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+namespace jwk;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class JSONWebKeyPublicKeyUseValues
+ * @package jwk
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+final class JSONWebKeyPublicKeyUseValues {
 
     /**
-     * @return StringOrURI
+     *
      */
-    public function getAlgorithm();
-
+    const Signature  = 'sig';
     /**
-     * @return JsonValue
+     *
      */
-    public function getKeyID();
+    const Encryption = 'enc';
 
-    /**
-     * @return StringOrURI
-     */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
-
+    public static $valid_uses = array ( self::Signature, self::Encryption);
 }

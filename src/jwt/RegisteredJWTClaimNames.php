@@ -13,6 +13,8 @@
  **/
 
 namespace jwt;
+use utils\json_types\JsonTypes;
+
 /**
  * Class RegisteredJWTClaimNames
  * @package jwt
@@ -107,12 +109,12 @@ final class RegisteredJWTClaimNames {
      * @var array
      */
     public static $registered_claim_set_types = array(
-        self::Issuer         => '\utils\StringOrURI',
-        self::Audience       => '\utils\StringOrURI',
-        self::Subject        => '\utils\StringOrURI',
-        self::IssuedAt       => '\utils\NumericDate',
-        self::ExpirationTime => '\utils\NumericDate',
-        self::NotBefore      => '\utils\NumericDate',
-        self::JWTID          => '\utils\JsonValue',
+        self::Issuer         => JsonTypes::StringOrURI,
+        self::Audience       => JsonTypes::StringOrURI,
+        self::Subject        => JsonTypes::StringOrURI,
+        self::IssuedAt       => JsonTypes::NumericDate,
+        self::ExpirationTime => JsonTypes::NumericDate,
+        self::NotBefore      => JsonTypes::NumericDate,
+        self::JWTID          => JsonTypes::JsonValue,
     );
 }

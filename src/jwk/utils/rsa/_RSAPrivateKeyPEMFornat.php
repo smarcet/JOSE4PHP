@@ -12,36 +12,38 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-
-use utils\json_types\IJsonObject;
-use utils\json_types\JsonValue;
-use utils\json_types\StringOrURI;
+namespace jwk\utils\rsa;
 
 /**
- * Interface IReadOnlyJOSEHeader
- * @package jwt
+ * Class _RSAPrivateKeyPEMFornat
+ * @package jwk\utils\rsa
  */
-interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
+final class _RSAPrivateKeyPEMFornat
+    extends _AbstractRSAKeyPEMFornat
+    implements RSAPrivateKey {
 
     /**
-     * @return StringOrURI
+     * @var \Math_BigInteger
      */
-    public function getAlgorithm();
+    private $d;
 
     /**
-     * @return JsonValue
+     * @param $pem_format
+     * @throws RSABadPEMFormat
      */
-    public function getKeyID();
+    public function __construct($pem_format){
+
+        parent::__construct($pem_format);
+        $this->d = $this->rsa_imp->exponent;
+    }
 
     /**
-     * @return StringOrURI
+     * The "d" (private exponent)
+     *
+     * @return \Math_BigInteger
      */
-    public function getContentType();
-
-    /**
-     * @return StringOrURI
-     */
-    public function getType();
-
+    public function getPrivateExponent()
+    {
+       return $this->d;
+    }
 }
