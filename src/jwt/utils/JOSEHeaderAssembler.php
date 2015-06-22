@@ -21,13 +21,13 @@ use utils\Base64UrlRepresentation;
  * Class JOSEHeaderSerializer
  * @package jwt\utils
  */
-final class JOSEHeaderAssembler extends JWTRawAssembler
+final class JOSEHeaderAssembler
 {
 
     public static function serialize(IJOSEHeader $header)
     {
         $json = $header->toJson();
-        return parent::serialize($json);
+        return JWTRawAssembler::serialize($json);
     }
 
     /**
@@ -37,7 +37,7 @@ final class JOSEHeaderAssembler extends JWTRawAssembler
     public static function unSerialize($input)
     {
 
-        $json = parent::unSerialize($input);
+        $json = JWTRawAssembler::unSerialize($input);
         $raw_headers = json_decode($json, true);
 
         return JOSEHeaderFactory::build($raw_headers, 'JWT');
