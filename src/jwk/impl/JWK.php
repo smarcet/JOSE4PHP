@@ -14,8 +14,9 @@
 
 namespace jwk\impl;
 
-
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+use jwk\exceptions\InvalidJWKAlgorithm;
+use jwk\exceptions\InvalidJWKType;
 use jwk\exceptions\InvalidJWKUseException;
 use jwk\IJWK;
 use jwk\JSONWebKeyParameters;
@@ -39,47 +40,103 @@ abstract class JWK
      * @throws InvalidJWKType
      * @throws InvalidJWKUseException
      */
-    public function __construct(array $headers = array()){
+    protected function __construct(array $headers = array()){
+
         if(count($headers) === 0 ) return;
+
         $alg = @$headers[JSONWebKeyParameters::Algorithm];
+        $this->setAlgorithm($alg);
+
+        $use = @$headers[JSONWebKeyParameters::PublicKeyUse];
+        $this->setKeyUse($use);
+
+        $id = @$headers[JSONWebKeyParameters::KeyId];
+        $this->setId($id);
+    }
+
+    /**
+     * @return StringOrURI
+     */
+    public function getAlgorithm()
+    {
+        return  $this[JSONWebKeyParameters::Algorithm];
+    }
+
+    /**
+     * @return StringOrURI
+     */
+    public function getKeyUse()
+    {
+        return  $this[JSONWebKeyParameters::PublicKeyUse];
+    }
+
+    /**
+     * @return JsonValue
+     */
+    public function getId()
+    {
+        return $this[JSONWebKeyParameters::KeyId];
+    }
+
+    /**
+     * @param  JsonValue $kid
+     * @return $this
+     */
+    public function setId($kid)
+    {
+        if(!empty($kid))
+            $this->set[JSONWebKeyParameters::KeyId] = new  JsonValue($kid);
+        return $this;
+    }
+
+    /**
+     * @param string $alg
+     * @throws InvalidJWKAlgorithm
+     * @return $this
+     */
+    public function setAlgorithm($alg)
+    {
         if(!in_array($alg, JSONWebSignatureAndEncryptionAlgorithms::$header_location_alg))
             throw new InvalidJWKAlgorithm (sprintf('alg %s', $alg));
 
         $this->set[JSONWebKeyParameters::Algorithm] = new StringOrURI($alg);
+        return $this;
+    }
 
-        $use = @$headers[JSONWebKeyParameters::PublicKeyUse];
+    /**
+     * @param string $use
+     * @throws InvalidJWKUseException
+     * @return $this
+     */
+    public function setKeyUse($use)
+    {
+        if(empty($use)) return;
         if(!in_array($use, JSONWebKeyPublicKeyUseValues::$valid_uses))
             throw new InvalidJWKUseException(sprintf('use %s', $use));
 
         $this->set[JSONWebKeyParameters::PublicKeyUse] = new StringOrURI($use);
-
-        $id = @$headers[JSONWebKeyParameters::KeyId];
-        if(!empty($id))
-            $this->set[JSONWebKeyParameters::KeyId] = new  JsonValue($id);
+        return $this;
     }
 
     /**
-     * @return string
+     * @param string $type
+     * @throws InvalidJWKType
+     * @return $this
      */
-    public function getAlgorithm()
+    public function setType($type)
     {
-        return  $this->set[JSONWebKeyParameters::Algorithm];
+        if(!in_array($type, JSONWebKeyTypes::$valid_keys_set))
+            throw new InvalidJWKType(sprintf('use %s', $type));
+
+        $this->set[JSONWebKeyParameters::KeyType] = new StringOrURI($type);
+        return $this;
     }
 
     /**
-     * @return string
+     * @return StringOrURI
      */
-    public function getKeyUse()
+    public function getType()
     {
-        return  $this->set[JSONWebKeyParameters::PublicKeyUse];
+        return  $this[JSONWebKeyParameters::KeyType];
     }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->set[JSONWebKeyParameters::KeyId];
-    }
-
 }

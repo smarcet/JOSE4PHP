@@ -34,10 +34,11 @@ final class JOSEHeaderFactory {
 
         foreach(RegisteredJOSEHeaderNames::$registered_basic_headers_set as $header_name){
             $value = isset($raw_headers[$header_name]) ? $raw_headers[$header_name] : null;
-            $type  = RegisteredJOSEHeaderNames::$registered_basic_headers_set[$header_name];
+            $type  = @RegisteredJOSEHeaderNames::$registered_basic_headers_set_types[$header_name];
             if(!is_null($value))
             {
-                $class    = new ReflectionClass($type);
+                if(is_null($type)) continue;
+                $class    = new \ReflectionClass($type);
                 $value    = $class->newInstanceArgs(array($value));
             }
             array_push($args, $value);
@@ -45,7 +46,7 @@ final class JOSEHeaderFactory {
         }
 
 
-        $class         = new ReflectionClass('\jwt\impl\JOSEHeader');
+        $class        = new \ReflectionClass('\jwt\impl\JOSEHeader');
         $basic_header = $class->newInstanceArgs($args);
 
         // unregistered headers

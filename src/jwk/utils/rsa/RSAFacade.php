@@ -15,6 +15,7 @@
 namespace jwk\utils\rsa;
 use jwk\utils\KeyPair;
 use jwk\utils\PrivateKey;
+use jwk\utils\rsa\exceptions\RSABadPEMFormat;
 
 /**
  * Class RSAFacade
@@ -112,4 +113,23 @@ final class RSAFacade {
         );
         return new _RSAPrivateKeyPEMFornat($private_key_pem);
     }
+
+    /**
+     * @param string $private_key_pem
+     * @return RSAPrivateKey
+     * @throws RSABadPEMFormat
+     */
+    public function buildPrivateKeyFromPEM($private_key_pem){
+       return new _RSAPrivateKeyPEMFornat($private_key_pem);
+    }
+
+    /**
+     * @param string $public_key_pem
+     * @return RSAPublicKey
+     * @throws RSABadPEMFormat
+     */
+    public function buildPublicKeyFromPEM($public_key_pem){
+        return new _RSAPublicKeyPEMFornat($public_key_pem);
+    }
+
 }

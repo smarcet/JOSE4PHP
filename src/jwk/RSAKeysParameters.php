@@ -13,6 +13,7 @@
  **/
 
 namespace jwk;
+use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 
 /**
  * Class RSAKeysParameters
@@ -83,5 +84,17 @@ final class RSAKeysParameters {
         self::SecondPrimeFactor,
         self::FirstFactorCRTExponent,
         self::SecondFactorCRTExponent,
+    );
+
+    public static $valid_algorithms_values = array(
+        JSONWebSignatureAndEncryptionAlgorithms::RS256,
+        JSONWebSignatureAndEncryptionAlgorithms::RS384,
+        JSONWebSignatureAndEncryptionAlgorithms::RS512,
+        JSONWebSignatureAndEncryptionAlgorithms::PS256,
+        JSONWebSignatureAndEncryptionAlgorithms::PS384,
+        JSONWebSignatureAndEncryptionAlgorithms::PS512,
+        JSONWebSignatureAndEncryptionAlgorithms::RSA1_5,
+        JSONWebSignatureAndEncryptionAlgorithms::RSA_OAEP,
+        JSONWebSignatureAndEncryptionAlgorithms::RSA_OAEP_256,
     );
 }

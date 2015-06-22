@@ -14,20 +14,54 @@
 
 namespace jws;
 
+use jwk\IJWK;
+use jws\exceptions\JWSInvalidJWKException;
+use jws\exceptions\JWSInvalidPayloadException;
+use jws\exceptions\JWSNotSupportedAlgorithm;
 
-interface IJWS {
+/**
+ * Interface IJWS
+ * @package jws
+ */
+interface IJWS extends IJWSReadOnly {
 
     /**
-     * @param $private_key_or_secret
-     * @param string $algorithm
-     * @return mixed
+     * @param string $payload
+     * @return $this
      */
-    public function sign($private_key_or_secret, $algorithm = 'HS256');
+    public function setPayload($payload);
 
     /**
-     * @param $public_key_or_secret
-     * @param null $alg
-     * @return mixed
+     * @return string
      */
-    public function verify($public_key_or_secret, $alg = null);
+    public function serialize();
+
+    /**
+     * @return $this
+     * @throws JWSInvalidJWKException
+     * @throws JWSInvalidPayloadException
+     * @throws JWSNotSupportedAlgorithm
+     */
+    public function sign();
+
+    /**
+     * @param string $original_alg
+     * @return bool
+     * @throws JWSInvalidJWKException
+     * @throws JWSInvalidPayloadException
+     * @throws JWSNotSupportedAlgorithm
+     */
+    public function verify($original_alg);
+    /**
+     * @param IJWK $key
+     * @return $this
+     */
+    public function setKey(IJWK $key);
+
+    /**
+     * @param string $compact_serialization
+     * @return $this
+     */
+    static public function fromCompactSerialization($compact_serialization);
+
 }

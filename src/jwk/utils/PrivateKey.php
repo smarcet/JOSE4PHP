@@ -14,7 +14,10 @@
 
 namespace jwk\utils;
 
-
-interface PrivateKey {
+/**
+ * Interface PrivateKey
+ * @package jwk\utils
+ */
+interface PrivateKey extends Key {
 
 }

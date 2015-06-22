@@ -15,7 +15,10 @@
 namespace jwk;
 
 
+use jwk\utils\Key;
 use utils\json_types\IJsonObject;
+use utils\json_types\JsonValue;
+use utils\json_types\StringOrURI;
 
 /**
  * Interface IReadOnlyJWK
@@ -24,23 +27,28 @@ use utils\json_types\IJsonObject;
 interface IReadOnlyJWK extends IJsonObject, \ArrayAccess {
 
     /**
-     * @return string
+     * @return StringOrURI
      */
     public function getType();
 
     /**
-     * @return string
+     * @return StringOrURI
      */
     public function getAlgorithm();
 
     /**
-     * @return string
+     * @return StringOrURI
      */
     public function getKeyUse();
 
     /**
-     * @return string
+     * @return JsonValue
      */
     public function getId();
+
+    /**
+     * @return Key
+     */
+    public function getKey();
 
 }

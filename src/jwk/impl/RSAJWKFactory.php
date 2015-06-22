@@ -18,13 +18,15 @@ namespace jwk\impl;
 use jwk\IJWK;
 use jwk\IJWKFactory;
 use jwk\IJWKSpecification;
+use jwk\utils\KeyPair;
 use \jwk\utils\rsa\RSAFacade;
 
 /**
  * Class RSAJWKFactory
  * @package jwk\impl
  */
-final class RSAJWKFactory implements IJWKFactory {
+final class RSAJWKFactory implements IJWKFactory
+{
 
     /**
      * @param IJWKSpecification $spec
@@ -32,7 +34,30 @@ final class RSAJWKFactory implements IJWKFactory {
      */
     static public function build(IJWKSpecification $spec)
     {
+        if ($spec instanceof RSAJWKKeyLengthSpecification) {
             $keys = RSAFacade::getInstance()->buildKeyPair($spec->getKeyLenInBits());
-            return RSAJWK::fromKeys($keys);
+            $jwk  = RSAJWK::fromKeys($keys);
+            $jwk->setAlgorithm($spec->getAlg());
+            return $jwk;
+        }
+        if ($spec instanceof RSAJWKPEMPrivateKeySpecification) {
+            $private_key  = RSAFacade::getInstance()->buildPrivateKeyFromPEM($spec->getPEM());
+            $public_key   = RSAFacade::getInstance()->buildPublicKey($private_key->getModulus(), $private_key->getPublicExponent());
+            $jwk = RSAJWK::fromKeys(new KeyPair($public_key, $private_key));
+            $jwk->setAlgorithm($spec->getAlg());
+            return $jwk;
+        }
+        if($spec instanceof RSAJWKParamsPublicKeySpecification){
+            $public_key = RSAFacade::getInstance()->buildPublicKey($spec->getModulus()->toBigInt(), $spec->getExponent()->toBigInt());
+            return RSAJWK::fromPublicKey($public_key);
+        }
+        if($spec instanceof RSAJWKPEMPublicKeySpecification){
+            $public_key = RSAFacade::getInstance()->buildPublicKeyFromPEM($spec->getPEM());
+            $jwk = RSAJWK::fromPublicKey($public_key);
+            $jwk->setAlgorithm($spec->getAlg());
+            return $jwk;
+        }
+        return null;
     }
+
 }

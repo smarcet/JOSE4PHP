@@ -21,25 +21,26 @@ use utils\Base64UrlRepresentation;
  * Class JOSEHeaderSerializer
  * @package jwt\utils
  */
-final class JOSEHeaderSerializer {
+final class JOSEHeaderAssembler extends JWTRawAssembler
+{
 
-    public static function serialize(IJOSEHeader $header){
+    public static function serialize(IJOSEHeader $header)
+    {
         $json = $header->toJson();
-        $base64 = new Base64UrlRepresentation();
-        return $base64->encode($json);
+        return parent::serialize($json);
     }
 
     /**
      * @param string $input
      * @return IJOSEHeader
      */
-    public static function unSerialize($input){
+    public static function unSerialize($input)
+    {
 
-        $base64      = new Base64UrlRepresentation();
-        $json        = $base64->decode($input);
+        $json = parent::unSerialize($input);
         $raw_headers = json_decode($json, true);
 
-        return JOSEHeaderFactory::build($raw_headers,'JWT');
+        return JOSEHeaderFactory::build($raw_headers, 'JWT');
     }
 
 }

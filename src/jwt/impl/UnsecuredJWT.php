@@ -14,6 +14,7 @@
 
 namespace jwt\impl;
 
+use jwt\IJWT;
 use jwt\IJWTClaimSet;
 use utils\json_types\StringOrURI;
 
@@ -25,57 +26,34 @@ use utils\json_types\StringOrURI;
  *
  *
  */
-class UnsecuredJWT extends JWT {
+final class UnsecuredJWT extends JWT {
 
     const EmptySignature = '';
 
     /**
-     * @param IJWTClaimSet $claimSet
+     * @param IJWTClaimSet $claim_set
      */
-    public function __construct(IJWTClaimSet $claimSet){
+    protected function __construct(IJWTClaimSet $claim_set){
 
         $this->header    = new JOSEHeader(new StringOrURI('none'), new StringOrURI('JWT'));
-        $this->claimSet  = $claimSet;
+        $this->claim_set = $claim_set;
         $this->signature = self::EmptySignature;
     }
 
     /**
-     * @param $private_key_or_secret
-     * @param string $algorithm
-     * @return mixed
+     * @return string
      */
-    public function sign($private_key_or_secret, $algorithm = 'HS256')
+    public function getRawPayload()
     {
-
+       return '';
     }
 
     /**
-     * @param $public_key_or_secret
-     * @param null $alg
-     * @return mixed
+     * @param IJWTClaimSet $claim_set
+     * @return IJWT
      */
-    public function verify($public_key_or_secret, $alg = null)
+    static public function fromClaimSet(IJWTClaimSet $claim_set)
     {
-
-    }
-
-    /**
-     * @param $public_key_or_secret
-     * @param string $algorithm
-     * @param string $encryption_method
-     * @return mixed
-     */
-    public function encrypt($public_key_or_secret, $algorithm = 'RSA1_5', $encryption_method = 'A128CBC-HS256')
-    {
-
-    }
-
-    /**
-     * @param $private_key_or_secret
-     * @return mixed
-     */
-    public function decrypt($private_key_or_secret)
-    {
-
+        return new UnsecuredJWT($claim_set);
     }
 }

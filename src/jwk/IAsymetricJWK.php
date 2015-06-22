@@ -15,6 +15,7 @@
 namespace jwk;
 
 
+use jwk\utils\KeyPair;
 use jwk\utils\PrivateKey;
 use jwk\utils\PublicKey;
 
@@ -65,4 +66,24 @@ interface IAsymetricJWK extends IJWK {
      * @return int
      */
     public function getVisibility();
+
+    // factory methods
+
+    /**
+     * @param KeyPair $keys
+     * @return IAsymetricJWK
+     */
+    static public function fromKeys(KeyPair $keys);
+
+    /**
+     * @param PublicKey $public_key
+     * @return IAsymetricJWK
+     */
+    static public function fromPublicKey(PublicKey $public_key);
+
+    /**
+     * @param PrivateKey $private_key
+     * @return IAsymetricJWK
+     */
+    static public function fromPrivateKey(PrivateKey $private_key);
 }

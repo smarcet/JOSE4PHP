@@ -44,9 +44,9 @@ abstract class _AbstractRSAKeyPEMFornat {
         $this->pem_format = $pem_format;
         $this->rsa_imp    = new \Crypt_RSA();
 
-        $res = $this->rsa_imp->loadKey($this->pem_format);
-        if(!$res)
-            throw new RSABadPEMFormat(sprintf('pem %s',$pem_format ));
+        $res = $this->rsa_imp->loadKey($this->pem_format, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+
+        if(!$res) throw new RSABadPEMFormat(sprintf('pem %s',$pem_format ));
 
         $this->n = $this->rsa_imp->modulus;
     }

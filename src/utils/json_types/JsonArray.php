@@ -20,8 +20,8 @@ namespace utils\json_types;
  */
 class JsonArray extends JsonValue implements \ArrayAccess {
 
-    public function __construct(){
-        parent::__construct(array());
+    public function __construct(array $values){
+        parent::__construct($values);
     }
 
     public function offsetSet($offset, $value)

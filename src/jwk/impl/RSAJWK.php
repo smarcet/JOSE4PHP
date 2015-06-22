@@ -15,6 +15,7 @@
 namespace jwk\impl;
 
 
+use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\exceptions\RSAJWKMissingPrivateKeyParamException;
 use jwk\exceptions\RSAJWKMissingPublicKeyParamException;
 use jwk\IAsymetricJWK;
@@ -22,10 +23,12 @@ use jwk\JSONWebKeyParameters;
 use jwk\JSONWebKeyTypes;
 use jwk\JSONWebKeyVisibility;
 use jwk\RSAKeysParameters;
+use jwk\utils\Key;
 use jwk\utils\KeyPair;
 use jwk\utils\PrivateKey;
 use jwk\utils\PublicKey;
 use jwk\utils\rsa\RSAFacade;
+use jwk\utils\rsa\RSAPrivateKey;
 use jwk\utils\rsa\RSAPublicKey;
 use utils\json_types\Base64urlUInt;
 use utils\json_types\StringOrURI;
@@ -41,7 +44,7 @@ final class RSAJWK extends AsymetricJWK {
      * @throws RSAJWKMissingPrivateKeyParamException
      * @throws RSAJWKMissingPublicKeyParamException
      */
-    public function __construct($headers = array()){
+    protected function __construct($headers = array()){
 
         $this->set[JSONWebKeyParameters::KeyType] = new StringOrURI(JSONWebKeyTypes::RSA);
 
@@ -108,21 +111,63 @@ final class RSAJWK extends AsymetricJWK {
     static public function fromKeys(KeyPair $keys){
 
         $jwk = new RSAJWK();
-        $jwk->public_key = $keys->getPublic();
+        $jwk->public_key  = $keys->getPublic();
         $jwk->private_key = $keys->getPrivate();
+        $jwk->set[RSAKeysParameters::Exponent] = Base64urlUInt::fromBigInt( $jwk->public_key->getPublicExponent());
+        $jwk->set[RSAKeysParameters::Modulus]  = Base64urlUInt::fromBigInt( $jwk->public_key->getModulus());
+        $jwk->set[RSAKeysParameters::PrivateExponent] = Base64urlUInt::fromBigInt($jwk->private_key->getPrivateExponent());
         return $jwk;
     }
 
     /**
-     * @param RSAPublicKey $public_key
+     * @param PublicKey $public_key
      * @return IAsymetricJWK
      */
-    static public function FromPublicKey(RSAPublicKey $public_key){
+    static public function fromPublicKey(PublicKey $public_key){
+        if($public_key instanceof RSAPublicKey) {
+            $jwk = new RSAJWK();
+            $jwk->public_key = $public_key;
+            $jwk->set[RSAKeysParameters::Exponent] = Base64urlUInt::fromBigInt($public_key->getPublicExponent());
+            $jwk->set[RSAKeysParameters::Modulus]  = Base64urlUInt::fromBigInt($public_key->getModulus());
+            return $jwk;
+        }
+        return null;
+    }
 
-        $jwk = new RSAJWK();
-        $jwk->public_key = $public_key;
-        return $jwk;
+    /**
+     * @param PrivateKey $private_key
+     * @return IAsymetricJWK|null
+     */
+    static public function fromPrivateKey(PrivateKey $private_key){
+        if($private_key instanceof RSAPrivateKey) {
+            $jwk = new RSAJWK();
+            $jwk->private_key = $private_key;
+            $jwk->set[RSAKeysParameters::Exponent]        = Base64urlUInt::fromBigInt($private_key->getPublicExponent());
+            $jwk->set[RSAKeysParameters::Modulus]         = Base64urlUInt::fromBigInt($private_key->getModulus());
+            $jwk->set[RSAKeysParameters::PrivateExponent] = Base64urlUInt::fromBigInt($private_key->getPrivateExponent());
+            return $jwk;
+        }
+        return null;
     }
 
 
+    /**
+     * @return Key
+     */
+    public function getKey()
+    {
+        return $this->getPrivateKey();
+    }
+
+    /**
+     * @param string $alg
+     * @throws InvalidJWKAlgorithm
+     * @return $this
+     */
+    public function setAlgorithm($alg)
+    {
+        if(!in_array($alg, RSAKeysParameters::$valid_algorithms_values))
+            throw new InvalidJWKAlgorithm(sprintf('alg %s not supported on RSA KEY!', $alg));
+        return parent::setAlgorithm($alg);
+    }
 }

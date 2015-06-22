@@ -14,20 +14,20 @@
 
 namespace jwt\impl;
 
-use jwe\IJWE;
+use jwt\exceptions\InvalidJWTException;
 use jwt\IJOSEHeader;
 use jwt\IJWT;
 use jwt\IJWTClaimSet;
-use jwt\utils\JOSEHeaderSerializer;
+use jwt\utils\JOSEHeaderAssembler;
 use jwt\utils\JWTClaimSetAssembler;
-use jws\IJWS;
+use jwt\utils\JWTRawAssembler;
 
 /**
  * Class JWT
  * @package jwt\impl
  */
 abstract class JWT
-    implements IJWT, IJWS, IJWE {
+    implements IJWT {
 
     /**
      * @var IJOSEHeader
@@ -37,7 +37,7 @@ abstract class JWT
     /**
      * @var IJWTClaimSet
      */
-    protected $claimSet;
+    protected $claim_set;
 
     /**
      * @var string
@@ -47,12 +47,12 @@ abstract class JWT
 
     /**
      * @param IJOSEHeader $header
-     * @param IJWTClaimSet $claimSet
+     * @param IJWTClaimSet $claim_set
      */
-    public function __construct(IJOSEHeader $header, IJWTClaimSet $claimSet){
+    protected function __construct(IJOSEHeader $header, IJWTClaimSet $claim_set){
 
-        $this->header   = $header;
-        $this->claimSet = $claimSet;
+        $this->header    = $header;
+        $this->claim_set = $claim_set;
     }
 
     /**
@@ -68,7 +68,7 @@ abstract class JWT
      */
     public function getClaimSet()
     {
-       return  $this->claimSet;
+       return  $this->claim_set;
     }
 
     /**
@@ -84,26 +84,32 @@ abstract class JWT
      */
     public function serialize()
     {
-        $header    = JOSEHeaderSerializer::serialize($this->header);
-        $claim_set = JWTClaimSetAssembler::serialize($this->claimSet);
-        $signature = JWTSignatureAssembler::serialize($this->signature);
+        $header    = JOSEHeaderAssembler::serialize($this->header);
+        $claim_set = ($this->header->getType()->getString() === 'JWT' && !is_null($this->claim_set)) ? JWTClaimSetAssembler::serialize($this->claim_set) : JWTRawAssembler::serialize($this->getRawPayload());
+        $signature = JWTRawAssembler::serialize($this->signature);
         return sprintf('%s.%s.%s', $header, $claim_set, $signature);
     }
 
     /**
      * @param string $input
+     * @return array
      * @throws InvalidJWTException
      */
-    public static function deserialize($input)
+    public static function unSerialize($input)
     {
         $e_parts = explode('.',$input);
         if(count($e_parts) < 2)
             throw new InvalidJWTException(sprintf('%s has only 2 or less encoded parts!'));
 
         $e_header    = $e_parts[0];
-        $e_claim_set = $e_parts[1];
+        $e_payload   = $e_parts[1];
         $e_signature = count($e_parts)>2 ? $e_parts[2] : '';
 
+        $header    = JOSEHeaderAssembler::unSerialize($e_header);
+        $payload   = ($header->getType()->getString() === 'JWT') ? JWTClaimSetAssembler::unSerialize($e_payload) : JWTRawAssembler::unSerialize($e_payload);
+        $signature = !empty($e_signature) ? JWTRawAssembler::unSerialize($e_signature): '';
+
+        return array($header, $payload, $signature);
     }
 
 }

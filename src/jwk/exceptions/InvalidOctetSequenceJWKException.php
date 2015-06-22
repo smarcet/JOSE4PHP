@@ -12,33 +12,12 @@
  * limitations under the License.
  **/
 
-namespace jwt\impl;
-
-
-use utils\Base64UrlRepresentation;
+namespace jwk\exceptions;
 
 /**
- * Class JWTSignatureAssembler
- * @package jwt\impl
+ * Class InvalidOctetSequenceJWKException
+ * @package jwk\exceptions
  */
-class JWTSignatureAssembler {
+final class InvalidOctetSequenceJWKException extends \Exception {
 
-    /**
-     * @param string $signature
-     * @return string
-     */
-    public static function serialize($signature){
-        $base64 = new Base64UrlRepresentation();
-        return $base64->encode($signature);
-    }
-
-    /**
-     * @param string $input
-     * @return string
-     */
-    public static function unSerialize($input){
-
-        $base64 = new Base64UrlRepresentation();
-        return $base64->decode($input);
-    }
 }

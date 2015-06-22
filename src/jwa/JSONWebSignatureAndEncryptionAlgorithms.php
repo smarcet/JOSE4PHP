@@ -22,6 +22,11 @@ namespace jwa;
  */
 final class JSONWebSignatureAndEncryptionAlgorithms {
 
+    // Cryptographic Algorithms for Digital Signatures and MACs
+    // https://tools.ietf.org/html/rfc7518#section-3
+
+    // HMAC with SHA-2 Functions
+
     /**
      * HMAC using SHA-256
      */
@@ -36,6 +41,8 @@ final class JSONWebSignatureAndEncryptionAlgorithms {
      * HMAC using SHA-512
      */
     const HS512 = 'HS512';
+
+    // Digital Signature with RSASSA-PKCS1-v1_5
 
     /**
      *  RSASSA-PKCS1-v1_5 using SHA-256
@@ -52,6 +59,8 @@ final class JSONWebSignatureAndEncryptionAlgorithms {
      */
     const RS512 = 'RS512';
 
+    // Digital Signature with ECDSA
+
     /**
      *  ECDSA using P-256 and SHA-256
      */
@@ -66,6 +75,8 @@ final class JSONWebSignatureAndEncryptionAlgorithms {
      * ECDSA using P-521 and SHA-512
      */
     const ES512 = 'ES512';
+
+    // Digital Signature with RSASSA-PSS
 
     /**
      *  RSASSA-PSS using SHA-256 and MGF1 with SHA-256
@@ -86,6 +97,9 @@ final class JSONWebSignatureAndEncryptionAlgorithms {
      *   No digital signature or MAC performed
      */
     const None = 'none';
+
+    // Cryptographic Algorithms for Key Management
+    // https://tools.ietf.org/html/rfc7518#section-4
 
     /**
      *  RSAES-PKCS1-v1_5

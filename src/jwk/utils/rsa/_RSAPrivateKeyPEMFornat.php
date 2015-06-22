@@ -19,7 +19,7 @@ namespace jwk\utils\rsa;
  * @package jwk\utils\rsa
  */
 final class _RSAPrivateKeyPEMFornat
-    extends _AbstractRSAKeyPEMFornat
+    extends _RSAPublicKeyPEMFornat
     implements RSAPrivateKey {
 
     /**
@@ -46,4 +46,5 @@ final class _RSAPrivateKeyPEMFornat
     {
        return $this->d;
     }
+
 }

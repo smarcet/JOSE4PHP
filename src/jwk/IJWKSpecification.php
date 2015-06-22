@@ -24,4 +24,10 @@ interface IJWKSpecification {
      * @return int
      */
     public function getKeyLenInBits();
+
+    /**
+     * @return string
+     */
+    public function getAlg();
+
 }

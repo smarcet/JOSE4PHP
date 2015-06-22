@@ -19,7 +19,7 @@ use jwk\utils\PrivateKey;
  * Interface RSAPrivateKey
  * @package jwk\utils\rsa
  */
-interface RSAPrivateKey extends RSAKey, PrivateKey {
+interface RSAPrivateKey extends RSAPublicKey, PrivateKey {
 
     /**
      * The "d" (private exponent)

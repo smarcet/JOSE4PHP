@@ -29,4 +29,12 @@ class Base64urlUInt extends JsonValue {
         return new \Math_BigInteger('0x'.$hex, 16);
     }
 
+    /**
+     * @param \Math_BigInteger $big_int
+     * @return Base64urlUInt
+     */
+    static function fromBigInt(\Math_BigInteger $big_int){
+        $b64 = new Base64UrlRepresentation();
+        return new Base64urlUInt($b64->encode((string)$big_int));
+    }
 }

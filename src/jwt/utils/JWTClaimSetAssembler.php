@@ -20,7 +20,7 @@ use utils\Base64UrlRepresentation;
  * Class JWTClaimSetAssembler
  * @package jwt\utils
  */
-class JWTClaimSetAssembler {
+class JWTClaimSetAssembler extends JWTRawAssembler{
 
     /**
      * @param IJWTClaimSet $claim_set
@@ -28,8 +28,7 @@ class JWTClaimSetAssembler {
      */
     public static function serialize(IJWTClaimSet $claim_set){
         $json = $claim_set->toJson();
-        $base64 = new Base64UrlRepresentation();
-        return $base64->encode($json);
+        return parent::serialize($json);
     }
 
     /***
@@ -37,8 +36,7 @@ class JWTClaimSetAssembler {
      * @return IJWTClaimSet
      */
     public static function unSerialize($input){
-        $base64      = new Base64UrlRepresentation();
-        $json        = $base64->decode($input);
+        $json        = parent::unSerialize($input);
         $raw_claims  = json_decode($json, true);
 
         return  JWTClaimSetFactory::build($raw_claims);

@@ -14,14 +14,13 @@
 
 namespace jwk\utils\rsa;
 
-
 use jwk\utils\rsa\exceptions\RSABadPEMFormat;
 
 /**
  * Class _RSAPublicKeyPEMFornat
  * @package jwk\utils\rsa
  */
-final class _RSAPublicKeyPEMFornat
+class _RSAPublicKeyPEMFornat
     extends _AbstractRSAKeyPEMFornat
     implements RSAPublicKey {
 
@@ -46,5 +45,37 @@ final class _RSAPublicKeyPEMFornat
     public function getPublicExponent()
     {
        return $this->e;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlgorithm()
+    {
+       return 'RSA';
+    }
+
+    /**
+     * @return string
+     */
+    public function getEncoded()
+    {
+        return $this->pem_format;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat()
+    {
+        return 'PKCS1';
+    }
+
+    /**
+     * @return int
+     */
+    public function getBitLength()
+    {
+        return $this->rsa_imp->getSize();
     }
 }

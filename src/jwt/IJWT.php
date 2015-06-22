@@ -13,6 +13,7 @@
  **/
 
 namespace jwt;
+use jwt\exceptions\InvalidJWTException;
 
 /**
  * Interface IJWT
@@ -42,7 +43,19 @@ interface IJWT {
 
     /**
      * @param string $input
+     * @return array
+     * @throws InvalidJWTException
+     */
+    public static function unSerialize($input);
+
+    /**
+     * @return string
+     */
+    public function getRawPayload();
+
+    /**
+     * @param IJWTClaimSet $claim_set
      * @return IJWT
      */
-    public static function deserialize($input);
+    static  public function fromClaimSet(IJWTClaimSet $claim_set);
 }

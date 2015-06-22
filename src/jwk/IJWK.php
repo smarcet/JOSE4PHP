@@ -13,15 +13,40 @@
  **/
 
 namespace jwk;
-
-
-use utils\json_types\IJsonObject;
+use jwk\exceptions\InvalidJWKUseException;
+use jwk\exceptions\InvalidJWKAlgorithm;
+use jwk\exceptions\InvalidJWKType;
 
 /**
  * Interface IJWK
  * @package jwk
  */
-
 interface IJWK extends IReadOnlyJWK  {
 
+    /**
+     * @param  string $kid
+     * @return $this
+     */
+    public function setId($kid);
+
+    /**
+     * @param string $alg
+     * @throws InvalidJWKAlgorithm
+     * @return $this
+     */
+    public function setAlgorithm($alg);
+
+    /**
+     * @param string $use
+     * @throws InvalidJWKUseException
+     * @return $this
+     */
+    public function setKeyUse($use);
+
+    /**
+     * @param string $type
+     * @throws InvalidJWKType
+     * @return $this
+     */
+    public function setType($type);
 }

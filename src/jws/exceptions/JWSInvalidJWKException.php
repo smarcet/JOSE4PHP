@@ -12,34 +12,12 @@
  * limitations under the License.
  **/
 
-namespace jwk\impl;
-
-use jwk\IJWKSpecification;
+namespace jws\exceptions;
 
 /**
- * Class RSAJWKSpecification
- * @package jwk\impl
+ * Class JWSInvalidJWKException
+ * @package jws\exceptions
  */
-final class RSAJWKSpecification
-    implements IJWKSpecification {
+class JWSInvalidJWKException extends \Exception {
 
-    /**
-     * @var int
-     */
-    private $len;
-
-    /**
-     * @param int $len
-     */
-    public function __construct($len = 2048){
-        $this->len = $len;
-    }
-
-    /**
-     * @return int
-     */
-    public function getKeyLenInBits()
-    {
-       return  $this->len;
-    }
 }

@@ -35,7 +35,7 @@ class JOSEHeader
      * @param StringOrURI $cty
      * @param JsonValue   $kid
      */
-    public function __construct(StringOrURI $alg, StringOrURI $type, StringOrURI $cty = null, JsonValue  $kid = null){
+    public function __construct(StringOrURI $alg, StringOrURI $type = null, StringOrURI $cty = null, JsonValue  $kid = null){
 
         $this->set[RegisteredJOSEHeaderNames::Algorithm]   = $alg;
         $this->set[RegisteredJOSEHeaderNames::Type]        = $type;
@@ -81,6 +81,6 @@ class JOSEHeader
      */
     public function addHeader(JOSEHeaderParam $header_param)
     {
-
+        $this->set[$header_param->getName()] = $header_param->getValue();
     }
 }
