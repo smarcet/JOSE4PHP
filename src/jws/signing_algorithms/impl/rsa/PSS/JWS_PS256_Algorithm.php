@@ -13,36 +13,17 @@
  **/
 
 namespace jws\signing_algorithms\impl\rsa\PSS;
-use jws\signing_algorithms\impl\rsa\JWS_RSA_Algorithm;
-
 
 /**
  * Class JWS_PS256_Algorithm
  * @package jws\signing_algorithms\impl\rsa\PSS
  */
-final class JWS_PS256_Algorithm extends JWS_RSA_Algorithm {
-
-    /**
-     * @return int
-     */
-    protected function getMinKeyLen()
-    {
-        return 2048;
-    }
-
+final class JWS_PS256_Algorithm extends JWS_RSASSA_PSS_Algorithm {
     /**
      * @return string
      */
     protected function getAlgo()
     {
         return 'sha256';
-    }
-
-    /**
-     * @return int
-     */
-    protected function getPaddingMode()
-    {
-        return CRYPT_RSA_SIGNATURE_PSS;
     }
 }

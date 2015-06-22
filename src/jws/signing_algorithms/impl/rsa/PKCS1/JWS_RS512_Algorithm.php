@@ -13,37 +13,18 @@
  **/
 
 namespace jws\signing_algorithms\impl\rsa\PKCS1;
-use jws\signing_algorithms\impl\rsa\JWS_RSA_Algorithm;
-
 
 /**
  * Class JWS_RS512_Algorithm
  * @package jws\signing_algorithms\impl\rsa
  */
-final class JWS_RS512_Algorithm extends JWS_RSA_Algorithm
+final class JWS_RS512_Algorithm extends JWK_RSASSA_PKCS1_v1_5_Algorithm
 {
-
-    /**
-     * @return int
-     */
-    protected function getMinKeyLen()
-    {
-        return 2048;
-    }
-
     /**
      * @return string
      */
     protected function getAlgo()
     {
         return 'sha512';
-    }
-
-    /**
-     * @return int
-     */
-    protected function getPaddingMode()
-    {
-        return CRYPT_RSA_SIGNATURE_PKCS1;
     }
 }

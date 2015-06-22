@@ -23,6 +23,7 @@ use jws\signing_algorithms\IJWSAlgorithm;
  * @package jws\signing_algorithms\impl
  */
 abstract class JWS_RSA_Algorithm
+
     implements IJWSAlgorithm {
 
 

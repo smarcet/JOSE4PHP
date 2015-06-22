@@ -12,20 +12,29 @@
  * limitations under the License.
  **/
 
-namespace jws\signing_algorithms\impl\rsa\PKCS1;
+namespace jws\signing_algorithms\impl\rsa\PSS;
 
+use jws\signing_algorithms\impl\rsa\JWS_RSA_Algorithm;
 
 /**
- * Class JWS_RS384_Algorithm
- * @package jws\signing_algorithms\impl\rsa
+ * Class JWS_RSASSA_PSS_Algorithm
+ * @package jws\signing_algorithms\impl\rsa\PSS
  */
-final class JWS_RS384_Algorithm extends JWK_RSASSA_PKCS1_v1_5_Algorithm {
+abstract class JWS_RSASSA_PSS_Algorithm extends JWS_RSA_Algorithm {
 
     /**
-     * @return string
+     * @return int
      */
-    protected function getAlgo()
+    protected function getPaddingMode()
     {
-        return 'sha384';
+        return CRYPT_RSA_SIGNATURE_PSS;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getMinKeyLen()
+    {
+        return 2048;
     }
 }

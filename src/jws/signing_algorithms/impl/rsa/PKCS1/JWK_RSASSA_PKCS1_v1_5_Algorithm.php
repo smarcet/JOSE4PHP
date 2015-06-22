@@ -14,18 +14,27 @@
 
 namespace jws\signing_algorithms\impl\rsa\PKCS1;
 
+use jws\signing_algorithms\impl\rsa\JWS_RSA_Algorithm;
 
 /**
- * Class JWS_RS384_Algorithm
- * @package jws\signing_algorithms\impl\rsa
+ * Class JWK_RSASSA_PKCS1_v1_5_Algorithm
+ * @package jws\signing_algorithms\impl\rsa\PKCS1
  */
-final class JWS_RS384_Algorithm extends JWK_RSASSA_PKCS1_v1_5_Algorithm {
+abstract class JWK_RSASSA_PKCS1_v1_5_Algorithm extends JWS_RSA_Algorithm {
 
     /**
-     * @return string
+     * @return int
      */
-    protected function getAlgo()
+    protected function getMinKeyLen()
     {
-        return 'sha384';
+        return 2048;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getPaddingMode()
+    {
+        return CRYPT_RSA_SIGNATURE_PKCS1;
     }
 }
