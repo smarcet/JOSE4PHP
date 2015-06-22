@@ -12,16 +12,14 @@
  * limitations under the License.
  **/
 
-namespace jws\signing_algorithms\impl\rsa;
-
-use jws\signing_algorithms\impl\JWSRSAAlgorithm;
+namespace jws\signing_algorithms\impl\rsa\PKCS1;
+use jws\signing_algorithms\impl\rsa\JWS_RSA_Algorithm;
 
 /**
- * Class JWSRSA512Algorithm
- * @package jws\signing_algorithms\impl\rsa
+ * Class JWS_RS256_Algorithm
+ * @package jws\signing_algorithms\impl
  */
-final class JWSRSA512Algorithm extends JWSRSAAlgorithm
-{
+final class JWS_RS256_Algorithm extends JWS_RSA_Algorithm {
 
     /**
      * @return int
@@ -36,7 +34,7 @@ final class JWSRSA512Algorithm extends JWSRSAAlgorithm
      */
     protected function getAlgo()
     {
-        return 'sha512';
+        return 'sha256';
     }
 
     /**

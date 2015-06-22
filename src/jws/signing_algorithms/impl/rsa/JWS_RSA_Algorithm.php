@@ -12,18 +12,28 @@
  * limitations under the License.
  **/
 
-namespace jws\signing_algorithms\impl;
-
+namespace jws\signing_algorithms\impl\rsa;
 
 use jwk\utils\Key;
 use jws\signing_algorithms\exceptions\IJWSInvalidKeyLenAlgorithm;
 use jws\signing_algorithms\IJWSAlgorithm;
 
 /**
- * Class JWSHMACAlgorithm
+ * Class JWS_RSA_Algorithm
  * @package jws\signing_algorithms\impl
  */
-abstract class JWSHMACAlgorithm implements IJWSAlgorithm {
+abstract class JWS_RSA_Algorithm
+    implements IJWSAlgorithm {
+
+
+    /**
+     * @var \Crypt_RSA
+     */
+    protected $rsa_impl;
+
+    public function __construct(){
+        $this->rsa_impl = new \Crypt_RSA();
+    }
 
     /**
      * @param Key $key
@@ -34,10 +44,20 @@ abstract class JWSHMACAlgorithm implements IJWSAlgorithm {
     public function sign(Key $key, $secured_input_bytes)
     {
         if($this->getMinKeyLen() > $key->getBitLength())
-            throw new IJWSInvalidKeyLenAlgorithm(sprintf('min len %s - cur len %s.',$this->getMinKeyLen(), $key->getBitLength()));
+            throw new IJWSInvalidKeyLenAlgorithm(sprintf('min len %s - cur len %s.',$this->minimum_key_length, $key->getBitLength()));
 
-        return hash_hmac($this->getAlgo(), $secured_input_bytes, $key->getEncoded(), true);
+        $this->rsa_impl->loadKey($key->getEncoded());
+
+        $this->rsa_impl->setHash($this->getAlgo());
+        $this->rsa_impl->setMGFHash($this->getAlgo());
+        $this->rsa_impl->setSignatureMode($this->getPaddingMode());
+        return $this->rsa_impl->sign($secured_input_bytes);
     }
+
+    /**
+     * @return int
+     */
+    abstract protected function getMinKeyLen();
 
     /**
      * @return string
@@ -47,7 +67,8 @@ abstract class JWSHMACAlgorithm implements IJWSAlgorithm {
     /**
      * @return int
      */
-    abstract protected function getMinKeyLen();
+    abstract protected function getPaddingMode();
+
 
     /**
      * @param Key $key
@@ -58,6 +79,15 @@ abstract class JWSHMACAlgorithm implements IJWSAlgorithm {
      */
     public function verify(Key $key, $current_sig, $secured_input_bytes)
     {
-       return $current_sig === $this->sign($key,$secured_input_bytes);
+        if($this->getMinKeyLen() > $key->getBitLength())
+            throw new IJWSInvalidKeyLenAlgorithm(sprintf('min len %s - cur len %s.',$this->minimum_key_length, $key->getBitLength()));
+
+        $this->rsa_impl->loadKey($key->getEncoded());
+
+        $this->rsa_impl->setHash($this->getAlgo());
+        $this->rsa_impl->setMGFHash($this->getAlgo());
+        $this->rsa_impl->setSignatureMode($this->getPaddingMode());
+
+        return $this->rsa_impl->verify($secured_input_bytes, $current_sig);
     }
 }

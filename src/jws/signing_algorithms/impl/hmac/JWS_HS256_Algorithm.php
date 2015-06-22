@@ -12,13 +12,13 @@
  * limitations under the License.
  **/
 
-namespace jws\signing_algorithms\impl;
+namespace jws\signing_algorithms\impl\hmac;
 
 /**
- * Class JWSHS256Algorithm
+ * Class JWS_HS256_Algorithm
  * @package jws\signing_algorithms\impl
  */
-final class JWSHS256Algorithm extends JWSHMACAlgorithm {
+final class JWS_HS256_Algorithm extends JWS_HSMAC_Algorithm {
 
     protected function getAlgo()
     {

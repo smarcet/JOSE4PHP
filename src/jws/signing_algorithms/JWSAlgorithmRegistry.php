@@ -14,17 +14,22 @@
 
 namespace jws\signing_algorithms;
 
-use jws\signing_algorithms\impl\hmac\JWSHA384Algorithm;
-use jws\signing_algorithms\impl\hmac\JWSHA512Algorithm;
-use jws\signing_algorithms\impl\JWSRSA256Algorithm;
+
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
-use jws\signing_algorithms\impl\JWSHS256Algorithm;
 use jws\exceptions\JWSNotSupportedAlgorithm;
-use jws\signing_algorithms\impl\rsa\JWSRSA384Algorithm;
-use jws\signing_algorithms\impl\rsa\JWSRSA512Algorithm;
-use jws\signing_algorithms\impl\rsa\PSS\JWSRSAPS256Algorithm;
-use jws\signing_algorithms\impl\rsa\PSS\JWSRSAPS384Algorithm;
-use jws\signing_algorithms\impl\rsa\PSS\JWSRSAPS512Algorithm;
+// HMAC with SHA-2 Functions
+use jws\signing_algorithms\impl\hmac\JWS_HS256_Algorithm;
+use jws\signing_algorithms\impl\hmac\JWS_HS384_Algorithm;
+use jws\signing_algorithms\impl\hmac\JWS_HS512_Algorithm;
+// Digital Signature with RSASSA-PKCS1-v1_5
+use jws\signing_algorithms\impl\rsa\PKCS1\JWS_RS256_Algorithm;
+use jws\signing_algorithms\impl\rsa\PKCS1\JWS_RS384_Algorithm;
+use jws\signing_algorithms\impl\rsa\PKCS1\JWS_RS512_Algorithm;
+// Digital Signature with RSASSA-PSS
+use jws\signing_algorithms\impl\rsa\PSS\JWS_PS256_Algorithm;
+use jws\signing_algorithms\impl\rsa\PSS\JWS_PS384_Algorithm;
+use jws\signing_algorithms\impl\rsa\PSS\JWS_PS512_Algorithm;
+
 
 /**
  * Class JWSAlgorithmRegistry
@@ -39,20 +44,19 @@ final class JWSAlgorithmRegistry {
 
     private $set = array();
 
-
     private function __construct(){
         // HMAC with SHA-2 Functions
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::HS256] = new JWSHS256Algorithm;
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::HS384] = new JWSHA384Algorithm;
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::HS512] = new JWSHA512Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::HS256] = new JWS_HS256_Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::HS384] = new JWS_HS384_Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::HS512] = new JWS_HS512_Algorithm;
         // Digital Signature with RSASSA-PKCS1-v1_5
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::RS256] = new JWSRSA256Algorithm;
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::RS384] = new JWSRSA384Algorithm;
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::RS512] = new JWSRSA512Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::RS256] = new JWS_RS256_Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::RS384] = new JWS_RS384_Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::RS512] = new JWS_RS512_Algorithm;
         // Digital Signature with RSASSA-PSS
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::PS256] = new JWSRSAPS256Algorithm;
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::PS384] = new JWSRSAPS384Algorithm;
-        $this->set[JSONWebSignatureAndEncryptionAlgorithms::PS512] = new JWSRSAPS512Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::PS256] = new JWS_PS256_Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::PS384] = new JWS_PS384_Algorithm;
+        $this->set[JSONWebSignatureAndEncryptionAlgorithms::PS512] = new JWS_PS512_Algorithm;
     }
 
     private function __clone(){}

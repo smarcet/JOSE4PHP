@@ -12,12 +12,23 @@
  * limitations under the License.
  **/
 
-namespace jws\signing_algorithms\impl\hmac;
+namespace jws\signing_algorithms\impl\rsa\PSS;
+use jws\signing_algorithms\impl\rsa\JWS_RSA_Algorithm;
 
 
-use jws\signing_algorithms\impl\JWSHMACAlgorithm;
+/**
+ * Class JWS_PS384_Algorithm
+ * @package jws\signing_algorithms\impl\rsa\PSS
+ */
+final class JWS_PS384_Algorithm extends JWS_RSA_Algorithm  {
 
-class JWSHA384Algorithm extends JWSHMACAlgorithm {
+    /**
+     * @return int
+     */
+    protected function getMinKeyLen()
+    {
+        return 2048;
+    }
 
     /**
      * @return string
@@ -30,8 +41,8 @@ class JWSHA384Algorithm extends JWSHMACAlgorithm {
     /**
      * @return int
      */
-    protected function getMinKeyLen()
+    protected function getPaddingMode()
     {
-        return 384;
+        return CRYPT_RSA_SIGNATURE_PSS;
     }
 }

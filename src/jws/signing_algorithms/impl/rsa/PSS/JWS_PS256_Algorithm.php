@@ -13,14 +13,14 @@
  **/
 
 namespace jws\signing_algorithms\impl\rsa\PSS;
+use jws\signing_algorithms\impl\rsa\JWS_RSA_Algorithm;
 
-use jws\signing_algorithms\impl\JWSRSAAlgorithm;
 
 /**
- * Class JWSRSAPS256Algorithm
+ * Class JWS_PS256_Algorithm
  * @package jws\signing_algorithms\impl\rsa\PSS
  */
-final class JWSRSAPS256Algorithm extends JWSRSAAlgorithm {
+final class JWS_PS256_Algorithm extends JWS_RSA_Algorithm {
 
     /**
      * @return int

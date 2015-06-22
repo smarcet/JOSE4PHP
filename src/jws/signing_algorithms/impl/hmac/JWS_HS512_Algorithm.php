@@ -12,35 +12,28 @@
  * limitations under the License.
  **/
 
-namespace jws\signing_algorithms\impl;
+namespace jws\signing_algorithms\impl\hmac;
+
 
 /**
- * Class JWSRSA256Algorithm
- * @package jws\signing_algorithms\impl
+ * Class JWS_HS512_Algorithm
+ * @package jws\signing_algorithms\impl\hmac
  */
-final class JWSRSA256Algorithm extends JWSRSAAlgorithm {
-
-    /**
-     * @return int
-     */
-    protected function getMinKeyLen()
-    {
-        return 2048;
-    }
+final class JWS_HS512_Algorithm extends JWS_HSMAC_Algorithm {
 
     /**
      * @return string
      */
     protected function getAlgo()
     {
-        return 'sha256';
+        return 'sha512';
     }
 
     /**
      * @return int
      */
-    protected function getPaddingMode()
+    protected function getMinKeyLen()
     {
-        return CRYPT_RSA_SIGNATURE_PKCS1;
+       return 512;
     }
 }
