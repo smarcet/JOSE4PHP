@@ -14,8 +14,7 @@
 
 namespace jwk\impl;
 
-
-use jwk\JSONWebKeyPublicKeyUseValues;
+use jwk\IJWKSpecification;
 use jwk\utils\aes\AesKey;
 use utils\ByteUtil;
 use \jwk\IJWK;
@@ -26,12 +25,12 @@ use \jwk\IJWK;
 final class OctetSequenceJWKFactory {
 
     /**
-     * @param int $key_length_in_bits
-     * @param string $alg
+     * @param IJWKSpecification $spec
      * @return IJWK
      */
-    static public function build($key_length_in_bits, $alg, $use = JSONWebKeyPublicKeyUseValues::Signature){
-        $bytes = ByteUtil::randomBytes($key_length_in_bits);
-        return OctetSequenceJWK::fromSecret(new AesKey($bytes), $alg , $use);
+    static public function build(IJWKSpecification $spec){
+        $bytes = ByteUtil::randomBytes($spec->getKeyLenInBits());
+        return OctetSequenceJWK::fromSecret(new AesKey($bytes), $spec->getAlg(), $spec->getUse());
     }
+
 }

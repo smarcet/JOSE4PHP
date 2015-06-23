@@ -25,21 +25,49 @@ use utils\json_types\StringOrURI;
 interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
 
     /**
+     * https://tools.ietf.org/html/rfc7515#section-4.1.1
+     *
+     * The "alg" (algorithm) Header Parameter identifies the cryptographic
+     * algorithm used to secure the JWS.  The JWS Signature value is not
+     * valid if the "alg" value does not represent a supported algorithm or
+     * if there is not a key for use with that algorithm associated with the
+     * party that digitally signed or MACed the content.
      * @return StringOrURI
      */
     public function getAlgorithm();
 
     /**
+     * https://tools.ietf.org/html/rfc7515#section-4.1.4
+     *
+     * the "kid" (key ID) Header Parameter is a hint indicating which key
+     * was used to secure the JWS. This parameter allows originators to
+     * explicitly signal a change of key to recipients.
      * @return JsonValue
      */
     public function getKeyID();
 
     /**
+     * https://tools.ietf.org/html/rfc7515#section-4.1.10
+     *
+     * @optional
+     *
+     * The "cty" (content type) Header Parameter is used by JWS applications
+     * to declare the media type [IANA.MediaTypes] of the secured content
+     * (the payload)
      * @return StringOrURI
      */
     public function getContentType();
 
     /**
+     * https://tools.ietf.org/html/rfc7515#section-4.1.9
+     *
+     * @optional
+     *
+     * The "typ" (type) Header Parameter is used by JWS applications to
+     * declare the media type [IANA.MediaTypes] of this complete JWS.  This
+     * is intended for use by the application when more than one kind of
+     * object could be present in an application data structure that can
+     * contain a JWS
      * @return StringOrURI
      */
     public function getType();

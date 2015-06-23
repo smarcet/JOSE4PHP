@@ -17,9 +17,9 @@ use \jwk\impl\RSAJWKFactory;
 use jwk\impl\OctetSequenceJWKFactory;
 use jwt\utils\JWTClaimSetFactory;
 use jwt\RegisteredJWTClaimNames;
-use jwt\impl\JWT;
 use jws\impl\JWS;
 use jwk\impl\RSAJWKPEMPrivateKeySpecification;
+use jwk\impl\OctetSequenceJWKSpecification;
 
 class JSONWebSignatureTest extends PHPUnit_Framework_TestCase {
 
@@ -62,10 +62,10 @@ PPK;
             'groups'                                => array('admin', 'sudo', 'devs')
         ));
 
-        $key = OctetSequenceJWKFactory::build(256, JWSupportedSigningAlgorithms::HS256);
+        $key = OctetSequenceJWKFactory::build( new OctetSequenceJWKSpecification( 256, JWSupportedSigningAlgorithms::HS256));
         $key->setId('sym_key');
 
-        $jws = JWSFactory::build($key->getAlgorithm()->getString(), $key, $claim_set);
+        $jws = JWSFactory::build($key, $claim_set);
 
         $compact_serialization = $jws->serialize();
 
@@ -91,11 +91,11 @@ PPK;
             'groups'                                => array('admin', 'sudo', 'devs')
         ));
 
-        $key = RSAJWKFactory::build( new RSAJWKPEMPrivateKeySpecification(self::$private_key_pem, JWSupportedSigningAlgorithms::RS256));
+        $key = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(self::$private_key_pem, JWSupportedSigningAlgorithms::RS256));
 
         $key->setId('sym_key');
 
-        $jws = JWSFactory::build($key->getAlgorithm()->getString(), $key, $claim_set);
+        $jws = JWSFactory::build($key, $claim_set);
 
         $compact_serialization = $jws->serialize();
 
@@ -106,7 +106,7 @@ PPK;
 
         $this->assertTrue(!is_null($jws_1));
 
-        $res = $jws_1->setKey($key)->verify($key->getAlgorithm()->getString());
+        $res = $jws_1->setKey($key)->verify($key->getAlgorithm());
 
         $this->assertTrue($res);
     }

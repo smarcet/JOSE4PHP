@@ -18,9 +18,20 @@ namespace jws;
 use jwt\IJWT;
 use utils\json_types\StringOrURI;
 
-interface IJWSReadOnly extends IJWT{
+/**
+ * Interface IJWSReadOnly
+ * @package jws
+ */
+interface IJWSReadOnly extends IJWT {
 
     /**
+     * https://tools.ietf.org/html/rfc7515#section-4.1.1
+     *
+     * The "alg" (algorithm) Header Parameter identifies the cryptographic
+     * algorithm used to secure the JWS.  The JWS Signature value is not
+     * valid if the "alg" value does not represent a supported algorithm or
+     * if there is not a key for use with that algorithm associated with the
+     * party that digitally signed or MACed the content.
      * @return StringOrURI
      */
     public function getSigningAlgorithm();

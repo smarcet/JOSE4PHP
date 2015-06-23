@@ -16,6 +16,7 @@ namespace jws;
 
 use jwk\exceptions\InvalidJWKType;
 use jwk\IJWK;
+use jwk\JSONWebKeyPublicKeyUseValues;
 use jws\exceptions\JWSInvalidPayloadException;
 use jws\impl\JWS;
 use jwt\IJWTClaimSet;
@@ -31,15 +32,14 @@ use utils\json_types\StringOrURI;
 final class JWSFactory {
 
     /**
-     * @param $alg
-     * @param IJWK $key
+     * * @param IJWK $key
      * @param IJWTClaimSet|string $payload
      * @param string $signature
      * @return JWS
      * @throws InvalidJWKType
      * @throws JWSInvalidPayloadException
      */
-    static public function build($alg, IJWK $key, $payload, $signature = ''){
+    static public function build(IJWK $key, $payload, $signature = ''){
 
         if(is_null($key))
             throw new InvalidJWKType();
@@ -47,7 +47,10 @@ final class JWSFactory {
         if(is_null($payload))
             throw new JWSInvalidPayloadException();
 
-        $header = new JOSEHeader(new StringOrURI($alg));
+        if($key->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
+            throw new InvalidJWKType(sprintf('use % not supported (sig)',$key->getKeyUse()->getString()));
+
+        $header = new JOSEHeader($key->getAlgorithm());
 
         $claim_set = null;
         if($payload instanceof IJWTClaimSet){

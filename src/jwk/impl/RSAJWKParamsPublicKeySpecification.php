@@ -17,6 +17,7 @@ namespace jwk\impl;
 
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwk\IJWKSpecification;
+use jwk\JSONWebKeyPublicKeyUseValues;
 use utils\json_types\Base64urlUInt;
 
 /**
@@ -49,9 +50,10 @@ final class RSAJWKParamsPublicKeySpecification
      * @param string $n_b64
      * @param string $e_b64
      * @param string $alg
+     * @param string $use
      */
-    public function __construct($n_b64, $e_b64, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256){
-        parent::__construct($alg);
+    public function __construct($n_b64, $e_b64, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
+        parent::__construct($alg, $use);
         $this->e_b64 = $e_b64;
         $this->n_b64 = $n_b64;
     }

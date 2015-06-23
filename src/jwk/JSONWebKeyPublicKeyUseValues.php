@@ -16,6 +16,12 @@ namespace jwk;
 
 /**
  * Class JSONWebKeyPublicKeyUseValues
+ * https://tools.ietf.org/html/rfc7517#section-4.2
+ *
+ * The "use" (public key use) parameter identifies the intended use of
+ * the public key.  The "use" parameter is employed to indicate whether
+ * a public key is used for encrypting data or verifying the signature
+ * on data.
  * @package jwk
  */
 final class JSONWebKeyPublicKeyUseValues {

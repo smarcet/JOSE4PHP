@@ -13,43 +13,34 @@
  **/
 
 namespace jwk\impl;
-use jwk\IJWKSpecification;
+
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwk\JSONWebKeyPublicKeyUseValues;
 
 /**
- * Class RSAJWKPEMKeySpecification
+ * Class OctetSequenceJWKSpecification
  * @package jwk\impl
  */
-abstract class RSAJWKPEMKeySpecification
-    extends AbstractJWKSpecification
-    implements IJWKSpecification {
+final class OctetSequenceJWKSpecification extends AbstractJWKSpecification {
+    /**
+     * @var int
+     */
+    private $len;
+
+    /**
+     * @param int $len
+     * @param string $alg
+     * @param string $use
+     */
+    public function __construct($len = 256, $alg = JSONWebSignatureAndEncryptionAlgorithms::HS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
+        parent::__construct($alg, $use);
+        $this->len = $len;
+    }
 
     /**
      * @return int
      */
-    public function getKeyLenInBits()
-    {
-        return 2048;
+    public function getKeyLenInBits(){
+        return  $this->len;
     }
-
-    /**
-     * @var string
-     */
-    private $key_pem;
-
-    /**
-     * @param string $key_pem
-     * @param string $alg
-     * @param string $use
-     */
-    public function __construct($key_pem, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
-        parent::__construct($alg, $use);
-        $this->key_pem = $key_pem;
-    }
-
-    public function getPEM(){
-        return $this->key_pem;
-    }
-
 }

@@ -17,6 +17,7 @@ namespace jwk\impl;
 
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwk\IJWKSpecification;
+use jwk\JSONWebKeyPublicKeyUseValues;
 
 /**
  * Class AbstractJWKSpecification
@@ -32,13 +33,34 @@ abstract class AbstractJWKSpecification
     protected $alg;
 
     /**
-     * @param string $alg
+     * @var string
      */
-    public function __construct($alg = JSONWebSignatureAndEncryptionAlgorithms::RS256){
+    protected $use;
+
+    /**
+     * @param string $alg
+     * @param string $use
+     */
+    public function __construct($alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
         $this->alg = $alg;
+        $this->use = $use;
     }
 
     public function getAlg(){
         return $this->alg;
+    }
+
+    /**
+     * https://tools.ietf.org/html/rfc7517#section-4.2
+     *
+     * The "use" (public key use) parameter identifies the intended use of
+     * the public key.  The "use" parameter is employed to indicate whether
+     * a public key is used for encrypting data or verifying the signature
+     * on data.
+     * @return string
+     */
+    public function getUse()
+    {
+       return   $this->use;
     }
 }

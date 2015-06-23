@@ -14,7 +14,6 @@
 
 namespace jwk\impl;
 
-
 use jwk\IJWK;
 use jwk\IJWKFactory;
 use jwk\IJWKSpecification;
@@ -38,6 +37,7 @@ final class RSAJWKFactory implements IJWKFactory
             $keys = RSAFacade::getInstance()->buildKeyPair($spec->getKeyLenInBits());
             $jwk  = RSAJWK::fromKeys($keys);
             $jwk->setAlgorithm($spec->getAlg());
+            $jwk->setKeyUse($spec->getUse());
             return $jwk;
         }
         if ($spec instanceof RSAJWKPEMPrivateKeySpecification) {
@@ -45,16 +45,21 @@ final class RSAJWKFactory implements IJWKFactory
             $public_key   = RSAFacade::getInstance()->buildPublicKey($private_key->getModulus(), $private_key->getPublicExponent());
             $jwk = RSAJWK::fromKeys(new KeyPair($public_key, $private_key));
             $jwk->setAlgorithm($spec->getAlg());
+            $jwk->setKeyUse($spec->getUse());
             return $jwk;
         }
         if($spec instanceof RSAJWKParamsPublicKeySpecification){
             $public_key = RSAFacade::getInstance()->buildPublicKey($spec->getModulus()->toBigInt(), $spec->getExponent()->toBigInt());
-            return RSAJWK::fromPublicKey($public_key);
+            $jwk = RSAJWK::fromPublicKey($public_key);
+            $jwk->setAlgorithm($spec->getAlg());
+            $jwk->setKeyUse($spec->getUse());
+            return $jwk;
         }
         if($spec instanceof RSAJWKPEMPublicKeySpecification){
             $public_key = RSAFacade::getInstance()->buildPublicKeyFromPEM($spec->getPEM());
             $jwk = RSAJWK::fromPublicKey($public_key);
             $jwk->setAlgorithm($spec->getAlg());
+            $jwk->setKeyUse($spec->getUse());
             return $jwk;
         }
         return null;

@@ -16,6 +16,7 @@ namespace jws\impl;
 
 use jwk\IAsymetricJWK;
 use jwk\IJWK;
+use jwk\JSONWebKeyPublicKeyUseValues;
 use jws\exceptions\JWSInvalidJWKException;
 use jws\exceptions\JWSInvalidPayloadException;
 use jws\exceptions\JWSNotSupportedAlgorithm;
@@ -23,7 +24,6 @@ use jws\IJWS;
 use jws\JWSupportedSigningAlgorithms;
 use jws\signing_algorithms\JWSAlgorithmRegistry;
 use jwt\IJOSEHeader;
-use jwt\IJWT;
 use jwt\IJWTClaimSet;
 use jwt\impl\JWT;
 use jwt\JOSEHeaderParam;
@@ -31,7 +31,6 @@ use jwt\RegisteredJOSEHeaderNames;
 use jwt\utils\JOSEHeaderAssembler;
 use jwt\utils\JWTClaimSetAssembler;
 use jwt\utils\JWTRawAssembler;
-use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
 
 /**
@@ -103,9 +102,12 @@ final class JWS
         if(is_null($this->jwk))
             throw new JWSInvalidJWKException;
 
+        if($this->jwk->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
+            throw new JWSInvalidJWKException(sprintf('use %s not supported ', $this->jwk->getKeyUse()->getString()));
+
         $alg                 = JWSAlgorithmRegistry::getInstance()->getAlgorithm($this->header->getAlgorithm()->getString());
         $secured_input_bytes = JOSEHeaderAssembler::serialize($this->header) . '.' .$this->getEncodedPayload();
-
+        //sign with private key/ secret
         $this->signature = $alg->sign($this->jwk->getKey(), $secured_input_bytes);
 
         return $this;
@@ -176,6 +178,9 @@ final class JWS
         if(is_null($this->jwk))
             throw new JWSInvalidJWKException;
 
+        if($this->jwk->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
+            throw new JWSInvalidJWKException(sprintf('use %s not supported ', $this->jwk->getKeyUse()->getString()));
+
         if(!is_null($this->jwk->getId()) && !is_null($this->header->getKeyID()) && $this->header->getKeyID()->getValue() != $this->jwk->getId()->getValue())
             throw new JWSInvalidJWKException(sprintf('original kid %s - current kid %s', $this->header->getKeyID()->getValue() , $this->jwk->getId()->getValue()));
 
@@ -183,11 +188,16 @@ final class JWS
             throw new JWSNotSupportedAlgorithm(sprintf('algo %s', $original_alg));
 
         $former_alg = $this->header->getAlgorithm()->getString();
+
         if($former_alg != $original_alg)
             throw new JWSNotSupportedAlgorithm(sprintf('former alg %s - original alg %s', $former_alg, $original_alg));
-        $alg = JWSAlgorithmRegistry::getInstance()->getAlgorithm($former_alg);
+
+        $alg                 = JWSAlgorithmRegistry::getInstance()->getAlgorithm($former_alg);
         $secured_input_bytes = JOSEHeaderAssembler::serialize($this->header) . '.' .$this->getEncodedPayload();
+
+        // use public key / secret
         $key = ($this->jwk instanceof IAsymetricJWK) ? $this->jwk->getPublicKey() : $this->jwk->getKey();
+
         return $alg->verify($key, $this->signature, $secured_input_bytes);
 
     }

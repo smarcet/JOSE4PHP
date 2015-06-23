@@ -16,6 +16,7 @@ namespace jwk\impl;
 
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwk\IJWKSpecification;
+use jwk\JSONWebKeyPublicKeyUseValues;
 
 /**
  * Class RSAJWKSpecification
@@ -32,9 +33,11 @@ final class RSAJWKKeyLengthSpecification
 
     /**
      * @param int $len
+     * @param string $alg
+     * @param string $use
      */
-    public function __construct($len = 2048, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256){
-        parent::__construct($alg);
+    public function __construct($len = 2048, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
+        parent::__construct($alg, $use);
         $this->len = $len;
     }
 
