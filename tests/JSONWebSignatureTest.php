@@ -106,7 +106,7 @@ PPK;
 
         $this->assertTrue(!is_null($jws_1));
 
-        $res = $jws_1->setKey($key)->verify($key->getAlgorithm());
+        $res = $jws_1->setKey($key)->verify($key->getAlgorithm()->getString());
 
         $this->assertTrue($res);
     }
