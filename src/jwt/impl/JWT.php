@@ -85,9 +85,21 @@ abstract class JWT
     public function serialize()
     {
         $header    = JOSEHeaderAssembler::serialize($this->header);
-        $claim_set = ($this->header->getType()->getString() === 'JWT' && !is_null($this->claim_set)) ? JWTClaimSetAssembler::serialize($this->claim_set) : JWTRawAssembler::serialize($this->getRawPayload());
+        $payload   = $this->serializePayload();
         $signature = JWTRawAssembler::serialize($this->signature);
-        return sprintf('%s.%s.%s', $header, $claim_set, $signature);
+        return sprintf('%s.%s.%s', $header, $payload, $signature);
+    }
+
+    /**
+     * @return string
+     */
+    protected function serializePayload(){
+        $type = $this->header->getType();
+        $e_payload = '';
+        if(!is_null($type) && $type->getString() === 'JWT' && !is_null($this->claim_set)){
+            $e_payload = JWTClaimSetAssembler::serialize($this->claim_set);
+        }
+        return $e_payload;
     }
 
     /**

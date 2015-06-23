@@ -18,6 +18,7 @@ use jwk\IJWK;
 use jws\exceptions\JWSInvalidJWKException;
 use jws\exceptions\JWSInvalidPayloadException;
 use jws\exceptions\JWSNotSupportedAlgorithm;
+use jwt\IJOSEHeader;
 
 /**
  * Interface IJWS
@@ -26,10 +27,10 @@ use jws\exceptions\JWSNotSupportedAlgorithm;
 interface IJWS extends IJWSReadOnly {
 
     /**
-     * @param string $payload
-     * @return $this
+     * @param IJWSPayloadSpec $payload
+     * @return IJWS
      */
-    public function setPayload($payload);
+    public function setPayload(IJWSPayloadSpec $payload);
 
     /**
      * @return string
@@ -64,4 +65,16 @@ interface IJWS extends IJWSReadOnly {
      */
     static public function fromCompactSerialization($compact_serialization);
 
+    /**
+     * @return IJWSPayloadSpec
+     */
+    public function getPayload();
+
+    /**
+     * @param IJOSEHeader $header
+     * @param IJWSPayloadSpec $payload
+     * @param string $signature
+     * @return IJWS
+     */
+    static public function fromHeaderClaimsAndSignature(IJOSEHeader $header, IJWSPayloadSpec $payload = null , $signature = '');
 }

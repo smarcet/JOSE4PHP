@@ -48,12 +48,7 @@ interface IJWT {
      */
     public static function unSerialize($input);
 
-    /**
-     * @return string
-     */
-    public function getRawPayload();
-
-    /**
+     /**
      * @param IJWTClaimSet $claim_set
      * @return IJWT
      */

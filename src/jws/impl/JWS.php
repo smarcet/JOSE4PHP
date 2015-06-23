@@ -21,7 +21,10 @@ use jws\exceptions\JWSInvalidJWKException;
 use jws\exceptions\JWSInvalidPayloadException;
 use jws\exceptions\JWSNotSupportedAlgorithm;
 use jws\IJWS;
+use jws\IJWSPayloadClaimSetSpec;
+use jws\IJWSPayloadSpec;
 use jws\JWSupportedSigningAlgorithms;
+use jws\payloads\JWSPayloadFactory;
 use jws\signing_algorithms\JWSAlgorithmRegistry;
 use jwt\IJOSEHeader;
 use jwt\IJWTClaimSet;
@@ -47,33 +50,40 @@ final class JWS
     private $jwk = null;
 
     /**
-     * @var string
+     * @var IJWSPayloadSpec
      */
     private $payload = null;
 
     /**
      * @param IJOSEHeader $header
-     * @param IJWTClaimSet $claim_set
+     * @param IJWSPayloadSpec $payload
      * @param string $signature
      * @throws JWSNotSupportedAlgorithm
      */
-    protected function __construct(IJOSEHeader $header, IJWTClaimSet $claim_set = null, $signature = ''){
+    protected function __construct(IJOSEHeader $header, IJWSPayloadSpec $payload = null, $signature = ''){
 
-        if(!is_null($claim_set))
+        $claim_set = null;
+
+        if(!is_null($payload) && $payload->isClaimSet() && $payload instanceof IJWSPayloadClaimSetSpec) {
             $header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::Type, new StringOrURI('JWT')));
+            $claim_set = $payload->getClaimSet();
+        }
 
         parent::__construct($header, $claim_set);
+
         if(!in_array($this->getSigningAlgorithm()->getString() , JWSupportedSigningAlgorithms::$algorithms))
             throw new JWSNotSupportedAlgorithm(sprintf('algo %s', $this->getSigningAlgorithm()->getString()));
+
+        $this->setPayload($payload);
 
         $this->signature = $signature;
     }
 
     /**
-     * @param string $payload
+     * @param IJWSPayloadSpec $payload
      * @return IJWS
      */
-    public function setPayload($payload)
+    public function setPayload(IJWSPayloadSpec $payload)
     {
         $this->payload = $payload;
         return $this;
@@ -88,6 +98,14 @@ final class JWS
             $this->header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::KeyID, $this->jwk->getId()));
         $this->sign();
         return parent::serialize();
+    }
+
+    protected function serializePayload(){
+        $e_payload = parent::serializePayload();
+        if(empty($e_payload)){
+            $e_payload = JWTRawAssembler::serialize($this->payload->getRaw());
+        }
+        return $e_payload;
     }
 
     /**
@@ -113,21 +131,22 @@ final class JWS
         return $this;
     }
 
+    /**
+     * @return string
+     * @throws JWSInvalidPayloadException
+     */
     public function getEncodedPayload(){
+        if(is_null($this->payload))
+            throw new JWSInvalidPayloadException('payload is not set!');
         $enc_payload = '';
-        if($this->claim_set){
-            $enc_payload = JWTClaimSetAssembler::serialize($this->claim_set);
-        }
-        else if(!empty($this->payload)){
-            $enc_payload = JWTRawAssembler::serialize($this->payload);
+        if($this->payload->isClaimSet() && $this->payload instanceof IJWSPayloadClaimSetSpec){
+            $enc_payload = JWTClaimSetAssembler::serialize($this->payload->getClaimSet());
         }
         else{
-            throw new JWSInvalidPayloadException('payload not set!');
+            $enc_payload = JWTRawAssembler::serialize($this->payload->getRaw());
         }
         return $enc_payload;
     }
-
-
 
     /**
      * @param IJWK $key
@@ -146,8 +165,7 @@ final class JWS
     static public function fromCompactSerialization($compact_serialization)
     {
         list($header, $payload, $signature) = parent::unSerialize($compact_serialization);
-        $claim_set = ($header->getType()->getString() === 'JWT') ? $payload : null;
-        return new JWS($header, $claim_set, $signature);
+        return new JWS($header, JWSPayloadFactory::build($payload), $signature);
     }
 
     /**
@@ -203,9 +221,9 @@ final class JWS
     }
 
     /**
-     * @return string
+     * @return IJWSPayloadSpec
      */
-    public function getRawPayload()
+    public function getPayload()
     {
         return $this->payload;
     }
@@ -219,7 +237,13 @@ final class JWS
         throw new \Exception;
     }
 
-    static public function fromHeaderClaimsAndSignature(IJOSEHeader $header, IJWTClaimSet $claim_set = null, $signature = ''){
-        return new JWS($header, $claim_set,$signature );
+    /**
+     * @param IJOSEHeader $header
+     * @param IJWSPayloadSpec $payload
+     * @param string $signature
+     * @return IJWS
+     */
+    static public function fromHeaderClaimsAndSignature(IJOSEHeader $header, IJWSPayloadSpec $payload = null , $signature = ''){
+        return new JWS($header, $payload, $signature );
     }
 }

@@ -20,8 +20,12 @@ use jwt\RegisteredJWTClaimNames;
 use jws\impl\JWS;
 use jwk\impl\RSAJWKPEMPrivateKeySpecification;
 use jwk\impl\OctetSequenceJWKSpecification;
+use jws\payloads\JWSPayloadFactory;
 
-class JSONWebSignatureTest extends PHPUnit_Framework_TestCase {
+/**
+ * Class JSONWebSignatureTest
+ */
+final class JSONWebSignatureTest extends PHPUnit_Framework_TestCase {
 
     static $private_key_pem = <<<PPK
 -----BEGIN RSA PRIVATE KEY-----
@@ -65,7 +69,7 @@ PPK;
         $key = OctetSequenceJWKFactory::build( new OctetSequenceJWKSpecification( 256, JWSupportedSigningAlgorithms::HS256));
         $key->setId('sym_key');
 
-        $jws = JWSFactory::build($key, $claim_set);
+        $jws = JWSFactory::build($key, JWSPayloadFactory::build($claim_set));
 
         $compact_serialization = $jws->serialize();
 
@@ -95,7 +99,7 @@ PPK;
 
         $key->setId('sym_key');
 
-        $jws = JWSFactory::build($key, $claim_set);
+        $jws = JWSFactory::build($key, JWSPayloadFactory::build($claim_set));
 
         $compact_serialization = $jws->serialize();
 

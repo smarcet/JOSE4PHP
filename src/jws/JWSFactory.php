@@ -32,35 +32,28 @@ use utils\json_types\StringOrURI;
 final class JWSFactory {
 
     /**
-     * * @param IJWK $key
-     * @param IJWTClaimSet|string $payload
+     * @param IJWK $key
+     * @param IJWSPayloadSpec $payload
      * @param string $signature
      * @return JWS
      * @throws InvalidJWKType
      * @throws JWSInvalidPayloadException
      */
-    static public function build(IJWK $key, $payload, $signature = ''){
+    static public function build(IJWK $key, IJWSPayloadSpec $payload, $signature = ''){
 
         if(is_null($key))
             throw new InvalidJWKType();
 
         if(is_null($payload))
-            throw new JWSInvalidPayloadException();
+            throw new JWSInvalidPayloadException('missing payload');
 
         if($key->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
             throw new InvalidJWKType(sprintf('use % not supported (sig)',$key->getKeyUse()->getString()));
 
         $header = new JOSEHeader($key->getAlgorithm());
 
-        $claim_set = null;
-        if($payload instanceof IJWTClaimSet){
-            $claim_set = $payload;
-        }
 
-        $jws = JWS::fromHeaderClaimsAndSignature($header, $claim_set, $signature);
-
-        if(is_null($claim_set))
-            $jws->setPayload((string)$payload);
+        $jws = JWS::fromHeaderClaimsAndSignature($header, $payload, $signature);
 
         $jws->setKey($key);
 

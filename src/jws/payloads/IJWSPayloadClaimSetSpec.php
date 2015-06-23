@@ -15,6 +15,16 @@
 namespace jws;
 
 
-interface IJWSPayloadSpec {
+use jwt\IJWTClaimSet;
 
+/**
+ * Interface IJWSPayloadClaimSetSpec
+ * @package jws
+ */
+interface IJWSPayloadClaimSetSpec extends IJWSPayloadSpec {
+
+    /**
+     * @return IJWTClaimSet
+     */
+    public function getClaimSet();
 }
