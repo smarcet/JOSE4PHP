@@ -16,12 +16,13 @@ namespace jwe\impl;
 
 use jwa\cryptographic_algorithms\ContentEncryptionAlgorithms_Registry;
 use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
-use jwe\IEncJOSEHeader;
+use jwe\IJWEJOSEHeader;
 use jwe\IJWE;
 use jwe\KeyManagementModeValues;
 use jwk\IJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
 use jws\IJWSPayloadRawSpec;
+use jws\IJWSPayloadSpec;
 use jwt\exceptions\InvalidJWTException;
 use jwt\IJOSEHeader;
 use jwt\IJWTClaimSet;
@@ -63,7 +64,7 @@ final class JWE
     private $enc_cek = null;
 
 
-    protected function __construct(IEncJOSEHeader $header, IJWSPayloadRawSpec $payload){
+    protected function __construct(IJWEJOSEHeader $header, IJWSPayloadRawSpec $payload){
 
         parent::__construct($header);
 
@@ -71,12 +72,12 @@ final class JWE
     }
 
     /**
-     * @param IJWK $key
+     * @param IJWK $recipient_key
      * @return $this
      */
-    public function setKey(IJWK $key)
+    public function setRecipientKey(IJWK $recipient_key)
     {
-        $this->jwk = $key;
+        $this->jwk = $recipient_key;
         return $this;
     }
 
@@ -193,11 +194,11 @@ final class JWE
 
 
     /**
-     * @param IEncJOSEHeader $header
-     * @param IJWSPayloadRawSpec $payload
+     * @param IJWEJOSEHeader $header
+     * @param IJWSPayloadSpec $payload
      * @return IJWE
      */
-    public static function fromHeaderAndPayload(IEncJOSEHeader $header, IJWSPayloadRawSpec $payload){
+    public static function fromHeaderAndPayload(IJWEJOSEHeader $header, IJWSPayloadSpec $payload){
         return new JWE($header, $payload);
     }
 

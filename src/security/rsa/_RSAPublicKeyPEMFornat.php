@@ -27,7 +27,7 @@ class _RSAPublicKeyPEMFornat
     /**
      * @var \Math_BigInteger
      */
-    private $e;
+    protected $e;
 
     /**
      * @param $pem_format

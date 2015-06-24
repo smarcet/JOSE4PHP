@@ -15,7 +15,6 @@
 namespace jwk\impl;
 
 use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
-use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
 use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\exceptions\InvalidJWKType;
 use jwk\IJWK;
@@ -45,8 +44,6 @@ final class RSAJWKFactory implements IJWKFactory
         if(is_null($spec)) throw new \InvalidArgumentException('missing spec param');
 
         $algorithm = DigitalSignatures_MACs_Registry::getInstance()->get($spec->getAlg());
-
-        if(is_null($algorithm)) $algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($spec->getAlg());
 
         if(is_null($algorithm)) throw new InvalidJWKAlgorithm(sprintf('alg %s not supported!',$spec->getAlg()));
 

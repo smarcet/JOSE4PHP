@@ -18,7 +18,7 @@ use jwe\IJWE;
 use jwk\exceptions\InvalidJWKType;
 use jwk\IJWK;
 use jwk\JSONWebKeyPublicKeyUseValues;
-use jws\IJWSPayloadRawSpec;
+use jws\IJWSPayloadSpec;
 use utils\json_types\StringOrURI;
 
 /**
@@ -28,23 +28,24 @@ use utils\json_types\StringOrURI;
 final class JWEFactory {
 
     /**
-     * @param IJWK $key
+     * @param IJWK $recipient_key
+     * @param StringOrURI $alg
      * @param StringOrURI $enc
-     * @param IJWSPayloadRawSpec $payload
+     * @param IJWSPayloadSpec $payload
      * @return IJWE
      * @throws InvalidJWKType
      */
-    static public function build(IJWK $key, StringOrURI $enc, IJWSPayloadRawSpec $payload){
+    static public function build(IJWK $recipient_key, StringOrURI $alg, StringOrURI $enc, IJWSPayloadSpec $payload){
 
 
-        if($key->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Encryption)
-            throw new InvalidJWKType(sprintf('use % not supported (sig)',$key->getKeyUse()->getString()));
+        if($recipient_key->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Encryption)
+            throw new InvalidJWKType(sprintf('use % not supported (should be "enc")',$recipient_key->getKeyUse()->getString()));
 
-        $header = new JWEJOSEHeader($key->getAlgorithm(), $enc);
+        $header = new JWEJOSEHeader($alg, $enc);
 
         $jwe = JWE::fromHeaderAndPayload($header, $payload);
 
-        $jwe->setKey($key);
+        $jwe->setRecipientKey($recipient_key);
 
         return $jwe;
     }

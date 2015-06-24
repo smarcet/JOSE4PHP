@@ -33,13 +33,14 @@ final class JWSFactory {
 
     /**
      * @param IJWK $key
+     * @param StringOrURI $alg
      * @param IJWSPayloadSpec $payload
      * @param string $signature
      * @return JWS
      * @throws InvalidJWKType
      * @throws JWSInvalidPayloadException
      */
-    static public function build(IJWK $key, IJWSPayloadSpec $payload, $signature = ''){
+    static public function build(IJWK $key, StringOrURI $alg, IJWSPayloadSpec $payload, $signature = ''){
 
         if(is_null($key))
             throw new InvalidJWKType();
@@ -50,8 +51,7 @@ final class JWSFactory {
         if($key->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
             throw new InvalidJWKType(sprintf('use % not supported (sig)',$key->getKeyUse()->getString()));
 
-        $header = new JOSEHeader($key->getAlgorithm());
-
+        $header = new JOSEHeader($alg);
 
         $jws = JWS::fromHeaderClaimsAndSignature($header, $payload, $signature);
 

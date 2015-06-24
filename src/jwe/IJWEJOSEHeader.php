@@ -19,10 +19,10 @@ use jwt\IJOSEHeader;
 use utils\json_types\StringOrURI;
 
 /**
- * Interface IEncJOSEHeader
+ * Interface IJWEJOSEHeader
  * @package jwe
  */
-interface IEncJOSEHeader extends IJOSEHeader {
+interface IJWEJOSEHeader extends IJOSEHeader {
 
     /**
      * @mandatory

@@ -13,6 +13,7 @@
  **/
 
 namespace security\rsa;
+use security\rsa\exceptions\RSABadPEMFormat;
 
 /**
  * Class _RSAPrivateKeyPEMFornat
@@ -35,6 +36,8 @@ final class _RSAPrivateKeyPEMFornat
 
         parent::__construct($pem_format);
         $this->d = $this->rsa_imp->exponent;
+        if($this->d->toString() === $this->e->toString())
+            throw new RSABadPEMFormat(sprintf('pem %s is a public key!', $pem_format));
     }
 
     /**

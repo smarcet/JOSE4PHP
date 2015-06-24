@@ -14,7 +14,7 @@
 
 namespace jwe\impl;
 
-use jwe\IEncJOSEHeader;
+use jwe\IJWEJOSEHeader;
 use jwe\RegisteredJWEJOSEHeaderNames;
 use jwt\impl\JOSEHeader;
 use utils\json_types\JsonValue;
@@ -26,7 +26,7 @@ use utils\json_types\StringOrURI;
  */
 final class JWEJOSEHeader
     extends JOSEHeader implements
-    IEncJOSEHeader {
+    IJWEJOSEHeader {
 
     /**
      * @param StringOrURI $alg

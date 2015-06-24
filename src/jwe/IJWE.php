@@ -37,10 +37,10 @@ interface IJWE extends IJWT {
     public function getPlainText();
 
     /**
-     * @param IJWK $key
+     * @param IJWK $recipient_key
      * @return $this
      */
-    public function setKey(IJWK $key);
+    public function setRecipientKey(IJWK $recipient_key);
 
     /**
      * @return $this
