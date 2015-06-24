@@ -48,9 +48,4 @@ interface IJWT {
      */
     public static function unSerialize($input);
 
-     /**
-     * @param IJWTClaimSet $claim_set
-     * @return IJWT
-     */
-    static  public function fromClaimSet(IJWTClaimSet $claim_set);
 }

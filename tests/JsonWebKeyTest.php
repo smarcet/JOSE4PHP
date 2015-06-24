@@ -13,15 +13,17 @@
  **/
 use jwk\impl\RSAJWKFactory;
 use jwk\impl\RSAJWKKeyLengthSpecification;
-use \jwk\utils\rsa\RSAFacade;
+use security\rsa\RSAFacade;
+use jwk\impl\RSAJWKSpecification;
 use jwk\impl\RSAJWK;
 use jwk\RSAKeysParameters;
 use \jwk\JSONWebKeyParameters;
 use jwk\JSONWebKeyPublicKeyUseValues;
-use jwk\utils\rsa\RSAPublicKey;
+use security\rsa\RSAPublicKey;
 use \jwk\impl\RSAJWKPEMPrivateKeySpecification;
 use \jwk\impl\JWKSet;
 use jwk\impl\RSAJWKParamsPublicKeySpecification;
+use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 
 class JsonWebKeyTest extends PHPUnit_Framework_TestCase {
 
@@ -56,7 +58,7 @@ bmMMryEQPGg3pKD9YkkMBa4TmUm5J4CLNP+YM/RVqwa41756NtyQ
 PPK;
 
     public function testCreate(){
-        $jwk = RSAJWKFactory::build(new RSAJWKKeyLengthSpecification(2048));
+        $jwk = RSAJWKFactory::build(new RSAJWKSpecification(JSONWebSignatureAndEncryptionAlgorithms::RS512));
         $this->assertTrue(!is_null($jwk));
     }
 
@@ -90,7 +92,7 @@ PPK;
     public function testCreateKeySet(){
 
         $jwk  = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(self::$private_key_pem));
-        $jwk2 = RSAJWKFactory::build(new RSAJWKKeyLengthSpecification(2048));
+        $jwk2 = RSAJWKFactory::build(new RSAJWKSpecification);
         $jwk->setId('k1');
         $jwk2->setId('k2');
         $set = new JWKSet(array($jwk, $jwk2 ));
@@ -98,5 +100,13 @@ PPK;
 
         $this->assertTrue(!is_null($set));
         $this->assertTrue(!empty($res));
+    }
+
+    /**
+     * @expectedException jwk\exceptions\InvalidJWKAlgorithm
+     *
+     */
+    public function testInvalidRSAAlg(){
+        RSAJWKFactory::build(new RSAJWKSpecification('test'));
     }
 }

@@ -14,7 +14,10 @@
 
 namespace jwk\exceptions;
 
-
-class RSAJWKMissingPublicKeyParamException extends \Exception {
+/**
+ * Class RSAJWKMissingPublicKeyParamException
+ * @package jwk\exceptions
+ */
+final class RSAJWKMissingPublicKeyParamException extends \Exception {
 
 }

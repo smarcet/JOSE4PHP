@@ -47,9 +47,9 @@ abstract class JWT
 
     /**
      * @param IJOSEHeader $header
-     * @param IJWTClaimSet $claim_set
+     * @param IJWTClaimSet|null $claim_set
      */
-    protected function __construct(IJOSEHeader $header, IJWTClaimSet $claim_set){
+    protected function __construct(IJOSEHeader $header, IJWTClaimSet $claim_set = null){
 
         $this->header    = $header;
         $this->claim_set = $claim_set;

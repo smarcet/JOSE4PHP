@@ -14,10 +14,14 @@
 
 namespace jwk\impl;
 
+use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
+use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\IJWKSpecification;
-use jwk\utils\aes\AesKey;
+use jwk\JSONWebKeyTypes;
+use security\SymmetricSharedKey;
 use utils\ByteUtil;
 use \jwk\IJWK;
+
 /**
  * Class OctetSequenceJWKFactory
  * @package jwk\impl
@@ -27,10 +31,19 @@ final class OctetSequenceJWKFactory {
     /**
      * @param IJWKSpecification $spec
      * @return IJWK
+     * @throws InvalidJWKAlgorithm
      */
     static public function build(IJWKSpecification $spec){
-        $bytes = ByteUtil::randomBytes($spec->getKeyLenInBits());
-        return OctetSequenceJWK::fromSecret(new AesKey($bytes), $spec->getAlg(), $spec->getUse());
+
+        if(is_null($spec)) throw new \InvalidArgumentException('missing spec param');
+
+        $algorithm = DigitalSignatures_MACs_Registry::getInstance()->get($spec->getAlg());
+
+        if(is_null($algorithm)) throw new InvalidJWKAlgorithm(sprintf('alg %s not supported!',$spec->getAlg()));
+        if($algorithm->getKeyType() !== JSONWebKeyTypes::OctetSequence) throw new InvalidJWKAlgorithm(sprintf('key type %s not supported!', $algorithm->getKeyType()));
+
+        $bytes = ByteUtil::randomBytes($algorithm->getMinKeyLen());
+        return OctetSequenceJWK::fromSecret(new SymmetricSharedKey($bytes), $spec->getAlg(), $spec->getUse());
     }
 
 }

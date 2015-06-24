@@ -13,7 +13,7 @@
  **/
 
 namespace jwk\impl;
-use jwk\IJWKSpecification;
+
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwk\JSONWebKeyPublicKeyUseValues;
 
@@ -21,17 +21,7 @@ use jwk\JSONWebKeyPublicKeyUseValues;
  * Class RSAJWKPEMKeySpecification
  * @package jwk\impl
  */
-abstract class RSAJWKPEMKeySpecification
-    extends AbstractJWKSpecification
-    implements IJWKSpecification {
-
-    /**
-     * @return int
-     */
-    public function getKeyLenInBits()
-    {
-        return 2048;
-    }
+abstract class RSAJWKPEMKeySpecification extends RSAJWKSpecification {
 
     /**
      * @var string
@@ -48,6 +38,9 @@ abstract class RSAJWKPEMKeySpecification
         $this->key_pem = $key_pem;
     }
 
+    /**
+     * @return string
+     */
     public function getPEM(){
         return $this->key_pem;
     }

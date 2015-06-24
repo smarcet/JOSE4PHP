@@ -18,6 +18,6 @@ namespace jwk\exceptions;
  * Class JWKInvalidIdentifierException
  * @package jwk\exceptions
  */
-class JWKInvalidIdentifierException extends \Exception {
+final class JWKInvalidIdentifierException extends \Exception {
 
 }

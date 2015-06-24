@@ -21,11 +21,6 @@ namespace jwk;
 interface IJWKSpecification {
 
     /**
-     * @return int
-     */
-    public function getKeyLenInBits();
-
-    /**
      * The "alg" (algorithm) parameter identifies the algorithm intended for
      * use with the key
      * @return string

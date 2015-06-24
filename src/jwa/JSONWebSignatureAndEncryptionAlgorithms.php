@@ -20,7 +20,7 @@ namespace jwa;
  *
  * https://tools.ietf.org/html/rfc7518#page-33
  */
-final class JSONWebSignatureAndEncryptionAlgorithms {
+abstract class JSONWebSignatureAndEncryptionAlgorithms {
 
     // Cryptographic Algorithms for Digital Signatures and MACs
     // https://tools.ietf.org/html/rfc7518#section-3

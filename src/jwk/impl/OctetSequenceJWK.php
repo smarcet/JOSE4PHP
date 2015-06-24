@@ -14,14 +14,15 @@
 
 namespace jwk\impl;
 
-
 use jwk\exceptions\InvalidOctetSequenceJWKException;
 use jwk\IJWK;
+use jwk\JSONWebKeyKeyOperationsValues;
 use jwk\JSONWebKeyParameters;
+use jwk\JSONWebKeyPublicKeyUseValues;
 use jwk\JSONWebKeyTypes;
 use jwk\JSONWebKeyVisibility;
 use jwk\OctetSequenceKeysParameters;
-use jwk\utils\Key;
+use security\Key;
 use utils\Base64UrlRepresentation;
 use utils\json_types\StringOrURI;
 
@@ -40,7 +41,7 @@ final class OctetSequenceJWK extends JWK {
     {
 
         if(empty($secret))
-            throw new InvalidOctetSequenceJWKException('$secret is not set');
+            throw new InvalidOctetSequenceJWKException('secret is not set!.');
 
         $this->set[JSONWebKeyParameters::KeyType] = new StringOrURI(JSONWebKeyTypes::OctetSequence);
 
@@ -59,9 +60,10 @@ final class OctetSequenceJWK extends JWK {
     }
 
     /**
-     * @return IJWK
+     * @param string $key_op
+     * @return Key
      */
-    public function getKey()
+    public function getKey($key_op = JSONWebKeyKeyOperationsValues::ComputeDigitalSignatureOrMAC)
     {
         return $this->key;
     }

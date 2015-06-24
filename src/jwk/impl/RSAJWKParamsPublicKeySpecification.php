@@ -14,9 +14,7 @@
 
 namespace jwk\impl;
 
-
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
-use jwk\IJWKSpecification;
 use jwk\JSONWebKeyPublicKeyUseValues;
 use utils\json_types\Base64urlUInt;
 
@@ -24,17 +22,8 @@ use utils\json_types\Base64urlUInt;
  * Class RSAJWKParamsPublicKeySpecification
  * @package jwk\impl
  */
-final class RSAJWKParamsPublicKeySpecification
-    extends AbstractJWKSpecification
-    implements IJWKSpecification {
-
-    /**
-     * @return int
-     */
-    public function getKeyLenInBits()
-    {
-        return 2048;
-    }
+final class RSAJWKParamsPublicKeySpecification extends RSAJWKSpecification
+{
 
     /**
      * @var string

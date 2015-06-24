@@ -18,7 +18,7 @@ namespace jwk;
  * Class PublicJSONWebKeyParameters
  * @package jwk
  */
-final class PublicJSONWebKeyParameters extends JSONWebKeyParameters {
+abstract class PublicJSONWebKeyParameters extends JSONWebKeyParameters {
 
     const X_509CertificateChain = 'x5c';
 

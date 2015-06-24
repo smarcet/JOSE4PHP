@@ -24,7 +24,7 @@ namespace jwk;
  * on data.
  * @package jwk
  */
-final class JSONWebKeyPublicKeyUseValues {
+abstract class JSONWebKeyPublicKeyUseValues {
 
     /**
      *

@@ -15,32 +15,26 @@
 namespace jwk\impl;
 
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\JSONWebKeyPublicKeyUseValues;
+use jwk\OctetSequenceKeysParameters;
 
 /**
  * Class OctetSequenceJWKSpecification
  * @package jwk\impl
  */
-final class OctetSequenceJWKSpecification extends AbstractJWKSpecification {
-    /**
-     * @var int
-     */
-    private $len;
+final class OctetSequenceJWKSpecification
+    extends JWKSpecification {
 
     /**
-     * @param int $len
+     *
      * @param string $alg
      * @param string $use
+     * @throws InvalidJWKAlgorithm
      */
-    public function __construct($len = 256, $alg = JSONWebSignatureAndEncryptionAlgorithms::HS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
+    public function __construct($alg = JSONWebSignatureAndEncryptionAlgorithms::HS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
+        if(!in_array($alg, OctetSequenceKeysParameters::$valid_algorithms_values))
+            throw new InvalidJWKAlgorithm(sprintf('alg %s', $alg));
         parent::__construct($alg, $use);
-        $this->len = $len;
-    }
-
-    /**
-     * @return int
-     */
-    public function getKeyLenInBits(){
-        return  $this->len;
     }
 }

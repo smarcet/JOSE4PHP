@@ -14,7 +14,6 @@
 
 namespace jwk\impl;
 
-
 use jwk\exceptions\JWKInvalidIdentifierException;
 use jwk\IJWK;
 use jwk\IJWKSet;
@@ -26,12 +25,10 @@ use utils\JsonObject;
  * Class JWKSet
  * @package jwk\impl
  */
-final class JWKSet extends JsonObject implements IJWKSet {
+final class JWKSet
+    extends JsonObject
+    implements IJWKSet {
 
-    /**
-     * @var JWK[]
-     */
-    private $keys   = array();
 
     private $keys_ids = array();
 

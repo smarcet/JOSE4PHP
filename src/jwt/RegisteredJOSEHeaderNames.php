@@ -28,7 +28,7 @@ use utils\json_types\JsonTypes;
  * specifications, its usage must be compatible between the
  * specifications.
  */
-final class RegisteredJOSEHeaderNames {
+abstract class RegisteredJOSEHeaderNames {
     /**
      * @mandatory
      *

@@ -14,13 +14,15 @@
 
 namespace jwk;
 
+use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+
 /**
  * Class OctetSequenceKeysParameters
  * @package jwk
  *
  * https://tools.ietf.org/html/rfc7518#section-6.4
  */
-final class OctetSequenceKeysParameters {
+abstract class OctetSequenceKeysParameters {
 
     /**
      * The "k" (key value) parameter contains the value of the symmetric (or
@@ -28,4 +30,10 @@ final class OctetSequenceKeysParameters {
      * encoding of the octet sequence containing the key value.
      */
     const Key = 'k';
+
+    public static $valid_algorithms_values = array(
+        JSONWebSignatureAndEncryptionAlgorithms::HS256,
+        JSONWebSignatureAndEncryptionAlgorithms::HS384,
+        JSONWebSignatureAndEncryptionAlgorithms::HS512,
+    );
 }

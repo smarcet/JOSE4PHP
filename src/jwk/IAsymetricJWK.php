@@ -13,11 +13,9 @@
  **/
 
 namespace jwk;
-
-
-use jwk\utils\KeyPair;
-use jwk\utils\PrivateKey;
-use jwk\utils\PublicKey;
+use security\PrivateKey;
+use security\PublicKey;
+use security\KeyPair;
 
 /**
  * Interface IAsymetricJWK

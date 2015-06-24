@@ -13,6 +13,7 @@
  **/
 
 namespace jwk;
+
 use jwk\exceptions\InvalidJWKUseException;
 use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\exceptions\InvalidJWKType;

@@ -18,6 +18,6 @@ namespace jws\exceptions;
  * Class JWSInvalidJWKException
  * @package jws\exceptions
  */
-class JWSInvalidJWKException extends \Exception {
+final class JWSInvalidJWKException extends \Exception {
 
 }

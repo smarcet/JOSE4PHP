@@ -110,7 +110,7 @@ abstract class JWK
      */
     public function setKeyUse($use)
     {
-        if(empty($use)) return;
+        if(empty($use)) return $this;
         if(!in_array($use, JSONWebKeyPublicKeyUseValues::$valid_uses))
             throw new InvalidJWKUseException(sprintf('use %s', $use));
 

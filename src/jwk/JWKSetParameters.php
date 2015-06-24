@@ -19,7 +19,7 @@ namespace jwk;
  * Class JWKSetParameters
  * @package jwk
  */
-final class JWKSetParameters {
+abstract class JWKSetParameters {
 
     /**
      *

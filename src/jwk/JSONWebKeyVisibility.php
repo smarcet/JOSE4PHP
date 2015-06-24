@@ -18,7 +18,7 @@ namespace jwk;
  * Class JSONWebKeyVisibility
  * @package jwk
  */
-final class JSONWebKeyVisibility {
+abstract class JSONWebKeyVisibility {
 
     /**
      *

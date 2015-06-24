@@ -14,8 +14,7 @@
 
 namespace jwk;
 
-
-use jwk\utils\Key;
+use security\Key;
 use utils\json_types\IJsonObject;
 use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
@@ -47,8 +46,9 @@ interface IReadOnlyJWK extends IJsonObject, \ArrayAccess {
     public function getId();
 
     /**
+     * @param string $key_op
      * @return Key
      */
-    public function getKey();
+    public function getKey($key_op = JSONWebKeyKeyOperationsValues::ComputeDigitalSignatureOrMAC);
 
 }

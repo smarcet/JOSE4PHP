@@ -21,7 +21,7 @@ use jwa\JSONWebSignatureAndEncryptionAlgorithms;
  *
  * https://tools.ietf.org/html/rfc7518#section-6.3
  */
-final class RSAKeysParameters {
+abstract class RSAKeysParameters {
 
     /**
      * The "n" (modulus) parameter contains the modulus value for the RSA

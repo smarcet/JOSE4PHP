@@ -14,9 +14,13 @@
 
 namespace jwk\impl;
 
+use jwk\exceptions\InvalidJWKAlgorithm;
+use jwk\exceptions\InvalidJWKType;
+use jwk\exceptions\InvalidJWKUseException;
 use jwk\IAsymetricJWK;
-use jwk\utils\PrivateKey;
-use jwk\utils\PublicKey;
+use security\PrivateKey;
+use security\PublicKey;
+
 
 /**
  * Class AsymetricJWK
@@ -45,12 +49,11 @@ abstract class AsymetricJWK
      * @param array $headers
      * @throws InvalidJWKAlgorithm
      * @throws InvalidJWKType
-     * @throws \jwk\exceptions\InvalidJWKUseException
+     * @throws InvalidJWKUseException
      */
     protected function __construct(array $headers = array()){
         parent::__construct($headers);
         if(count($headers) === 0 ) return;
-
     }
 
     /**

@@ -18,7 +18,7 @@ namespace jwk;
  * Class EncryptionJSONWebKeyParameters
  * @package jwk
  */
-final class EncryptionJSONWebKeyParameters {
+abstract class EncryptionJSONWebKeyParameters {
 
     /**
      * @mandatory

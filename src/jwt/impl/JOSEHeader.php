@@ -83,4 +83,15 @@ class JOSEHeader
     {
         $this->set[$header_param->getName()] = $header_param->getValue();
     }
+
+    /**
+     * @param string $name
+     * @return JOSEHeaderParam
+     */
+    public function getHeaderByName($name)
+    {
+        $value = $this[$name];
+        if(is_null($value)) return null;
+        return new JOSEHeaderParam($name, $value);
+    }
 }

@@ -31,7 +31,7 @@ namespace jwk;
  * +-------------+--------------------------------+--------------------+
  *
  */
-final class JSONWebKeyTypes {
+abstract class JSONWebKeyTypes {
 
     const  EllipticCurve = 'EC';
 

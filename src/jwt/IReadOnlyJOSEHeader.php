@@ -25,6 +25,7 @@ use utils\json_types\StringOrURI;
 interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
 
     /**
+     * @mandatory
      * https://tools.ietf.org/html/rfc7515#section-4.1.1
      *
      * The "alg" (algorithm) Header Parameter identifies the cryptographic
@@ -32,16 +33,20 @@ interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
      * valid if the "alg" value does not represent a supported algorithm or
      * if there is not a key for use with that algorithm associated with the
      * party that digitally signed or MACed the content.
+     *
      * @return StringOrURI
      */
     public function getAlgorithm();
 
     /**
+     * @mandatory
+     *
      * https://tools.ietf.org/html/rfc7515#section-4.1.4
      *
      * the "kid" (key ID) Header Parameter is a hint indicating which key
      * was used to secure the JWS. This parameter allows originators to
      * explicitly signal a change of key to recipients.
+     *
      * @return JsonValue
      */
     public function getKeyID();
@@ -71,5 +76,11 @@ interface IReadOnlyJOSEHeader extends IJsonObject, \ArrayAccess {
      * @return StringOrURI
      */
     public function getType();
+
+    /**
+     * @param string $name
+     * @return JOSEHeaderParam
+     */
+    public function getHeaderByName($name);
 
 }

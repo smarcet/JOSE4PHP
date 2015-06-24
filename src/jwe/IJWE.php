@@ -14,20 +14,37 @@
 
 namespace jwe;
 
+use jwk\IJWK;
+use jws\IJWSPayloadRawSpec;
+use jwt\IJWT;
 
-interface IJWE {
+/**
+ * Interface IJWE
+ * @package jwe
+ */
+interface IJWE extends IJWT {
+
+    public function setPayload(IJWSPayloadRawSpec $payload);
 
     /**
-     * @param $public_key_or_secret
-     * @param string $algorithm
-     * @param string $encryption_method
-     * @return mixed
+     * @return string
      */
-    public function encrypt($public_key_or_secret, $algorithm = 'RSA1_5', $encryption_method = 'A128CBC-HS256');
+    public function serialize();
 
     /**
-     * @param $private_key_or_secret
-     * @return mixed
+     * @return string
      */
-    public function decrypt($private_key_or_secret);
+    public function getPlainText();
+
+    /**
+     * @param IJWK $key
+     * @return $this
+     */
+    public function setKey(IJWK $key);
+
+    /**
+     * @return $this
+     */
+    public function encrypt();
+
 }

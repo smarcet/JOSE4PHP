@@ -14,7 +14,10 @@
 
 namespace jwk\exceptions;
 
-
-class InvalidJWKUseException extends \Exception {
+/**
+ * Class InvalidJWKUseException
+ * @package jwk\exceptions
+ */
+final class InvalidJWKUseException extends \Exception {
 
 }

@@ -14,11 +14,17 @@
 
 namespace jwk\impl;
 
+use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
+use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
+use jwk\exceptions\InvalidJWKAlgorithm;
+use jwk\exceptions\InvalidJWKType;
 use jwk\IJWK;
 use jwk\IJWKFactory;
 use jwk\IJWKSpecification;
-use jwk\utils\KeyPair;
-use \jwk\utils\rsa\RSAFacade;
+use jwk\JSONWebKeyTypes;
+use security\KeyPair;
+use security\rsa\RSAFacade;
+
 
 /**
  * Class RSAJWKFactory
@@ -30,16 +36,22 @@ final class RSAJWKFactory implements IJWKFactory
     /**
      * @param IJWKSpecification $spec
      * @return IJWK
+     * @throws InvalidJWKAlgorithm
+     * @throws InvalidJWKType
      */
     static public function build(IJWKSpecification $spec)
     {
-        if ($spec instanceof RSAJWKKeyLengthSpecification) {
-            $keys = RSAFacade::getInstance()->buildKeyPair($spec->getKeyLenInBits());
-            $jwk  = RSAJWK::fromKeys($keys);
-            $jwk->setAlgorithm($spec->getAlg());
-            $jwk->setKeyUse($spec->getUse());
-            return $jwk;
-        }
+
+        if(is_null($spec)) throw new \InvalidArgumentException('missing spec param');
+
+        $algorithm = DigitalSignatures_MACs_Registry::getInstance()->get($spec->getAlg());
+
+        if(is_null($algorithm)) $algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($spec->getAlg());
+
+        if(is_null($algorithm)) throw new InvalidJWKAlgorithm(sprintf('alg %s not supported!',$spec->getAlg()));
+
+        if($algorithm->getKeyType() !== JSONWebKeyTypes::RSA) throw new InvalidJWKAlgorithm(sprintf('key type %s not supported!', $algorithm->getKeyType()));
+
         if ($spec instanceof RSAJWKPEMPrivateKeySpecification) {
             $private_key  = RSAFacade::getInstance()->buildPrivateKeyFromPEM($spec->getPEM());
             $public_key   = RSAFacade::getInstance()->buildPublicKey($private_key->getModulus(), $private_key->getPublicExponent());
@@ -62,7 +74,12 @@ final class RSAJWKFactory implements IJWKFactory
             $jwk->setKeyUse($spec->getUse());
             return $jwk;
         }
-        return null;
+        // default ...
+        $keys = RSAFacade::getInstance()->buildKeyPair($algorithm->getMinKeyLen());
+        $jwk  = RSAJWK::fromKeys($keys);
+        $jwk->setAlgorithm($spec->getAlg());
+        $jwk->setKeyUse($spec->getUse());
+        return $jwk;
     }
 
 }

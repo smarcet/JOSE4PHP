@@ -21,7 +21,7 @@ namespace jwk;
  * https://tools.ietf.org/html/rfc7517#section-4.3
  * (key_ops)
  */
-final class JSONWebKeyKeyOperationsValues {
+abstract class JSONWebKeyKeyOperationsValues {
 
     const ComputeDigitalSignatureOrMAC = 'sign';
 
