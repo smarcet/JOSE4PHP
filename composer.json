@@ -1,5 +1,5 @@
 {
-  "name": "smarcet/JOSE4PHP",
+  "name": "smarcet/jose4php",
   "version": "1.0.0",
   "description": "JWT, JWS,JWE and JWK implementation in PHP",
   "keywords": [
@@ -17,7 +17,17 @@
   ],
   "require": {
     "phpseclib/phpseclib": "0.3.*",
-    "php": ">=5.3.7"
+    "php": ">=5.3",
+    "ext-gmp": "*",
+    "ext-crypto": "*",
+    "lib-openssl": "*"
+  },
+  "suggest":{
+    "lib-openssl": "Required to use AES algorithms (except AES GCM)",
+    "ext-gmp":"Required if BCMath is not installed (this extension is highly recommended!)",
+    "ext-bcmath":"Required if GMP is not installed",
+    "ext-crypto":"Required to use AES GCM algorithms",
+    "phpseclib/phpseclib":"Required to use RSA based algorithms"
   },
   "require-dev": {
     "phpunit/phpunit": "4.7.*",
