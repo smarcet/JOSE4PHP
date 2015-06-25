@@ -32,10 +32,6 @@ interface IJWS extends IJWSReadOnly {
      */
     public function setPayload(IJWSPayloadSpec $payload);
 
-    /**
-     * @return string
-     */
-    public function serialize();
 
     /**
      * @return $this
@@ -61,7 +57,7 @@ interface IJWS extends IJWSReadOnly {
 
     /**
      * @param string $compact_serialization
-     * @return $this
+     * @return IJWS
      */
     static public function fromCompactSerialization($compact_serialization);
 

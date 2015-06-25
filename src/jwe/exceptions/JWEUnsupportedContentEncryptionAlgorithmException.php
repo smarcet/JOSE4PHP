@@ -12,39 +12,12 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-use jwt\exceptions\InvalidJWTException;
+namespace jwe\exceptions;
 
 /**
- * Interface IJWT
- * @package jwt
+ * Class JWEUnsupportedContentEncryptionAlgorithmException
+ * @package jwe\exceptions
  */
-interface IJWT {
+final class JWEUnsupportedContentEncryptionAlgorithmException extends \Exception {
 
-    /**
-     * @return IJOSEHeader
-     */
-    public function getJOSEHeader();
-
-    /**
-     * @return IJWTClaimSet
-     */
-    public function getClaimSet();
-
-    /**
-     * @return string|null
-     */
-    public function getSignature();
-
-    /**
-     * @return string
-     */
-    public function toCompactSerialization();
-
-
-    /**
-     * @param string $compact_serialization
-     * @return IJWT
-     */
-    public static function fromCompactSerialization($compact_serialization);
 }

@@ -114,7 +114,7 @@ class JsonWebTokenTest extends PHPUnit_Framework_TestCase {
         ));
 
         $unsecured_jwt = UnsecuredJWT::fromClaimSet($claim_set);
-        $res           = $unsecured_jwt->serialize();
+        $res           = $unsecured_jwt->toCompactSerialization();
         $should        = 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJqb2UiLCJleHAiOjEzMDA4MTkzODAsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlLCJncm91cHMiOlsiYWRtaW4iLCJzdWRvIiwiZGV2cyJdfQ.';
 
         $this->assertTrue( $res == $should);

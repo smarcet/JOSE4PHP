@@ -12,39 +12,35 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-use jwt\exceptions\InvalidJWTException;
+namespace jwt\utils;
+
+use jwt\IJOSEHeader;
+use utils\Base64UrlRepresentation;
 
 /**
- * Interface IJWT
- * @package jwt
+ * Class JOSEHeaderSerializer
+ * @package jwt\utils
+ * @access internal
  */
-interface IJWT {
+final class JOSEHeaderSerializer
+{
+
+    public static function serialize(IJOSEHeader $header)
+    {
+        $json = $header->toJson();
+        return JWTRawSerializer::serialize($json);
+    }
 
     /**
+     * @param string $input
      * @return IJOSEHeader
      */
-    public function getJOSEHeader();
+    public static function deserialize($input)
+    {
+        $json = JWTRawSerializer::deserialize($input);
+        $raw_headers = json_decode($json, true);
 
-    /**
-     * @return IJWTClaimSet
-     */
-    public function getClaimSet();
+        return JOSEHeaderFactory::build($raw_headers);
+    }
 
-    /**
-     * @return string|null
-     */
-    public function getSignature();
-
-    /**
-     * @return string
-     */
-    public function toCompactSerialization();
-
-
-    /**
-     * @param string $compact_serialization
-     * @return IJWT
-     */
-    public static function fromCompactSerialization($compact_serialization);
 }

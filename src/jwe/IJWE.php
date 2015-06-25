@@ -14,22 +14,26 @@
 
 namespace jwe;
 
+use jwe\exceptions\JWEInvalidCompactFormatException;
 use jwk\IJWK;
-use jws\IJWSPayloadRawSpec;
-use jwt\IJWT;
+use jws\IJWSPayloadSpec;
 
 /**
  * Interface IJWE
  * @package jwe
  */
-interface IJWE extends IJWT {
+interface IJWE {
 
-    public function setPayload(IJWSPayloadRawSpec $payload);
+    /**
+     * @param IJWSPayloadSpec $payload
+     * @return $this
+     */
+    public function setPayload(IJWSPayloadSpec $payload);
 
     /**
      * @return string
      */
-    public function serialize();
+    public function toCompactSerialization();
 
     /**
      * @return string
@@ -42,9 +46,26 @@ interface IJWE extends IJWT {
      */
     public function setRecipientKey(IJWK $recipient_key);
 
+
     /**
-     * @return $this
+     * @return IJWEJOSEHeader
      */
-    public function encrypt();
+    public function getJOSEHeader();
+
+    // factory methods
+
+    /**
+     * @param string $compact_serialization
+     * @return IJWE
+     * @throws JWEInvalidCompactFormatException
+     */
+    public static function fromCompactSerialization($compact_serialization);
+
+    /**
+     * @param IJWEJOSEHeader $header
+     * @param IJWSPayloadSpec $payload
+     * @return IJWE
+     */
+    public static function fromHeaderAndPayload(IJWEJOSEHeader $header, IJWSPayloadSpec $payload);
 
 }

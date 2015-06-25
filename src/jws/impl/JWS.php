@@ -29,11 +29,12 @@ use jws\IJWSPayloadSpec;
 use jws\payloads\JWSPayloadFactory;
 use jwt\IJOSEHeader;
 use jwt\impl\JWT;
+use jwt\impl\JWTSerializer;
 use jwt\JOSEHeaderParam;
 use jwt\RegisteredJOSEHeaderNames;
-use jwt\utils\JOSEHeaderAssembler;
-use jwt\utils\JWTClaimSetAssembler;
-use jwt\utils\JWTRawAssembler;
+use jwt\utils\JOSEHeaderSerializer;
+use jwt\utils\JWTClaimSetSerializer;
+use jwt\utils\JWTRawSerializer;
 use utils\json_types\StringOrURI;
 
 /**
@@ -89,20 +90,12 @@ final class JWS
     /**
      * @return string
      */
-    public function serialize()
+    public function toCompactSerialization()
     {
         if(!is_null($this->jwk->getId()))
             $this->header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::KeyID, $this->jwk->getId()));
         $this->sign();
-        return parent::serialize();
-    }
-
-    protected function serializePayload(){
-        $e_payload = parent::serializePayload();
-        if(empty($e_payload)){
-            $e_payload = JWTRawAssembler::serialize($this->payload->getRaw());
-        }
-        return $e_payload;
+        return parent::toCompactSerialization();
     }
 
     /**
@@ -124,7 +117,7 @@ final class JWS
 
         if(is_null($alg)) throw new JWSNotSupportedAlgorithm(sprintf('alg %s.',$this->header->getAlgorithm()->getString()));
 
-        $secured_input_bytes = JOSEHeaderAssembler::serialize($this->header) . '.' .$this->getEncodedPayload();
+        $secured_input_bytes = JOSEHeaderSerializer::serialize($this->header) . '.' .$this->getEncodedPayload();
 
         $key  = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::ComputeDigitalSignatureOrMAC);
 
@@ -150,10 +143,10 @@ final class JWS
             throw new JWSInvalidPayloadException('payload is not set!');
         $enc_payload = '';
         if($this->payload->isClaimSet() && $this->payload instanceof IJWSPayloadClaimSetSpec){
-            $enc_payload = JWTClaimSetAssembler::serialize($this->payload->getClaimSet());
+            $enc_payload = JWTClaimSetSerializer::serialize($this->payload->getClaimSet());
         }
         else{
-            $enc_payload = JWTRawAssembler::serialize($this->payload->getRaw());
+            $enc_payload = JWTRawSerializer::serialize($this->payload->getRaw());
         }
         return $enc_payload;
     }
@@ -170,11 +163,11 @@ final class JWS
 
     /**
      * @param string $compact_serialization
-     * @return $this
+     * @return IJWS
      */
     static public function fromCompactSerialization($compact_serialization)
     {
-        list($header, $payload, $signature) = parent::unSerialize($compact_serialization);
+        list($header, $payload, $signature) = JWTSerializer::deserialize($compact_serialization);
         return new JWS($header, JWSPayloadFactory::build($payload), $signature);
     }
 
@@ -222,7 +215,7 @@ final class JWS
         if($former_alg != $original_alg)
             throw new JWSNotSupportedAlgorithm(sprintf('former alg %s - original alg %s', $former_alg, $original_alg));
 
-        $secured_input_bytes = JOSEHeaderAssembler::serialize($this->header) . '.' .$this->getEncodedPayload();
+        $secured_input_bytes = JOSEHeaderSerializer::serialize($this->header) . '.' .$this->getEncodedPayload();
 
         // use public key / secret
         $key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::VerifyDigitalSignatureOrMAC);
@@ -245,5 +238,18 @@ final class JWS
      */
     static public function fromHeaderClaimsAndSignature(IJOSEHeader $header, IJWSPayloadSpec $payload = null , $signature = ''){
         return new JWS($header, $payload, $signature );
+    }
+
+    /**
+     * @return array
+     */
+    public function take()
+    {
+        $payload = $this->payload->isClaimSet() ?  $this->claim_set : $this->payload->getRaw();
+        return array(
+            $this->header,
+            $payload,
+            $this->signature
+        );
     }
 }

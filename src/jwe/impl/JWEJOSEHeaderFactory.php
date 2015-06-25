@@ -12,34 +12,32 @@
  * limitations under the License.
  **/
 
-namespace jwt\utils;
+namespace jwe\impl;
 
-use jwt\IJOSEHeader;
-use jwt\JOSEHeaderParam;
-use jwt\RegisteredJOSEHeaderNames;
-use utils\json_types\JsonValue;
+use jwe\IJWEJOSEHeader;
+use jwe\RegisteredJWEJOSEHeaderNames;
 
 /**
- * Class JOSEHeaderFactory
- * @package jwt\utils
+ * Class JWEJOSEHeaderFactory
+ * @package jwe\impl
  */
-class JOSEHeaderFactory {
+final class JWEJOSEHeaderFactory {
 
     static protected function getProductClass(){
-        return  '\jwt\impl\JOSEHeader';
+        return  '\jwe\impl\JWEJOSEHeader';
     }
 
     /**
      * @param array $raw_headers
-     * @return IJOSEHeader
+     * @return IJWEJOSEHeader
      */
     public static function build(array $raw_headers){
 
         $args = array();
 
-        foreach(RegisteredJOSEHeaderNames::$registered_basic_headers_set as $header_name){
+        foreach(RegisteredJWEJOSEHeaderNames::$registered_basic_headers_set as $header_name){
             $value = isset($raw_headers[$header_name]) ? $raw_headers[$header_name] : null;
-            $type  = @RegisteredJOSEHeaderNames::$registered_basic_headers_set_types[$header_name];
+            $type  = @RegisteredJWEJOSEHeaderNames::$registered_basic_headers_set_types[$header_name];
             if(!is_null($value))
             {
                 if(is_null($type)) continue;

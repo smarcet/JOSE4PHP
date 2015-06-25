@@ -12,35 +12,16 @@
  * limitations under the License.
  **/
 
-namespace jwt\utils;
-
-use jwt\IJOSEHeader;
-use utils\Base64UrlRepresentation;
+namespace jwe\impl;
 
 /**
- * Class JOSEHeaderSerializer
- * @package jwt\utils
+ * Interface IJWESnapshot
+ * @package jwe\impl
  */
-final class JOSEHeaderAssembler
-{
-
-    public static function serialize(IJOSEHeader $header)
-    {
-        $json = $header->toJson();
-        return JWTRawAssembler::serialize($json);
-    }
+interface IJWESnapshot {
 
     /**
-     * @param string $input
-     * @return IJOSEHeader
+     * @return array
      */
-    public static function unSerialize($input)
-    {
-
-        $json = JWTRawAssembler::unSerialize($input);
-        $raw_headers = json_decode($json, true);
-
-        return JOSEHeaderFactory::build($raw_headers, 'JWT');
-    }
-
+    public function take();
 }

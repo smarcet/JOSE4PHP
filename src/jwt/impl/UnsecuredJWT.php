@@ -26,7 +26,7 @@ use utils\json_types\StringOrURI;
  *
  *
  */
-final class UnsecuredJWT extends JWT {
+final class UnsecuredJWT extends JWT implements IJWTSnapshot {
 
     const EmptySignature = '';
 
@@ -55,5 +55,17 @@ final class UnsecuredJWT extends JWT {
     static public function fromClaimSet(IJWTClaimSet $claim_set)
     {
         return new UnsecuredJWT($claim_set);
+    }
+
+    /**
+     * @param string $compact_serialization
+     * @return IJWT
+     */
+    public static function fromCompactSerialization($compact_serialization)
+    {
+        list($header, $payload, $signature) = JWTSerializer::deserialize($compact_serialization);
+        $jwt = new UnsecuredJWT($payload);
+        $jwt->header = $header;
+        return $jwt;
     }
 }

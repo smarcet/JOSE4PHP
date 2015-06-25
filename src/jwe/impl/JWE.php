@@ -16,29 +16,29 @@ namespace jwe\impl;
 
 use jwa\cryptographic_algorithms\ContentEncryptionAlgorithms_Registry;
 use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
+use jwe\exceptions\JWEInvalidCompactFormatException;
+use jwe\exceptions\JWEInvalidRecipientKeyException;
+use jwe\exceptions\JWEUnsupportedContentEncryptionAlgorithmException;
+use jwe\exceptions\JWEUnsupportedKeyManagementAlgorithmException;
 use jwe\IJWEJOSEHeader;
 use jwe\IJWE;
 use jwe\KeyManagementModeValues;
 use jwk\IJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
-use jws\IJWSPayloadRawSpec;
 use jws\IJWSPayloadSpec;
-use jwt\exceptions\InvalidJWTException;
-use jwt\IJOSEHeader;
-use jwt\IJWTClaimSet;
-use jwt\impl\JWT;
-use jwt\utils\JOSEHeaderAssembler;
-use jwt\utils\JWTRawAssembler;
+use jws\payloads\JWSPayloadFactory;
+use jwt\utils\JOSEHeaderSerializer;
 use security\Key;
 use utils\ByteUtil;
 
 /**
  * Class JWE
  * @package jwe\impl
+ * @access private
  */
 final class JWE
-    extends JWT
-    implements IJWE {
+    implements IJWE, IJWESnapshot
+{
 
     /**
      * @var IJWK
@@ -46,9 +46,14 @@ final class JWE
     private $jwk = null;
 
     /**
-     * @var IJWSPayloadRawSpec
+     * @var IJWSPayloadSpec
      */
     private $payload = null;
+
+    /**
+     * @var IJWEJOSEHeader
+     */
+    private $header;
 
     /**
      * @var Key
@@ -63,12 +68,17 @@ final class JWE
 
     private $enc_cek = null;
 
+    private $should_decrypt = false;
 
-    protected function __construct(IJWEJOSEHeader $header, IJWSPayloadRawSpec $payload){
-
-        parent::__construct($header);
-
-        $this->setPayload($payload);
+    /**
+     * @param IJWEJOSEHeader $header
+     * @param IJWSPayloadSpec $payload
+     */
+    protected function __construct(IJWEJOSEHeader $header, IJWSPayloadSpec $payload = null)
+    {
+        $this->header = $header;
+        if(!is_null($payload))
+            $this->setPayload($payload);
     }
 
     /**
@@ -81,38 +91,55 @@ final class JWE
         return $this;
     }
 
-
-    public function setPayload(IJWSPayloadRawSpec $payload)
+    /**
+     * @param IJWSPayloadSpec $payload
+     * @return $this
+     */
+    public function setPayload(IJWSPayloadSpec $payload)
     {
         $this->payload = $payload;
+        return $this;
     }
 
-    private function getKeyManagementMode(){
+    private function getKeyManagementMode()
+    {
         return KeyManagementModeValues::KeyEncryption;
     }
 
     /**
      * @return $this
+     * @throws JWEInvalidRecipientKeyException
+     * @throws JWEUnsupportedContentEncryptionAlgorithmException
+     * @throws JWEUnsupportedKeyManagementAlgorithmException
      */
-    public function encrypt(){
+    public function encrypt()
+    {
 
-        $recipient_public_key         = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::EncryptContent);
+        if (is_null($this->jwk))
+            throw new JWEInvalidRecipientKeyException;
 
-        $key_management_mode          = $this->getKeyManagementMode();
+        $recipient_public_key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::EncryptContent);
 
-        $key_management_algorithm     = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
+        $key_management_mode = $this->getKeyManagementMode();
+
+        $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
+
+        if (is_null($key_management_algorithm)) throw new JWEUnsupportedKeyManagementAlgorithmException(sprintf('alg %s', $this->header->getAlgorithm()->getString()));
 
         $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get($this->header->getEncryptionAlgorithm()->getString());
 
-        $this->cek                    = ContentEncryptionKeyFactory::build($recipient_public_key, $key_management_mode, $key_management_algorithm);
+        if (is_null($content_encryption_algorithm)) throw new JWEUnsupportedContentEncryptionAlgorithmException(sprintf('enc %s', $this->header->getEncryptionAlgorithm()->getString()));
 
-        $this->enc_cek                = $key_management_algorithm->encrypt($recipient_public_key, $this->cek->getEncoded() );
+        $this->cek = ContentEncryptionKeyFactory::build($recipient_public_key, $key_management_mode, $key_management_algorithm);
+
+        $this->enc_cek = $key_management_algorithm->encrypt($recipient_public_key, $this->cek->getEncoded());
 
         if (!is_null($iv_size = $content_encryption_algorithm->getIVSize())) {
             $this->iv = $this->createIV($iv_size);
         }
         // We encrypt the payload and get the tag
-        $jwt_shared_protected_header  = JOSEHeaderAssembler::serialize($this->header);
+        $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
+
         $this->cipher_text = $content_encryption_algorithm->encryptContent($this->payload->getRaw(), $this->cek->getEncoded(), $this->iv, null, $jwt_shared_protected_header, $this->tag);
 
         return $this;
@@ -130,83 +157,108 @@ final class JWE
     /**
      * @return string
      */
-    public function serialize()
+    public function toCompactSerialization()
     {
-        return $this->encrypt()->_serialize();
+        return JWESerializer::serialize($this->encrypt());
     }
-
-    /**
-     * @return string
-     */
-    private function _serialize(){
-
-        $header      = JOSEHeaderAssembler::serialize($this->header);
-        $enc_cek     = JWTRawAssembler::serialize($this->enc_cek);
-        $iv          = JWTRawAssembler::serialize($this->iv);
-        $cipher_text = JWTRawAssembler::serialize($this->cipher_text);
-        $tag         = JWTRawAssembler::serialize($this->tag);
-
-        return sprintf('%s.%s.%s.%s.%s', $header, $enc_cek, $iv, $cipher_text, $tag);
-    }
-
 
     /**
      * @return string
      */
     public function getPlainText()
     {
-        // TODO: Implement getPlainText() method.
+        if ($this->should_decrypt) {
+            $this->decrypt();
+        }
+
+        if (is_null($this->payload)) $this->payload = JWSPayloadFactory::build('');
+
+        return $this->payload->getRaw();
     }
 
     /**
-     * @return IJOSEHeader
+     * @return IJWEJOSEHeader
      */
     public function getJOSEHeader()
     {
-        // TODO: Implement getJOSEHeader() method.
+        return $this->header;
     }
-
-    /**
-     * @return IJWTClaimSet
-     */
-    public function getClaimSet()
-    {
-        // TODO: Implement getClaimSet() method.
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSignature()
-    {
-        // TODO: Implement getSignature() method.
-    }
-
-    /**
-     * @param string $input
-     * @return array
-     * @throws InvalidJWTException
-     */
-    public static function unSerialize($input)
-    {
-        // TODO: Implement unSerialize() method.
-    }
-
 
     /**
      * @param IJWEJOSEHeader $header
      * @param IJWSPayloadSpec $payload
      * @return IJWE
      */
-    public static function fromHeaderAndPayload(IJWEJOSEHeader $header, IJWSPayloadSpec $payload){
+    public static function fromHeaderAndPayload(IJWEJOSEHeader $header, IJWSPayloadSpec $payload)
+    {
         return new JWE($header, $payload);
     }
 
     /**
      * @param string $compact_serialization
-     * @return $this
+     * @return IJWE
+     * @throws JWEInvalidCompactFormatException
      */
-    public static function fromCompactSerialization($compact_serialization){
+    public static function fromCompactSerialization($compact_serialization)
+    {
 
+        list($header, $enc_cek, $iv, $cipher_text, $tag) = JWESerializer::deserialize($compact_serialization);
+        $jwe     = new JWE($header);
+        $jwe->iv = $iv;
+        $jwe->tag = $tag;
+        $jwe->enc_cek = $enc_cek;
+        $jwe->cipher_text = $cipher_text;
+        $jwe->should_decrypt = true;
+        return $jwe;
+    }
+
+    /**
+     * @return $this
+     * @throws JWEInvalidRecipientKeyException
+     * @throws JWEUnsupportedContentEncryptionAlgorithmException
+     * @throws JWEUnsupportedKeyManagementAlgorithmException
+     */
+    public function decrypt()
+    {
+        if (is_null($this->jwk))
+            throw new JWEInvalidRecipientKeyException();
+
+        if (!$this->should_decrypt) return $this;
+
+        $recipient_private_key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::DecryptContentAndValidateDecryption);
+
+        $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
+
+        if (is_null($key_management_algorithm)) throw new JWEUnsupportedKeyManagementAlgorithmException(sprintf('alg %s', $this->header->getAlgorithm()->getString()));
+
+        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get($this->header->getEncryptionAlgorithm()->getString());
+
+        if (is_null($content_encryption_algorithm)) throw new JWEUnsupportedContentEncryptionAlgorithmException(sprintf('enc %s', $this->header->getEncryptionAlgorithm()->getString()));
+
+        $this->cek = $key_management_algorithm->decrypt($recipient_private_key, $this->enc_cek);
+
+        // We encrypt the payload and get the tag
+        $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
+
+        $plain_text = $content_encryption_algorithm->decryptContent($this->cipher_text, $this->cek, $this->iv, null, $jwt_shared_protected_header, $this->tag);
+
+        $this->setPayload(JWSPayloadFactory::build($plain_text));
+        $this->should_decrypt = false;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function take()
+    {
+
+        return array(
+            $this->header,
+            $this->enc_cek,
+            $this->iv,
+            $this->cipher_text,
+            $this->tag);
     }
 }

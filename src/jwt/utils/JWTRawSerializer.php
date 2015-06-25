@@ -13,33 +13,25 @@
  **/
 
 namespace jwt\utils;
-use jwt\IJWTClaimSet;
 use utils\Base64UrlRepresentation;
 
-/**
- * Class JWTClaimSetAssembler
- * @package jwt\utils
- */
-class JWTClaimSetAssembler {
+class JWTRawSerializer {
 
     /**
-     * @param IJWTClaimSet $claim_set
+     * @param string $raw_input
      * @return string
      */
-    public static function serialize(IJWTClaimSet $claim_set){
-        $json = $claim_set->toJson();
-        return JWTRawAssembler::serialize($json);
+    public static function serialize($raw_input){
+        $base64 = new Base64UrlRepresentation();
+        return $base64->encode($raw_input);
     }
 
-    /***
-     * @param $input
-     * @return IJWTClaimSet
+    /**
+     * @param string $input
+     * @return string
      */
-    public static function unSerialize($input){
-        $json        = JWTRawAssembler::unSerialize($input);
-        $raw_claims  = json_decode($json, true);
-
-        return  JWTClaimSetFactory::build($raw_claims);
+    public static function deserialize($input){
+        $base64 = new Base64UrlRepresentation();
+        return $base64->decode($input);
     }
-
 }

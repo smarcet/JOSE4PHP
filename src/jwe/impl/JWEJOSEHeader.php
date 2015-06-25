@@ -34,10 +34,13 @@ final class JWEJOSEHeader
      * @param StringOrURI $type
      * @param StringOrURI $cty
      * @param JsonValue $kid
+     * @param JsonValue $zip
      */
-    public function __construct(StringOrURI $alg, StringOrURI $enc, StringOrURI $type = null, StringOrURI $cty = null, JsonValue  $kid = null){
+    public function __construct(StringOrURI $alg, StringOrURI $enc, StringOrURI $type = null, StringOrURI $cty = null, JsonValue  $kid = null, JsonValue $zip = null){
         parent::__construct($alg,$type,$cty, $kid);
         $this->set[RegisteredJWEJOSEHeaderNames::EncryptionAlgorithm] = $enc;
+        if(!is_null($zip))
+            $this->set[RegisteredJWEJOSEHeaderNames::CompressionAlgorithm] = $zip;
     }
 
     /**

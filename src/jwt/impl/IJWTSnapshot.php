@@ -12,39 +12,17 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-use jwt\exceptions\InvalidJWTException;
+namespace jwt\impl;
 
 /**
- * Interface IJWT
- * @package jwt
+ * Interface IJWTSnapshot
+ * @package jwt\impl
+ * @access internal
  */
-interface IJWT {
+interface IJWTSnapshot {
 
     /**
-     * @return IJOSEHeader
+     * @return array
      */
-    public function getJOSEHeader();
-
-    /**
-     * @return IJWTClaimSet
-     */
-    public function getClaimSet();
-
-    /**
-     * @return string|null
-     */
-    public function getSignature();
-
-    /**
-     * @return string
-     */
-    public function toCompactSerialization();
-
-
-    /**
-     * @param string $compact_serialization
-     * @return IJWT
-     */
-    public static function fromCompactSerialization($compact_serialization);
+    public function take();
 }

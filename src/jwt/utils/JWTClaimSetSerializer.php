@@ -12,39 +12,34 @@
  * limitations under the License.
  **/
 
-namespace jwt;
-use jwt\exceptions\InvalidJWTException;
+namespace jwt\utils;
+use jwt\IJWTClaimSet;
+use utils\Base64UrlRepresentation;
 
 /**
- * Interface IJWT
- * @package jwt
+ * Class JWTClaimSetSerializer
+ * @package jwt\utils
  */
-interface IJWT {
+class JWTClaimSetSerializer {
 
     /**
-     * @return IJOSEHeader
-     */
-    public function getJOSEHeader();
-
-    /**
-     * @return IJWTClaimSet
-     */
-    public function getClaimSet();
-
-    /**
-     * @return string|null
-     */
-    public function getSignature();
-
-    /**
+     * @param IJWTClaimSet $claim_set
      * @return string
      */
-    public function toCompactSerialization();
+    public static function serialize(IJWTClaimSet $claim_set){
+        $json = $claim_set->toJson();
+        return JWTRawSerializer::serialize($json);
+    }
 
-
-    /**
-     * @param string $compact_serialization
-     * @return IJWT
+    /***
+     * @param $input
+     * @return IJWTClaimSet
      */
-    public static function fromCompactSerialization($compact_serialization);
+    public static function deserialize($input){
+        $json        = JWTRawSerializer::deserialize($input);
+        $raw_claims  = json_decode($json, true);
+
+        return  JWTClaimSetFactory::build($raw_claims);
+    }
+
 }

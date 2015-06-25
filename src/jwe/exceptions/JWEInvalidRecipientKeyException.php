@@ -12,26 +12,12 @@
  * limitations under the License.
  **/
 
-namespace jwt\utils;
-use utils\Base64UrlRepresentation;
+namespace jwe\exceptions;
 
-class JWTRawAssembler {
+/**
+ * Class JWEInvalidRecipientKeyException
+ * @package jwe\exceptions
+ */
+final class JWEInvalidRecipientKeyException extends \Exception {
 
-    /**
-     * @param string $raw_input
-     * @return string
-     */
-    public static function serialize($raw_input){
-        $base64 = new Base64UrlRepresentation();
-        return $base64->encode($raw_input);
-    }
-
-    /**
-     * @param string $input
-     * @return string
-     */
-    public static function unSerialize($input){
-        $base64 = new Base64UrlRepresentation();
-        return $base64->decode($input);
-    }
 }

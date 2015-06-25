@@ -44,7 +44,7 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
         $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256);
         $jws = JWSFactory::build($key, $alg, JWSPayloadFactory::build($claim_set));
 
-        $compact_serialization = $jws->serialize();
+        $compact_serialization = $jws->toCompactSerialization();
 
         $this->assertTrue(!is_null($jws));
         $this->assertTrue(!empty($compact_serialization));
@@ -74,7 +74,7 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
         $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::PS512);
         $jws = JWSFactory::build($key,$alg, JWSPayloadFactory::build($claim_set));
 
-        $compact_serialization = $jws->serialize();
+        $compact_serialization = $jws->toCompactSerialization();
 
         $this->assertTrue(!is_null($jws));
         $this->assertTrue(!empty($compact_serialization));

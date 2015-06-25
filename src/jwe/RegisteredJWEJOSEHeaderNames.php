@@ -15,6 +15,7 @@
 namespace jwe;
 
 use jwt\RegisteredJOSEHeaderNames;
+use utils\json_types\JsonTypes;
 
 /**
  * Class RegisteredJWEJOSEHeaderNames
@@ -61,4 +62,23 @@ abstract class RegisteredJWEJOSEHeaderNames extends RegisteredJOSEHeaderNames {
      * JWE Protected Header.  Use of this Header Parameter is OPTIONAL.
      */
     const CompressionAlgorithm = 'zip';
+
+
+    public static $registered_basic_headers_set = array (
+        self::Algorithm,
+        self::EncryptionAlgorithm,
+        self::Type,
+        self::ContentType,
+        self::KeyID,
+        self::CompressionAlgorithm,
+    );
+
+    public static $registered_basic_headers_set_types = array (
+        self::Algorithm            => JsonTypes::StringOrURI ,
+        self::Type                 => JsonTypes::StringOrURI,
+        self::ContentType          => JsonTypes::StringOrURI,
+        self::KeyID                => JsonTypes::JsonValue,
+        self::EncryptionAlgorithm  => JsonTypes::StringOrURI,
+        self::CompressionAlgorithm => JsonTypes::JsonValue,
+    );
 }
