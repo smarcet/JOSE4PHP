@@ -19,7 +19,6 @@
     "phpseclib/phpseclib": "0.3.*",
     "php": ">=5.3",
     "ext-gmp": "*",
-    "ext-crypto": "*",
     "lib-openssl": "*"
   },
   "suggest":{
