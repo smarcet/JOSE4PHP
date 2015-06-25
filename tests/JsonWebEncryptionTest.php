@@ -12,18 +12,23 @@
  * limitations under the License.
  **/
 
-use jws\JWSFactory;
+use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+
 use jwt\utils\JWTClaimSetFactory;
 use jwt\RegisteredJWTClaimNames;
 use jwk\impl\RSAJWKPEMPrivateKeySpecification;
 use jwk\impl\RSAJWKFactory;
-use jws\payloads\JWSPayloadFactory;
-use jwe\impl\JWEFactory;
-use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwk\JSONWebKeyPublicKeyUseValues;
+
+use jws\JWSFactory;
+use jws\impl\specs\JWS_ParamsSpecification;
+use jws\impl\specs\JWS_CompactFormatSpecification;
+
+use jwe\impl\JWEFactory;
+use jwe\impl\specs\JWE_CompactFormatSpecification;
+use jwe\impl\specs\JWE_ParamsSpecification;
+
 use utils\json_types\StringOrURI;
-use jwe\impl\JWE;
-use jws\impl\JWS;
 /**
  * Class JsonWebEncryptionTest
  */
@@ -39,12 +44,12 @@ class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase {
             'groups'                                => array('admin', 'sudo', 'devs')
         ));
 
-        $key  = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
-
-
-        $key->setId('rsa_server');
+        // load server key from pem format
+        $server_key  = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
+        $server_key->setId('rsa_server');
+        // and sign the jws with server private key
         $alg     = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::RS384);
-        $jws     = JWSFactory::build($key, $alg, JWSPayloadFactory::build($claim_set));
+        $jws     = JWSFactory::build( new JWS_ParamsSpecification ( $server_key, $alg, $claim_set));
 
         $payload = $jws->toCompactSerialization();
 
@@ -53,7 +58,7 @@ class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase {
 
         $alg     = new  StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::RSA1_5);
         $enc     = new  StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::A256CBC_HS512);
-        $jwe     = JWEFactory::build($recipient_key, $alg, $enc, JWSPayloadFactory::build($payload));
+        $jwe     = JWEFactory::build( new JWE_ParamsSpecification($recipient_key, $alg, $enc, $payload ));
 
         $compact_serialization = $jwe->toCompactSerialization();
 
@@ -68,18 +73,17 @@ class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase {
         $recipient_key = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key2_pem));
         $recipient_key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('recipient_public_key');
 
-        $jwe_2 = JWE::fromCompactSerialization($jwe_compact_form);
+        $jwe_2 = JWEFactory::build( new JWE_CompactFormatSpecification( $jwe_compact_form));
 
         $this->assertTrue(!is_null($jwe_2));
 
         $jwe_2->setRecipientKey($recipient_key);
 
-
         $payload_2 = $jwe_2->getPlainText();
 
         $this->assertTrue($payload_2 === $payload_jws);
 
-        $jws = JWS::fromCompactSerialization($payload_jws);
+        $jws = JWSFactory::build( new JWS_CompactFormatSpecification ($payload_jws));
 
         $this->assertTrue(!is_null($jws));
     }

@@ -11,18 +11,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-use jws\JWSFactory;
-use \jws\JWSupportedSigningAlgorithms;
-use \jwk\impl\RSAJWKFactory;
-use jwk\impl\OctetSequenceJWKFactory;
-use jwt\utils\JWTClaimSetFactory;
+
+
+use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+
 use jwt\RegisteredJWTClaimNames;
-use jws\impl\JWS;
+use jwt\RegisteredJOSEHeaderNames;
+use jwt\utils\JWTClaimSetFactory;
+
 use jwk\impl\RSAJWKPEMPrivateKeySpecification;
 use jwk\impl\OctetSequenceJWKSpecification;
-use jws\payloads\JWSPayloadFactory;
+use jwk\impl\RSAJWKParamsPublicKeySpecification;
+use jwk\RSAKeysParameters;
+use jwk\JSONWebKeyParameters;
+use jwk\impl\OctetSequenceJWKFactory;
+use jwk\impl\RSAJWKFactory;
+
+use jws\impl\specs\JWS_ParamsSpecification;
+use jws\impl\specs\JWS_CompactFormatSpecification;
+use jws\JWSFactory;
+
 use utils\json_types\StringOrURI;
-use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+
 /**
  * Class JsonWebSignatureTest
  */
@@ -42,14 +52,14 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
         $key->setId('sym_key');
 
         $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256);
-        $jws = JWSFactory::build($key, $alg, JWSPayloadFactory::build($claim_set));
+        $jws = JWSFactory::build( new JWS_ParamsSpecification( $key, $alg, $claim_set));
 
         $compact_serialization = $jws->toCompactSerialization();
 
         $this->assertTrue(!is_null($jws));
         $this->assertTrue(!empty($compact_serialization));
 
-        $jws_1 =  JWS::fromCompactSerialization($compact_serialization);
+        $jws_1 = JWSFactory::build( new JWS_CompactFormatSpecification($compact_serialization));
 
         $this->assertTrue(!is_null($jws_1));
 
@@ -67,23 +77,38 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
             "http://example.com/is_root"            => true,
             'groups'                                => array('admin', 'sudo', 'devs')
         ));
-
+        //load server private key.
         $key = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
-
-        $key->setId('sym_key');
+        $key->setId('server_key');
         $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::PS512);
-        $jws = JWSFactory::build($key,$alg, JWSPayloadFactory::build($claim_set));
-
+        $jws = JWSFactory::build( new JWS_ParamsSpecification($key,$alg, $claim_set) );
+        // and sign with server private key
         $compact_serialization = $jws->toCompactSerialization();
 
         $this->assertTrue(!is_null($jws));
         $this->assertTrue(!empty($compact_serialization));
 
-        $jws_1 =  JWS::fromCompactSerialization($compact_serialization);
+        // then on client side, load the JWS from compact format
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
 
         $this->assertTrue(!is_null($jws_1));
 
-        $res = $jws_1->setKey($key)->verify($alg->getString());
+        // get the server public key from jose header ..
+
+        $public_key =  $jws_1->getJOSEHeader()->getHeaderByName(RegisteredJOSEHeaderNames::JSONWebKey);
+
+        $this->assertTrue(!is_null($public_key));
+
+        $public_key = $public_key->getRawValue();
+        // and re built it from params
+        $public_key = RSAJWKFactory::build(new RSAJWKParamsPublicKeySpecification($public_key[RSAKeysParameters::Modulus],
+                                                                                  $public_key[RSAKeysParameters::Exponent],
+                                                                                  $public_key[JSONWebKeyParameters::Algorithm],
+                                                                                  $public_key[JSONWebKeyParameters::PublicKeyUse]));
+
+        //set the server public key and then proceed to verify signature
+
+        $res = $jws_1->setKey($public_key)->verify($alg->getString());
 
         $this->assertTrue($res);
     }

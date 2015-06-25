@@ -12,29 +12,34 @@
  * limitations under the License.
  **/
 
-namespace jwk;
+namespace jws;
+
+use jwk\IJWK;
+use utils\json_types\StringOrURI;
 
 /**
- * Class JSONWebKeyVisibility
- * @package jwk
+ * Interface IJWS_ParamsSpecification
+ * @package jws
  */
-abstract class JSONWebKeyVisibility {
+interface IJWS_ParamsSpecification extends IJWS_Specification {
 
     /**
-     *
+     * @return IJWK
      */
-    const PublicOnly       = 1;
-    /**
-     *
-     */
-    const IncludePrivate   = 2;
-    /**
-     *
-     */
-    const IncludeSymmetric = 3;
+    public function getKey();
 
     /**
-     * @var array
+     * @return StringOrURI
      */
-    static public $valid_values = array ( self::IncludePrivate, self::IncludeSymmetric, self::PublicOnly);
+    public function getAlg();
+
+    /**
+     * @return IJWSPayloadSpec
+     */
+    public function getPayload();
+
+    /**
+     * @return null|string
+     */
+    public function getSignature();
 }

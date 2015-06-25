@@ -15,15 +15,11 @@
 namespace jws;
 
 use jwk\exceptions\InvalidJWKType;
-use jwk\IJWK;
 use jwk\JSONWebKeyPublicKeyUseValues;
-use jws\exceptions\JWSInvalidPayloadException;
 use jws\impl\JWS;
-use jwt\IJWTClaimSet;
 use jwt\impl\JOSEHeader;
 use jwt\JOSEHeaderParam;
 use jwt\RegisteredJOSEHeaderNames;
-use utils\json_types\StringOrURI;
 
 /**
  * Class JWSFactory
@@ -32,31 +28,24 @@ use utils\json_types\StringOrURI;
 final class JWSFactory {
 
     /**
-     * @param IJWK $key
-     * @param StringOrURI $alg
-     * @param IJWSPayloadSpec $payload
-     * @param string $signature
-     * @return JWS
+     * @param IJWS_Specification $spec
+     * @return IJWS
      * @throws InvalidJWKType
-     * @throws JWSInvalidPayloadException
+     * @throws \RuntimeException
      */
-    static public function build(IJWK $key, StringOrURI $alg, IJWSPayloadSpec $payload, $signature = ''){
+    static public function build(IJWS_Specification $spec){
 
-        if(is_null($key))
-            throw new InvalidJWKType();
-
-        if(is_null($payload))
-            throw new JWSInvalidPayloadException('missing payload');
-
-        if($key->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
-            throw new InvalidJWKType(sprintf('use % not supported (sig)',$key->getKeyUse()->getString()));
-
-        $header = new JOSEHeader($alg);
-
-        $jws = JWS::fromHeaderClaimsAndSignature($header, $payload, $signature);
-
-        $jws->setKey($key);
-
-        return $jws;
+        if($spec instanceof IJWS_ParamsSpecification){
+            if($spec->getKey()->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
+                throw new InvalidJWKType(sprintf('use % not supported (sig)',$spec->getKey()->getKeyUse()->getString()));
+            $header = new JOSEHeader($spec->getAlg());
+            $jws = JWS::fromHeaderClaimsAndSignature($header, $spec->getPayload(), $spec->getSignature());
+            $jws->setKey($spec->getKey());
+            return $jws;
+        }
+        if($spec instanceof IJWS_CompactFormatSpecification){
+            return JWS::fromCompactSerialization($spec->getCompactFormat());
+        }
+        throw new \RuntimeException('invalid JWE spec!');
     }
 }

@@ -13,6 +13,8 @@
  **/
 
 namespace jwk;
+
+use jwk\exceptions\InvalidJWKVisibilityException;
 use security\PrivateKey;
 use security\PublicKey;
 use security\KeyPair;
@@ -65,6 +67,13 @@ interface IAsymetricJWK extends IJWK {
      */
     public function getVisibility();
 
+    /**
+     * @param int $visibility
+     * @return $this
+     * @throws InvalidJWKVisibilityException
+     */
+    public function setVisibility($visibility);
+
     // factory methods
 
     /**
@@ -84,4 +93,6 @@ interface IAsymetricJWK extends IJWK {
      * @return IAsymetricJWK
      */
     static public function fromPrivateKey(PrivateKey $private_key);
+
+
 }

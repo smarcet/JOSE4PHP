@@ -17,7 +17,9 @@ namespace jwk\impl;
 use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\exceptions\InvalidJWKType;
 use jwk\exceptions\InvalidJWKUseException;
+use jwk\exceptions\InvalidJWKVisibilityException;
 use jwk\IAsymetricJWK;
+use jwk\JSONWebKeyVisibility;
 use security\PrivateKey;
 use security\PublicKey;
 
@@ -103,6 +105,18 @@ abstract class AsymetricJWK
      */
     public function getVisibility(){
         return $this->visibility;
+    }
+
+    /**
+     * @param int $visibility
+     * @return $this
+     * @throws InvalidJWKVisibilityException
+     */
+    public function setVisibility($visibility){
+        if(!in_array($visibility, JSONWebKeyVisibility::$valid_values))
+            throw new InvalidJWKVisibilityException;
+        $this->visibility = $visibility;
+        return $this;
     }
 
     /**

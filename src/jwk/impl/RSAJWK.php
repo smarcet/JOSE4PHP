@@ -177,4 +177,23 @@ final class RSAJWK extends AsymetricJWK
         }
     }
 
+    /**
+     * @override
+     * @return array
+     */
+    public function toArray()
+    {
+        $res = parent::toArray();
+        if($this->visibility === JSONWebKeyVisibility::PublicOnly){
+            //remove private attributes
+            unset($res[RSAKeysParameters::PrivateExponent]);
+            unset($res[RSAKeysParameters::FirstPrimeFactor]);
+            unset($res[RSAKeysParameters::SecondPrimeFactor]);
+            unset($res[RSAKeysParameters::FirstFactorCRTExponent]);
+            unset($res[RSAKeysParameters::SecondFactorCRTExponent]);
+            unset($res[RSAKeysParameters::FirstCRTCoefficient]);
+        }
+        return $res;
+    }
+
 }

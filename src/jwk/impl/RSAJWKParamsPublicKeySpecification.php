@@ -43,8 +43,8 @@ final class RSAJWKParamsPublicKeySpecification extends RSAJWKSpecification
      */
     public function __construct($n_b64, $e_b64, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
         parent::__construct($alg, $use);
-        $this->e_b64 = $e_b64;
         $this->n_b64 = $n_b64;
+        $this->e_b64 = $e_b64;
     }
 
     /**

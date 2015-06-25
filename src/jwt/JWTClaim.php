@@ -64,4 +64,11 @@ class JWTClaim {
         return $this->value;
     }
 
+    /**
+     * @return array|bool|int|string|\utils\json_types\IJsonObject
+     */
+    public function getRawValue(){
+        return $this->getValue()->getValue();
+    }
+
 }

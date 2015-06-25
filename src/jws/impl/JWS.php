@@ -17,9 +17,11 @@ namespace jws\impl;
 use jwa\cryptographic_algorithms\digital_signatures\DigitalSignatureAlgorithm;
 use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
 use jwa\cryptographic_algorithms\macs\MAC_Algorithm;
+use jwk\IAsymetricJWK;
 use jwk\IJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
 use jwk\JSONWebKeyPublicKeyUseValues;
+use jwk\JSONWebKeyVisibility;
 use jws\exceptions\JWSInvalidJWKException;
 use jws\exceptions\JWSInvalidPayloadException;
 use jws\exceptions\JWSNotSupportedAlgorithm;
@@ -35,11 +37,14 @@ use jwt\RegisteredJOSEHeaderNames;
 use jwt\utils\JOSEHeaderSerializer;
 use jwt\utils\JWTClaimSetSerializer;
 use jwt\utils\JWTRawSerializer;
+use utils\json_types\JsonArray;
+use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
 
 /**
  * Class JWS
  * @package jws\impl
+ * @access private
  */
 final class JWS
     extends JWT
@@ -94,6 +99,15 @@ final class JWS
     {
         if(!is_null($this->jwk->getId()))
             $this->header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::KeyID, $this->jwk->getId()));
+        if($this->jwk instanceof IAsymetricJWK) {
+            // we should add the public key on the header
+            $public_key = clone $this->jwk;
+
+            $this->header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::JSONWebKey,
+                    new JsonValue( $public_key->setVisibility(JSONWebKeyVisibility::PublicOnly) )
+                )
+            );
+        }
         $this->sign();
         return parent::toCompactSerialization();
     }
@@ -164,6 +178,7 @@ final class JWS
     /**
      * @param string $compact_serialization
      * @return IJWS
+     * @access private
      */
     static public function fromCompactSerialization($compact_serialization)
     {

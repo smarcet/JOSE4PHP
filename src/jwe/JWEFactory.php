@@ -15,11 +15,11 @@
 namespace jwe\impl;
 
 use jwe\IJWE;
+use jwe\IJWE_CompactFormatSpecification;
+use jwe\IJWE_ParamsSpecification;
+use jwe\IJWE_Specification;
 use jwk\exceptions\InvalidJWKType;
-use jwk\IJWK;
 use jwk\JSONWebKeyPublicKeyUseValues;
-use jws\IJWSPayloadSpec;
-use utils\json_types\StringOrURI;
 
 /**
  * Class JWEFactory
@@ -27,26 +27,31 @@ use utils\json_types\StringOrURI;
  */
 final class JWEFactory {
 
+
     /**
-     * @param IJWK $recipient_key
-     * @param StringOrURI $alg
-     * @param StringOrURI $enc
-     * @param IJWSPayloadSpec $payload
+     * @param IJWE_Specification $spec
      * @return IJWE
      * @throws InvalidJWKType
      */
-    static public function build(IJWK $recipient_key, StringOrURI $alg, StringOrURI $enc, IJWSPayloadSpec $payload){
+    static public function build(IJWE_Specification $spec){
 
 
-        if($recipient_key->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Encryption)
-            throw new InvalidJWKType(sprintf('use % not supported (should be "enc")',$recipient_key->getKeyUse()->getString()));
+        if($spec instanceof IJWE_ParamsSpecification){
 
-        $header = new JWEJOSEHeader($alg, $enc);
+            if($spec->getRecipientKey()->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Encryption)
+                throw new InvalidJWKType(sprintf('use % not supported (should be "enc")',$spec->getRecipientKey()->getKeyUse()->getString()));
 
-        $jwe = JWE::fromHeaderAndPayload($header, $payload);
+            $header = new JWEJOSEHeader($spec->getAlg(), $spec->getEnc());
 
-        $jwe->setRecipientKey($recipient_key);
+            $jwe = JWE::fromHeaderAndPayload($header, $spec->getPayload());
 
-        return $jwe;
+            $jwe->setRecipientKey($spec->getRecipientKey());
+
+            return $jwe;
+        }
+        if($spec instanceof IJWE_CompactFormatSpecification){
+            return JWE::fromCompactSerialization($spec->getCompactFormat());
+        }
+        throw new \RuntimeException('invalid JWE spec!');
     }
 }

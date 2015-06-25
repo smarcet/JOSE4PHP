@@ -82,7 +82,6 @@ abstract class JWT
      */
     public function toCompactSerialization()
     {
-        if($this)
         return JWTSerializer::serialize($this);
     }
 

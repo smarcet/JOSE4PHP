@@ -12,29 +12,12 @@
  * limitations under the License.
  **/
 
-namespace jwk;
+namespace jwe;
 
 /**
- * Class JSONWebKeyVisibility
- * @package jwk
+ * Interface IJWE_Specification
+ * @package jwe
  */
-abstract class JSONWebKeyVisibility {
+interface IJWE_Specification {
 
-    /**
-     *
-     */
-    const PublicOnly       = 1;
-    /**
-     *
-     */
-    const IncludePrivate   = 2;
-    /**
-     *
-     */
-    const IncludeSymmetric = 3;
-
-    /**
-     * @var array
-     */
-    static public $valid_values = array ( self::IncludePrivate, self::IncludeSymmetric, self::PublicOnly);
 }

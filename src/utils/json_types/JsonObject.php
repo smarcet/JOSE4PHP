@@ -93,21 +93,28 @@ class JsonObject implements \ArrayAccess, IJsonObject {
     public function toArray()
     {
        $res = array();
-       foreach($this->set as $k => $jv){
-           if($jv instanceof JsonValue){
-               $res[$k] = $jv->getValue();
-               if(is_array($res[$k])){
-                   $temp = array();
-                   $original  = $res[$k];
-                   foreach($original as $e){
-                       if($e instanceof JsonObject)
-                           $e = $e->toArray();
-                       array_push($temp, $e);
-                   }
-                   $res[$k] = $temp;
+
+       foreach($this->set as $key => $val){
+           if($val instanceof JsonValue){
+               $res[$key] = $val->getValue();
+               if($res[$key] instanceof JsonObject)
+                   $res[$key] = $res[$key]->toArray();
+               if(is_array($res[$key])){
+                   $res[$key] = $this->processArray($res[$key]);
                }
+
            }
        }
        return $res;
+    }
+
+    private function processArray($original){
+        $temp = array();
+        foreach($original as $k => $val){
+            if($val instanceof JsonObject)
+                $val = $val->toArray();
+            $temp[$k] = $val;
+        }
+        return $temp;
     }
 }

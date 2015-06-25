@@ -12,29 +12,34 @@
  * limitations under the License.
  **/
 
-namespace jwk;
+namespace jws\impl\specs;
+
+use jws\IJWS_CompactFormatSpecification;
 
 /**
- * Class JSONWebKeyVisibility
- * @package jwk
+ * Class JWS_CompactFormatSpecification
+ * @package jws\impl\specs
  */
-abstract class JSONWebKeyVisibility {
+final class JWS_CompactFormatSpecification
+    implements IJWS_CompactFormatSpecification {
 
     /**
-     *
+     * @var string
      */
-    const PublicOnly       = 1;
-    /**
-     *
-     */
-    const IncludePrivate   = 2;
-    /**
-     *
-     */
-    const IncludeSymmetric = 3;
+    private $compact_format;
 
     /**
-     * @var array
+     * @param string $compact_format
      */
-    static public $valid_values = array ( self::IncludePrivate, self::IncludeSymmetric, self::PublicOnly);
+    public function __construct($compact_format){
+        $this->compact_format = $compact_format;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompactFormat()
+    {
+       return $this->compact_format;
+    }
 }

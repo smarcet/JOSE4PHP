@@ -198,6 +198,7 @@ final class JWE
      * @param string $compact_serialization
      * @return IJWE
      * @throws JWEInvalidCompactFormatException
+     * @access private
      */
     public static function fromCompactSerialization($compact_serialization)
     {

@@ -12,29 +12,12 @@
  * limitations under the License.
  **/
 
-namespace jwk;
+namespace jwk\exceptions;
 
 /**
- * Class JSONWebKeyVisibility
- * @package jwk
+ * Class InvalidJWKVisibilityException
+ * @package jwk\exceptions
  */
-abstract class JSONWebKeyVisibility {
+final class InvalidJWKVisibilityException extends \Exception {
 
-    /**
-     *
-     */
-    const PublicOnly       = 1;
-    /**
-     *
-     */
-    const IncludePrivate   = 2;
-    /**
-     *
-     */
-    const IncludeSymmetric = 3;
-
-    /**
-     * @var array
-     */
-    static public $valid_values = array ( self::IncludePrivate, self::IncludeSymmetric, self::PublicOnly);
 }

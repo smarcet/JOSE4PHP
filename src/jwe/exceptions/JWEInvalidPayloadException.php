@@ -12,29 +12,12 @@
  * limitations under the License.
  **/
 
-namespace jwk;
+namespace jwe\exceptions;
 
 /**
- * Class JSONWebKeyVisibility
- * @package jwk
+ * Class JWEInvalidPayloadException
+ * @package jwe\exceptions
  */
-abstract class JSONWebKeyVisibility {
+final class JWEInvalidPayloadException extends \Exception {
 
-    /**
-     *
-     */
-    const PublicOnly       = 1;
-    /**
-     *
-     */
-    const IncludePrivate   = 2;
-    /**
-     *
-     */
-    const IncludeSymmetric = 3;
-
-    /**
-     * @var array
-     */
-    static public $valid_values = array ( self::IncludePrivate, self::IncludeSymmetric, self::PublicOnly);
 }
