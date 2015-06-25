@@ -43,6 +43,11 @@ final class JWEFactory {
 
             $header = new JWEJOSEHeader($spec->getAlg(), $spec->getEnc());
 
+            //set zip alg
+            $zip    = $spec->getZip();
+            if(!is_null($zip))
+                $header->setCompressionAlgorithm($zip);
+
             $jwe = JWE::fromHeaderAndPayload($header, $spec->getPayload());
 
             $jwe->setRecipientKey($spec->getRecipientKey());

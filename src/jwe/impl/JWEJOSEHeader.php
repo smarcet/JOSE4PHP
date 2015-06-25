@@ -14,6 +14,7 @@
 
 namespace jwe\impl;
 
+use jwe\compression_algorithms\CompressionAlgorithms_Registry;
 use jwe\IJWEJOSEHeader;
 use jwe\RegisteredJWEJOSEHeaderNames;
 use jwt\impl\JOSEHeader;
@@ -39,7 +40,8 @@ final class JWEJOSEHeader
     public function __construct(StringOrURI $alg, StringOrURI $enc, StringOrURI $type = null, StringOrURI $cty = null, JsonValue  $kid = null, JsonValue $zip = null){
         parent::__construct($alg,$type,$cty, $kid);
         $this->set[RegisteredJWEJOSEHeaderNames::EncryptionAlgorithm] = $enc;
-        if(!is_null($zip))
+
+        if(!is_null($zip) && CompressionAlgorithms_Registry::getInstance()->get($zip->getValue()))
             $this->set[RegisteredJWEJOSEHeaderNames::CompressionAlgorithm] = $zip;
     }
 
@@ -63,5 +65,25 @@ final class JWEJOSEHeader
     public function getEncryptionAlgorithm()
     {
         return $this[RegisteredJWEJOSEHeaderNames::EncryptionAlgorithm];
+    }
+
+    /**
+     * @optional
+     * https://tools.ietf.org/html/rfc7516#section-4.1.3
+     * @return JsonValue
+     */
+    public function getCompressionAlgorithm()
+    {
+        return $this[RegisteredJWEJOSEHeaderNames::CompressionAlgorithm];
+    }
+
+    /**
+     * @param JsonValue $zip
+     * @return $this
+     */
+    public function setCompressionAlgorithm(JsonValue $zip)
+    {
+        $this->set[RegisteredJWEJOSEHeaderNames::CompressionAlgorithm] = $zip;
+        return $this;
     }
 }

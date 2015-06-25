@@ -16,6 +16,7 @@ namespace jwe\impl;
 
 use jwa\cryptographic_algorithms\ContentEncryptionAlgorithms_Registry;
 use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
+use jwe\compression_algorithms\CompressionAlgorithms_Registry;
 use jwe\exceptions\JWEInvalidCompactFormatException;
 use jwe\exceptions\JWEInvalidRecipientKeyException;
 use jwe\exceptions\JWEUnsupportedContentEncryptionAlgorithmException;
@@ -140,7 +141,15 @@ final class JWE
         // We encrypt the payload and get the tag
         $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
 
-        $this->cipher_text = $content_encryption_algorithm->encryptContent($this->payload->getRaw(), $this->cek->getEncoded(), $this->iv, null, $jwt_shared_protected_header, $this->tag);
+        $payload = $this->payload->getRaw();
+        $zip     = $this->header->getCompressionAlgorithm();
+        //check if we need to compress ...
+        if(!is_null($zip)){
+            $compression__algorithm = CompressionAlgorithms_Registry::getInstance()->get($zip->getValue());
+            $payload  = $compression__algorithm->compress($payload);
+        }
+
+        $this->cipher_text = $content_encryption_algorithm->encryptContent($payload, $this->cek->getEncoded(), $this->iv, null, $jwt_shared_protected_header, $this->tag);
 
         return $this;
     }
@@ -242,6 +251,13 @@ final class JWE
         $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
 
         $plain_text = $content_encryption_algorithm->decryptContent($this->cipher_text, $this->cek, $this->iv, null, $jwt_shared_protected_header, $this->tag);
+
+        $zip     = $this->header->getCompressionAlgorithm();
+        //check if we need to compress ...
+        if(!is_null($zip)){
+            $compression__algorithm = CompressionAlgorithms_Registry::getInstance()->get($zip->getValue());
+            $plain_text = $compression__algorithm->uncompress($plain_text);
+        }
 
         $this->setPayload(JWSPayloadFactory::build($plain_text));
         $this->should_decrypt = false;

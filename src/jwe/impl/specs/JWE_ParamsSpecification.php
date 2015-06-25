@@ -20,13 +20,15 @@ use jwe\IJWE_ParamsSpecification;
 use jwk\IJWK;
 use jws\IJWSPayloadSpec;
 use jws\payloads\JWSPayloadFactory;
+use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
 
 /**
  * Class JWE_ParamsSpecification
  * @package jwe\impl\specs
  */
-final class JWE_ParamsSpecification implements IJWE_ParamsSpecification {
+final class JWE_ParamsSpecification
+    implements IJWE_ParamsSpecification {
 
     /**
      * @var IJWK
@@ -46,17 +48,22 @@ final class JWE_ParamsSpecification implements IJWE_ParamsSpecification {
      */
     private $payload;
 
+    /**
+     * @var JsonValue
+     */
+    private $zip;
+
 
     /**
      * @param IJWK $key
      * @param StringOrURI $alg
      * @param StringOrURI $enc
-     * @param mixed $payload
-     * @param string $signature
+     * @param $payload
+     * @param JsonValue $zip
      * @throws JWEInvalidPayloadException
      * @throws JWEInvalidRecipientKeyException
      */
-    public function __construct(IJWK $key, StringOrURI $alg, StringOrURI $enc, $payload, $signature = ''){
+    public function __construct(IJWK $key, StringOrURI $alg, StringOrURI $enc, $payload,  JsonValue $zip = null){
 
         if(is_null($key))
             throw new JWEInvalidRecipientKeyException();
@@ -64,9 +71,10 @@ final class JWE_ParamsSpecification implements IJWE_ParamsSpecification {
         if(is_null($payload))
             throw new JWEInvalidPayloadException('missing payload');
 
-        $this->key = $key;
-        $this->alg = $alg;
-        $this->enc = $enc;
+        $this->key     = $key;
+        $this->alg     = $alg;
+        $this->enc     = $enc;
+        $this->zip     = $zip;
         $this->payload = JWSPayloadFactory::build($payload);
     }
 
@@ -101,5 +109,13 @@ final class JWE_ParamsSpecification implements IJWE_ParamsSpecification {
     public function getEnc()
     {
         return $this->enc;
+    }
+
+    /**
+     * @return JsonValue
+     */
+    public function getZip()
+    {
+        return $this->zip;
     }
 }

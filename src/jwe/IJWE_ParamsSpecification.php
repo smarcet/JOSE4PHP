@@ -16,6 +16,7 @@ namespace jwe;
 
 use jwk\IJWK;
 use jws\IJWSPayloadSpec;
+use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
 
 /**
@@ -38,6 +39,12 @@ interface IJWE_ParamsSpecification extends IJWE_Specification {
      * @return StringOrURI
      */
     public function getEnc();
+
+
+    /**
+     * @return JsonValue
+     */
+    public function getZip();
 
     /**
      * @return IJWSPayloadSpec

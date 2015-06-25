@@ -16,6 +16,7 @@ namespace jwe;
 
 
 use jwt\IJOSEHeader;
+use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
 
 /**
@@ -42,4 +43,18 @@ interface IJWEJOSEHeader extends IJOSEHeader {
      * @return StringOrURI
      */
     public function getEncryptionAlgorithm();
+
+    /**
+     * @optional
+     * https://tools.ietf.org/html/rfc7516#section-4.1.3
+     * @return JsonValue
+     */
+    public function getCompressionAlgorithm();
+
+
+    /**
+     * @param JsonValue $zip
+     * @return $this
+     */
+    public function setCompressionAlgorithm(JsonValue $zip);
 }
