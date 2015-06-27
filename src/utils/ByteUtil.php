@@ -40,12 +40,12 @@ final class ByteUtil {
      * @param array $oct
      * @return string
      */
-    static public function convertOctArrayToBin(array $oct){
+    static public function convertHalfWordArrayToBin(array $oct){
         $hex = '';
         foreach($oct as $b){
             $hex .= str_pad(dechex($b),2,'0',STR_PAD_LEFT);
         }
-        return hex2bin($hex);
+        return self::hex2bin($hex);
     }
 
     /**
@@ -54,6 +54,13 @@ final class ByteUtil {
      */
     static public function convert2UnsignedLongBE($nbr){
         $hex = str_pad(dechex($nbr),16,'0',STR_PAD_LEFT);
-        return hex2bin($hex);
+        return self::hex2bin($hex);
+    }
+
+    static public function hex2bin($hex_string){
+        if ( function_exists( 'hex2bin' ) ){
+            return hex2bin($hex_string);
+        }
+        return pack("H*" , $hex_string);
     }
 }
