@@ -14,7 +14,11 @@
 
 namespace jwe;
 
+use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
 use jwe\exceptions\JWEInvalidCompactFormatException;
+use jwe\exceptions\JWEInvalidRecipientKeyException;
+use jwe\exceptions\JWEUnsupportedContentEncryptionAlgorithmException;
+use jwe\exceptions\JWEUnsupportedKeyManagementAlgorithmException;
 use jwk\IJWK;
 use jws\IJWSPayloadSpec;
 
@@ -31,12 +35,19 @@ interface IJWE {
     public function setPayload(IJWSPayloadSpec $payload);
 
     /**
+     * @throws JWEInvalidRecipientKeyException
+     * @throws JWEUnsupportedContentEncryptionAlgorithmException
+     * @throws JWEUnsupportedKeyManagementAlgorithmException
      * @return string
      */
     public function toCompactSerialization();
 
     /**
      * @return string
+     * @throws JWEInvalidRecipientKeyException
+     * @throws JWEUnsupportedContentEncryptionAlgorithmException
+     * @throws JWEUnsupportedKeyManagementAlgorithmException
+     * @throws InvalidAuthenticationTagException
      */
     public function getPlainText();
 

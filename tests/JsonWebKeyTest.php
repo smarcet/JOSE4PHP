@@ -21,7 +21,12 @@ use \jwk\impl\RSAJWKPEMPrivateKeySpecification;
 use \jwk\impl\JWKSet;
 use jwk\impl\RSAJWKParamsPublicKeySpecification;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+use security\x509\X509CertificateFactory;
+use security\x509\X509Certificate;
 
+/**
+ * Class JsonWebKeyTest
+ */
 class JsonWebKeyTest extends PHPUnit_Framework_TestCase {
 
     public function testCreate(){
@@ -75,5 +80,45 @@ class JsonWebKeyTest extends PHPUnit_Framework_TestCase {
      */
     public function testInvalidRSAAlg(){
         RSAJWKFactory::build(new RSAJWKSpecification('test'));
+    }
+
+
+    public function testX509PEM(){
+
+        $pem = <<<x509
+MIIDQjCCAiqgAwIBAgIGATz/FuLiMA0GCSqGSIb3DQEBBQUAMGIxCzAJB
+gNVBAYTAlVTMQswCQYDVQQIEwJDTzEPMA0GA1UEBxMGRGVudmVyMRwwGgYD
+VQQKExNQaW5nIElkZW50aXR5IENvcnAuMRcwFQYDVQQDEw5CcmlhbiBDYW1
+wYmVsbDAeFw0xMzAyMjEyMzI5MTVaFw0xODA4MTQyMjI5MTVaMGIxCzAJBg
+NVBAYTAlVTMQswCQYDVQQIEwJDTzEPMA0GA1UEBxMGRGVudmVyMRwwGgYDV
+QQKExNQaW5nIElkZW50aXR5IENvcnAuMRcwFQYDVQQDEw5CcmlhbiBDYW1w
+YmVsbDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL64zn8/QnH
+YMeZ0LncoXaEde1fiLm1jHjmQsF/449IYALM9if6amFtPDy2yvz3YlRij66
+s5gyLCyO7ANuVRJx1NbgizcAblIgjtdf/u3WG7K+IiZhtELto/A7Fck9Ws6
+SQvzRvOE8uSirYbgmj6He4iO8NCyvaK0jIQRMMGQwsU1quGmFgHIXPLfnpn
+fajr1rVTAwtgV5LEZ4Iel+W1GC8ugMhyr4/p1MtcIM42EA8BzE6ZQqC7VPq
+PvEjZ2dbZkaBhPbiZAS3YeYBRDWm1p1OZtWamT3cEvqqPpnjL1XyW+oyVVk
+aZdklLQp2Btgt9qr21m42f4wTw+Xrp6rCKNb0CAwEAATANBgkqhkiG9w0BA
+QUFAAOCAQEAh8zGlfSlcI0o3rYDPBB07aXNswb4ECNIKG0CETTUxmXl9KUL
++9gGlqCz5iWLOgWsnrcKcY0vXPG9J1r9AqBNTqNgHq2G03X09266X5CpOe1
+zFo+Owb1zxtp3PehFdfQJ610CDLEaS9V9Rqp17hCyybEpOGVwe8fnk+fbEL
+2Bo3UPGrpsHzUoaGpDftmWssZkhpBJKVMJyf/RuP2SmmaIzmnw9JiSlYhzo
+4tpzd5rFXhjRbg4zW9C+2qok+2+qDM1iJ684gPHMIY8aLWrdgQTxkumGmTq
+gawR+N5MDtdPTEQ0XfIBc2cJEUyMTY5MPvACWpkA6SdS4xSvdXK3IVfOWA==
+x509;
+
+        $x509 = X509CertificateFactory::buildFromPEM($pem);
+
+        $should_fingerprint_sha1 = 'E2935E9C404BBF42692C876E816C5090EB1970AD';
+
+        $this->assertTrue($x509->getSHA_1_Thumbprint() === $should_fingerprint_sha1);
+
+        $should_fingerprint_sha256 = 'A499B6041A6407CCBBB42AAB58CD17DFB58E9904CEF33430F95A7156005BDB52';
+
+        $this->assertTrue($x509->getSHA_256_Thumbprint() === $should_fingerprint_sha256);
+
+        $public_key = $x509->getPublicKey();
+
+        $this->assertTrue(!empty($public_key));
     }
 }

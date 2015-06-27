@@ -28,7 +28,32 @@ final class ByteUtil {
         return $byte_len * 8;
     }
 
-    static public function randomBytes($bits_len){
-        return crypt_random_string((int)($bits_len/8));
+    /**
+     * @param int $byte_len
+     * @return String
+     */
+    static public function randomBytes($byte_len){
+        return crypt_random_string($byte_len);
+    }
+
+    /**
+     * @param array $oct
+     * @return string
+     */
+    static public function convertOctArrayToBin(array $oct){
+        $hex = '';
+        foreach($oct as $b){
+            $hex .= str_pad(dechex($b),2,'0',STR_PAD_LEFT);
+        }
+        return hex2bin($hex);
+    }
+
+    /**
+     * @param int $nbr
+     * @return string
+     */
+    static public function convert2UnsignedLongBE($nbr){
+        $hex = str_pad(dechex($nbr),16,'0',STR_PAD_LEFT);
+        return hex2bin($hex);
     }
 }

@@ -38,7 +38,7 @@ use utils\json_types\StringOrURI;
  * Class RSAJWK
  * @package jwk\impl
  */
-final class RSAJWK extends AsymetricJWK
+final class RSAJWK extends AsymmetricJWK
 {
 
     /**

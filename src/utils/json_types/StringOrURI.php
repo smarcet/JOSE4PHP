@@ -26,27 +26,34 @@ namespace utils\json_types;
 class StringOrURI extends JsonValue {
 
     public function getString(){
-        return $this->value;
+        return (string)$this->value;
     }
 
     /**
+     * @throws \RuntimeException
      * @return string
      */
     public function getUri(){
-        return '';
+
+        if($this->isString())
+            throw new \RuntimeException('current value is not an uri!');
+        if(filter_var($this->value, FILTER_VALIDATE_URL) === false)
+            throw new \RuntimeException('current value is not an uri!');
+
+        return (string)$this->value;
     }
 
     /**
      * @return bool
      */
     public function isString(){
-        return true;
+        return !$this->isUri();
     }
 
     /**
      * @return bool
      */
     public function isUri(){
-        return false;
+        return !(strstr($this->value, ':') === false);
     }
 }

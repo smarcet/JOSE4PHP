@@ -14,6 +14,7 @@
 
 namespace jwa\cryptographic_algorithms\content_encryption;
 
+use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
 use jwa\cryptographic_algorithms\HashFunctionAlgorithm;
 
 /**
@@ -23,32 +24,28 @@ use jwa\cryptographic_algorithms\HashFunctionAlgorithm;
 interface ContentEncryptionAlgorithm extends HashFunctionAlgorithm {
 
     /**
-     * Encrypt data.
+     * https://tools.ietf.org/html/rfc7518#section-5.2.2.1
      *
-     * @param string      $data                     The data to encrypt
-     * @param string      $cek                      The content encryption key
-     * @param string      $iv                       The Initialization Vector
-     * @param string|null $aad                      Additional Additional Authenticated Data
-     * @param string      $encoded_protected_header The Protected Header encoded in Base64Url
-     * @param string      $tag                      Tag
-     *
-     * @return string The encrypted data
+     * @param string $plain_text
+     * @param string $key
+     * @param string $iv
+     * @param string $aad
+     * @return string[]
      */
-    public function encryptContent($data, $cek, $iv, $aad, $encoded_protected_header, &$tag);
+    public function encrypt($plain_text, $key, $iv, $aad);
 
     /**
-     * Decrypt data.
+     * https://tools.ietf.org/html/rfc7518#section-5.2.2.2
      *
-     * @param string      $data                     The data to decrypt
-     * @param string      $cek                      The content encryption key
-     * @param string      $iv                       The Initialization Vector
-     * @param string|null $aad                      Additional Additional Authenticated Data
-     * @param string      $encoded_protected_header The Protected Header encoded in Base64Url
-     * @param string      $tag                      Tag
-     *
+     * @param string $cypher_text
+     * @param string $key
+     * @param string $iv
+     * @param string $aad
+     * @param string $tag
      * @return string
+     * @throws InvalidAuthenticationTagException
      */
-    public function decryptContent($data, $cek, $iv, $aad, $encoded_protected_header, $tag);
+    public function decrypt($cypher_text, $key, $iv, $aad, $tag);
 
     /**
      * @return int|null

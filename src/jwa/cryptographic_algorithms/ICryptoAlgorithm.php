@@ -31,6 +31,7 @@ interface ICryptoAlgorithm {
     public function getKeyType();
 
     /**
+     * unit is on bits
      * @return int
      */
     public function getMinKeyLen();

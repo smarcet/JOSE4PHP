@@ -19,8 +19,8 @@ use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\IJWKSpecification;
 use jwk\JSONWebKeyTypes;
 use security\SymmetricSharedKey;
-use utils\ByteUtil;
 use \jwk\IJWK;
+use utils\services\Utils_Registry;
 
 /**
  * Class OctetSequenceJWKFactory
@@ -41,9 +41,9 @@ final class OctetSequenceJWKFactory {
 
         if(is_null($algorithm)) throw new InvalidJWKAlgorithm(sprintf('alg %s not supported!',$spec->getAlg()));
         if($algorithm->getKeyType() !== JSONWebKeyTypes::OctetSequence) throw new InvalidJWKAlgorithm(sprintf('key type %s not supported!', $algorithm->getKeyType()));
-
-        $bytes = ByteUtil::randomBytes($algorithm->getMinKeyLen());
-        return OctetSequenceJWK::fromSecret(new SymmetricSharedKey($bytes), $spec->getAlg(), $spec->getUse());
+        $generator = Utils_Registry::getInstance()->get(Utils_Registry::RandomNumberGeneratorService);
+        $rnd       = $generator->invoke($algorithm->getMinKeyLen()/8);
+        return OctetSequenceJWK::fromSecret(new SymmetricSharedKey($rnd), $spec->getAlg(), $spec->getUse());
     }
 
 }

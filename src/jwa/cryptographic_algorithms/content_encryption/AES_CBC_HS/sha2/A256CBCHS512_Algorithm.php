@@ -14,14 +14,14 @@
 
 namespace jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2;
 
-use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\AESCBCHS_Algorithm;
+use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\AES_CBC_HMAC_SHA2_Algorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 
 /**
  * Class A256CBCHS512_Algorithm
  * @package jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2
  */
-final class A256CBCHS512_Algorithm extends AESCBCHS_Algorithm {
+final class A256CBCHS512_Algorithm extends AES_CBC_HMAC_SHA2_Algorithm {
 
     /**
      * @return string

@@ -15,6 +15,7 @@
 namespace jwe\impl;
 
 use jwa\cryptographic_algorithms\ContentEncryptionAlgorithms_Registry;
+use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
 use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
 use jwe\compression_algorithms\CompressionAlgorithms_Registry;
 use jwe\exceptions\JWEInvalidCompactFormatException;
@@ -30,7 +31,6 @@ use jws\IJWSPayloadSpec;
 use jws\payloads\JWSPayloadFactory;
 use jwt\utils\JOSEHeaderSerializer;
 use security\Key;
-use utils\ByteUtil;
 
 /**
  * Class JWE
@@ -108,62 +108,18 @@ final class JWE
     }
 
     /**
-     * @return $this
-     * @throws JWEInvalidRecipientKeyException
-     * @throws JWEUnsupportedContentEncryptionAlgorithmException
-     * @throws JWEUnsupportedKeyManagementAlgorithmException
-     */
-    public function encrypt()
-    {
-
-        if (is_null($this->jwk))
-            throw new JWEInvalidRecipientKeyException;
-
-        $recipient_public_key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::EncryptContent);
-
-        $key_management_mode = $this->getKeyManagementMode();
-
-        $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
-
-        if (is_null($key_management_algorithm)) throw new JWEUnsupportedKeyManagementAlgorithmException(sprintf('alg %s', $this->header->getAlgorithm()->getString()));
-
-        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get($this->header->getEncryptionAlgorithm()->getString());
-
-        if (is_null($content_encryption_algorithm)) throw new JWEUnsupportedContentEncryptionAlgorithmException(sprintf('enc %s', $this->header->getEncryptionAlgorithm()->getString()));
-
-        $this->cek = ContentEncryptionKeyFactory::build($recipient_public_key, $key_management_mode, $key_management_algorithm);
-
-        $this->enc_cek = $key_management_algorithm->encrypt($recipient_public_key, $this->cek->getEncoded());
-
-        if (!is_null($iv_size = $content_encryption_algorithm->getIVSize())) {
-            $this->iv = $this->createIV($iv_size);
-        }
-        // We encrypt the payload and get the tag
-        $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
-
-        $payload = $this->payload->getRaw();
-        $zip     = $this->header->getCompressionAlgorithm();
-        //check if we need to compress ...
-        if(!is_null($zip)){
-            $compression__algorithm = CompressionAlgorithms_Registry::getInstance()->get($zip->getValue());
-            $payload  = $compression__algorithm->compress($payload);
-        }
-
-        $this->cipher_text = $content_encryption_algorithm->encryptContent($payload, $this->cek->getEncoded(), $this->iv, null, $jwt_shared_protected_header, $this->tag);
-
-        return $this;
-    }
-
-    /**
      * @param int $size
      * @return String
      */
     protected function createIV($size)
     {
-        return ByteUtil::randomBytes($size / 8);
+        return IVFactory::build($size);
     }
 
     /**
+     * @throws JWEInvalidRecipientKeyException
+     * @throws JWEUnsupportedContentEncryptionAlgorithmException
+     * @throws JWEUnsupportedKeyManagementAlgorithmException
      * @return string
      */
     public function toCompactSerialization()
@@ -172,7 +128,10 @@ final class JWE
     }
 
     /**
-     * @return string
+     * @return mixed
+     * @throws JWEInvalidRecipientKeyException
+     * @throws JWEUnsupportedContentEncryptionAlgorithmException
+     * @throws JWEUnsupportedKeyManagementAlgorithmException
      */
     public function getPlainText()
     {
@@ -191,6 +150,111 @@ final class JWE
     public function getJOSEHeader()
     {
         return $this->header;
+    }
+
+
+    /**
+     * @return $this
+     * @throws JWEInvalidRecipientKeyException
+     * @throws JWEUnsupportedContentEncryptionAlgorithmException
+     * @throws JWEUnsupportedKeyManagementAlgorithmException
+     */
+    private function encrypt()
+    {
+
+        if (is_null($this->jwk))
+            throw new JWEInvalidRecipientKeyException;
+
+        $recipient_public_key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::EncryptContent);
+
+        $key_management_mode = $this->getKeyManagementMode();
+
+        $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
+
+        if (is_null($key_management_algorithm)) throw new JWEUnsupportedKeyManagementAlgorithmException(sprintf('alg %s', $this->header->getAlgorithm()->getString()));
+
+        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get($this->header->getEncryptionAlgorithm()->getString());
+
+        if (is_null($content_encryption_algorithm)) throw new JWEUnsupportedContentEncryptionAlgorithmException(sprintf('enc %s', $this->header->getEncryptionAlgorithm()->getString()));
+
+        $this->cek     = ContentEncryptionKeyFactory::build($recipient_public_key, $key_management_mode, $key_management_algorithm);
+
+        $this->enc_cek = $key_management_algorithm->encrypt($recipient_public_key, $this->cek->getEncoded());
+
+        if (!is_null($iv_size = $content_encryption_algorithm->getIVSize())) {
+            $this->iv = $this->createIV($iv_size);
+        }
+        // We encrypt the payload and get the tag
+        $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
+
+        $payload = $this->payload->getRaw();
+        $zip     = $this->header->getCompressionAlgorithm();
+        //check if we need to compress ...
+        if(!is_null($zip)){
+            $compression__algorithm = CompressionAlgorithms_Registry::getInstance()->get($zip->getValue());
+            $payload  = $compression__algorithm->compress($payload);
+        }
+
+        list($this->cipher_text, $this->tag) = $content_encryption_algorithm->encrypt($payload, $this->cek->getEncoded(), $this->iv, $jwt_shared_protected_header);
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws JWEInvalidRecipientKeyException
+     * @throws JWEUnsupportedContentEncryptionAlgorithmException
+     * @throws JWEUnsupportedKeyManagementAlgorithmException
+     * @throws InvalidAuthenticationTagException
+     */
+    private function decrypt()
+    {
+        if (is_null($this->jwk))
+            throw new JWEInvalidRecipientKeyException();
+
+        if (!$this->should_decrypt) return $this;
+
+        $recipient_private_key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::DecryptContentAndValidateDecryption);
+
+        $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
+
+        if (is_null($key_management_algorithm)) throw new JWEUnsupportedKeyManagementAlgorithmException(sprintf('alg %s', $this->header->getAlgorithm()->getString()));
+
+        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get($this->header->getEncryptionAlgorithm()->getString());
+
+        if (is_null($content_encryption_algorithm)) throw new JWEUnsupportedContentEncryptionAlgorithmException(sprintf('enc %s', $this->header->getEncryptionAlgorithm()->getString()));
+
+        $this->cek = ContentEncryptionKeyFactory::fromRaw($key_management_algorithm->decrypt($recipient_private_key, $this->enc_cek), $key_management_algorithm);
+
+        // We encrypt the payload and get the tag
+        $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
+
+        $plain_text = $content_encryption_algorithm->decrypt($this->cipher_text, $this->cek->getEncoded(), $this->iv, $jwt_shared_protected_header, $this->tag);
+
+        $zip     = $this->header->getCompressionAlgorithm();
+        //check if we need to compress ...
+        if(!is_null($zip)){
+            $compression__algorithm = CompressionAlgorithms_Registry::getInstance()->get($zip->getValue());
+            $plain_text = $compression__algorithm->uncompress($plain_text);
+        }
+
+        $this->setPayload(JWSPayloadFactory::build($plain_text));
+        $this->should_decrypt = false;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function take()
+    {
+        return array(
+            $this->header,
+            $this->enc_cek,
+            $this->iv,
+            $this->cipher_text,
+            $this->tag);
     }
 
     /**
@@ -220,62 +284,5 @@ final class JWE
         $jwe->cipher_text = $cipher_text;
         $jwe->should_decrypt = true;
         return $jwe;
-    }
-
-    /**
-     * @return $this
-     * @throws JWEInvalidRecipientKeyException
-     * @throws JWEUnsupportedContentEncryptionAlgorithmException
-     * @throws JWEUnsupportedKeyManagementAlgorithmException
-     */
-    public function decrypt()
-    {
-        if (is_null($this->jwk))
-            throw new JWEInvalidRecipientKeyException();
-
-        if (!$this->should_decrypt) return $this;
-
-        $recipient_private_key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::DecryptContentAndValidateDecryption);
-
-        $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
-
-        if (is_null($key_management_algorithm)) throw new JWEUnsupportedKeyManagementAlgorithmException(sprintf('alg %s', $this->header->getAlgorithm()->getString()));
-
-        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get($this->header->getEncryptionAlgorithm()->getString());
-
-        if (is_null($content_encryption_algorithm)) throw new JWEUnsupportedContentEncryptionAlgorithmException(sprintf('enc %s', $this->header->getEncryptionAlgorithm()->getString()));
-
-        $this->cek = $key_management_algorithm->decrypt($recipient_private_key, $this->enc_cek);
-
-        // We encrypt the payload and get the tag
-        $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
-
-        $plain_text = $content_encryption_algorithm->decryptContent($this->cipher_text, $this->cek, $this->iv, null, $jwt_shared_protected_header, $this->tag);
-
-        $zip     = $this->header->getCompressionAlgorithm();
-        //check if we need to compress ...
-        if(!is_null($zip)){
-            $compression__algorithm = CompressionAlgorithms_Registry::getInstance()->get($zip->getValue());
-            $plain_text = $compression__algorithm->uncompress($plain_text);
-        }
-
-        $this->setPayload(JWSPayloadFactory::build($plain_text));
-        $this->should_decrypt = false;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function take()
-    {
-
-        return array(
-            $this->header,
-            $this->enc_cek,
-            $this->iv,
-            $this->cipher_text,
-            $this->tag);
     }
 }

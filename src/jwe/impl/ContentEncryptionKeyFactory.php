@@ -17,7 +17,7 @@ namespace jwe\impl;
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
 use jwe\KeyManagementModeValues;
 use security\Key;
-use utils\ByteUtil;
+use utils\services\Utils_Registry;
 
 /**
  * Class ContentEncryptionKeyFactory
@@ -44,8 +44,9 @@ final class ContentEncryptionKeyFactory
             case KeyManagementModeValues::KeyWrapping:
             case KeyManagementModeValues::KeyEncryption: {
                 // calculate it
-                $size = $alg->getMinKeyLen();
-                $cek = new _ContentEncryptionKey($alg->getName(), 'RAW', ByteUtil::randomBytes($size / 8));
+                $generator = Utils_Registry::getInstance()->get(Utils_Registry::RandomNumberGeneratorService);
+                $rnd       = $generator->invoke($alg->getMinKeyLen()/8);
+                $cek       = new _ContentEncryptionKey($alg->getName(), 'RAW', $rnd);
             }
             break;
             case KeyManagementModeValues::DirectEncryption: {
@@ -54,5 +55,14 @@ final class ContentEncryptionKeyFactory
             break;
         }
         return $cek;
+    }
+
+    /**
+     * @param string $value
+     * @param EncryptionAlgorithm $alg
+     * @return Key
+     */
+    static public function fromRaw($value, EncryptionAlgorithm $alg){
+        return  new _ContentEncryptionKey($alg->getName(), 'RAW', $value);
     }
 }

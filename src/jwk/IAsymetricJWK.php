@@ -18,6 +18,7 @@ use jwk\exceptions\InvalidJWKVisibilityException;
 use security\PrivateKey;
 use security\PublicKey;
 use security\KeyPair;
+use security\x509\X509Certificate;
 
 /**
  * Interface IAsymetricJWK
@@ -36,14 +37,9 @@ interface IAsymetricJWK extends IJWK {
     public function getPublicKey();
 
     /**
-     * @return string[]
+     * @return X509Certificate[]
      */
     public function getCertificateChain();
-
-    /**
-     * @return string
-     */
-    public function getLeafCertificate();
 
     /**
      * @param bool $fallback_on_x5c
@@ -66,6 +62,11 @@ interface IAsymetricJWK extends IJWK {
      * @return int
      */
     public function getVisibility();
+
+    /**
+     * @return null | X509Certificate
+     */
+    public function getX509LeafCertificate();
 
     /**
      * @param int $visibility
@@ -93,6 +94,5 @@ interface IAsymetricJWK extends IJWK {
      * @return IAsymetricJWK
      */
     static public function fromPrivateKey(PrivateKey $private_key);
-
 
 }
