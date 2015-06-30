@@ -45,4 +45,9 @@ abstract class JSONWebKeyTypes {
         self::RSA,
         self::EllipticCurve
     );
+
+    public static $supported_keys = array(
+        self::RSA,
+    );
+
 }

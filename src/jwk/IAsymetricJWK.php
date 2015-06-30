@@ -15,6 +15,7 @@
 namespace jwk;
 
 use jwk\exceptions\InvalidJWKVisibilityException;
+use security\exceptions\X509CertMismatchException;
 use security\PrivateKey;
 use security\PublicKey;
 use security\KeyPair;
@@ -74,6 +75,13 @@ interface IAsymetricJWK extends IJWK {
      * @throws InvalidJWKVisibilityException
      */
     public function setVisibility($visibility);
+
+    /**
+     * @param array $x5c
+     * @return $this
+     * @throws X509CertMismatchException
+     */
+    public function setX509CertificateChain(array $x5c);
 
     // factory methods
 

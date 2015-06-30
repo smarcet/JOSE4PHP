@@ -36,12 +36,20 @@ class JWKSpecification
     protected $use;
 
     /**
+     * @var string
+     */
+    protected $kid;
+
+
+    /**
      * @param string $alg
      * @param string $use
+     * @param null|string $kid
      */
-    public function __construct($alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
-        $this->alg = $alg;
-        $this->use = $use;
+    public function __construct($alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature, $kid = null){
+        $this->alg  = $alg;
+        $this->use  = $use;
+        $this->kid  = $kid;
     }
 
     public function getAlg(){
@@ -59,6 +67,14 @@ class JWKSpecification
      */
     public function getUse()
     {
-       return   $this->use;
+       return $this->use;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKeyId()
+    {
+       return $this->kid;
     }
 }

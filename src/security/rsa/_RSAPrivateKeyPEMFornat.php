@@ -50,4 +50,24 @@ final class _RSAPrivateKeyPEMFornat
        return $this->d;
     }
 
+    /**
+     * @return string
+     */
+    public function getEncoded()
+    {
+        $pem = $this->rsa_imp->getPrivateKey(CRYPT_RSA_PUBLIC_FORMAT_PKCS1);
+        $pem = preg_replace('/\-+BEGIN RSA PRIVATE KEY\-+/','',$pem);
+        $pem = preg_replace('/\-+END RSA PRIVATE KEY\-+/','',$pem);
+        $pem = str_replace( array("\n","\r","\t"), '', trim($pem));
+        return $pem;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat()
+    {
+        return 'PKCS1';
+    }
+
 }

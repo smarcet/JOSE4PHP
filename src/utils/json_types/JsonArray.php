@@ -45,4 +45,8 @@ class JsonArray extends JsonValue implements \ArrayAccess {
             unset($this->value[$offset]);
     }
 
+    public function append($value){
+        array_push($this->value, $value);
+    }
+
 }

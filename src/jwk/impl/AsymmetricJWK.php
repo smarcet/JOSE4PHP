@@ -18,7 +18,6 @@ use jwk\exceptions\InvalidJWKVisibilityException;
 use jwk\IAsymetricJWK;
 use jwk\JSONWebKeyVisibility;
 use jwk\PublicJSONWebKeyParameters;
-use security\exceptions\InvalidX509CertificateException;
 use security\exceptions\X509CertMismatchException;
 use security\PrivateKey;
 use security\PublicKey;
@@ -71,7 +70,7 @@ abstract class AsymmetricJWK
 
             // json array
             foreach($headers[PublicJSONWebKeyParameters::X_509CertificateChain] as $x509_pem){
-                array_push($this->$x509_certificates_chain, X509CertificateFactory::buildFromPEM($x509_pem));
+                array_push($this->x509_certificates_chain, X509CertificateFactory::buildFromPEM($x509_pem));
 
             }
 
@@ -194,5 +193,25 @@ abstract class AsymmetricJWK
     protected function checkX509CertMismatch(){
         $x509 = $this->getX509LeafCertificate();
         return !is_null($x509) && $x509->getPublicKey() !== $this->public_key->getEncoded();
+    }
+
+    /**
+     * @param array $x5c
+     * @return $this
+     * @throws X509CertMismatchException
+     */
+    public function setX509CertificateChain(array $x5c){
+        // json array
+        foreach($x5c as $x509_pem){
+            array_push($this->x509_certificates_chain, X509CertificateFactory::buildFromPEM($x509_pem));
+        }
+
+        if($this->checkX509CertMismatch()){
+            throw new X509CertMismatchException;
+        }
+
+        $this->set[PublicJSONWebKeyParameters::X_509CertificateChain] = new JsonArray($x5c);
+
+        return $this;
     }
 }

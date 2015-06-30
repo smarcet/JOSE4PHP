@@ -49,7 +49,7 @@ abstract class RSA_KeyManagementAlgorithm
         if(!($key instanceof RSAPublicKey))
             throw new InvalidKeyTypeAlgorithmException('key is not public');
 
-        if($key->getFormat() !== 'PKCS1')
+        if($key->getFormat() !== 'PKCS8')
             throw new InvalidKeyTypeAlgorithmException('keys is not on PKCS1 format');
 
         $res = $this->rsa_impl->loadKey($key->getEncoded());

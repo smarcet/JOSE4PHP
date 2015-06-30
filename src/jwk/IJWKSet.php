@@ -53,4 +53,19 @@ interface IJWKSet {
      * @throws JWKInvalidIdentifierException
      */
     public function addKey(IJWK $key);
+
+    /**
+     * @param string $kid
+     * @return IJWK
+     */
+    public function getKeyById($kid);
+
+    // factory methods
+
+    /**
+     * @param $json
+     * @return IJWK
+     */
+    static public function fromJson($json);
+
 }

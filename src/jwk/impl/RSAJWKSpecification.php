@@ -28,11 +28,16 @@ class RSAJWKSpecification extends JWKSpecification {
     /**
      * @param string $alg
      * @param string $use
+     * @param string $kid
      * @throws InvalidJWKAlgorithm
      */
-    public function __construct($alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
-        if(!in_array($alg, RSAKeysParameters::$valid_algorithms_values))
+    public function __construct(
+        $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256,
+        $use = JSONWebKeyPublicKeyUseValues::Signature,
+        $kid = null)
+    {
+        if(!empty($alg) && !in_array($alg, RSAKeysParameters::$valid_algorithms_values))
             throw new InvalidJWKAlgorithm(sprintf('alg %s', $alg));
-        parent::__construct($alg, $use);
+        parent::__construct($alg, $use, $kid);
     }
 }

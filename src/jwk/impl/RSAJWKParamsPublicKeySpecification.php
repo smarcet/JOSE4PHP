@@ -35,16 +35,58 @@ final class RSAJWKParamsPublicKeySpecification extends RSAJWKSpecification
      */
     private $e_b64;
 
+
+    /**
+     * @var array
+     */
+    private $x5c;
+
+    /**
+     * @var string
+     */
+    private $x5u;
+
+    /**
+     * @var string
+     */
+    private $x5t;
+
+    /**
+     * @var string
+     */
+    private $x5t_S256;
+
+
     /**
      * @param string $n_b64
      * @param string $e_b64
      * @param string $alg
      * @param string $use
+     * @param array $x5c
+     * @param null $x5u
+     * @param null $x5t
+     * @param null $x5t_S256
+     * @param null $kid
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
      */
-    public function __construct($n_b64, $e_b64, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
-        parent::__construct($alg, $use);
-        $this->n_b64 = $n_b64;
-        $this->e_b64 = $e_b64;
+    public function __construct(
+        $n_b64,
+        $e_b64,
+        $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256,
+        $use = JSONWebKeyPublicKeyUseValues::Signature,
+        $x5c = array(),
+        $x5u = null,
+        $x5t = null,
+        $x5t_S256 = null,
+        $kid = null
+    ) {
+        parent::__construct($alg, $use, $kid);
+        $this->n_b64    = $n_b64;
+        $this->e_b64    = $e_b64;
+        $this->x5c      = $x5c;
+        $this->x5u      = $x5u;
+        $this->x5t      = $x5t;
+        $this->x5t_S256 = $x5t_S256;
     }
 
     /**
@@ -59,5 +101,33 @@ final class RSAJWKParamsPublicKeySpecification extends RSAJWKSpecification
      */
     public function getExponent(){
         return new Base64urlUInt($this->e_b64);
+    }
+
+    /**
+     * @return array
+     */
+    public function getX509CertificateChain(){
+        return $this->x5c;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getX509Url(){
+        return $this->x5u;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getX509CertificateSHA_1_Thumbprint(){
+        return $this->x5t;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getX509CertificateSHA_256_Thumbprint(){
+        return $this->x5t_S256;
     }
 }

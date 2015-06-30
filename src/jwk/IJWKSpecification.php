@@ -38,4 +38,9 @@ interface IJWKSpecification {
      */
     public function getUse();
 
+    /**
+     * @return string
+     */
+    public function getKeyId();
+
 }

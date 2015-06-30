@@ -84,7 +84,7 @@ final class _X509Certificate implements X509Certificate {
         $pem = (string)$this->file->getPublicKey();
         $pem = preg_replace('/\-+BEGIN PUBLIC KEY\-+/','',$pem);
         $pem = preg_replace('/\-+END PUBLIC KEY\-+/','',$pem);
-        $pem = str_replace( array("\n","\r"), '', trim($pem));
+        $pem = str_replace( array("\n","\r","\t"), '', trim($pem));
         return $pem;
     }
 

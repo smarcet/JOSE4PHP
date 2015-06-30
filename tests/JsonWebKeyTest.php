@@ -13,7 +13,6 @@
  **/
 
 use jwk\impl\RSAJWKFactory;
-use jwk\impl\RSAJWKKeyLengthSpecification;
 use security\rsa\RSAFacade;
 use jwk\impl\RSAJWKSpecification;
 use security\rsa\RSAPublicKey;
@@ -22,7 +21,7 @@ use \jwk\impl\JWKSet;
 use jwk\impl\RSAJWKParamsPublicKeySpecification;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use security\x509\X509CertificateFactory;
-use security\x509\X509Certificate;
+use utils\json_types\Base64urlUInt;
 
 /**
  * Class JsonWebKeyTest
@@ -43,7 +42,13 @@ class JsonWebKeyTest extends PHPUnit_Framework_TestCase {
 
     public function testCreateFromParams(){
 
-        $jwk = RSAJWKFactory::build(new RSAJWKParamsPublicKeySpecification("0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw", 'AQAB'));
+        $jwk = RSAJWKFactory::build(
+            new RSAJWKParamsPublicKeySpecification
+            (
+                "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw",
+                'AQAB'
+            )
+        );
         $jwk->setId('2011-04-29');
 
         $this->assertTrue(!is_null($jwk));
@@ -120,5 +125,59 @@ x509;
         $public_key = $x509->getPublicKey();
 
         $this->assertTrue(!empty($public_key));
+    }
+
+    public function testLoadFromJsonJWKSet(){
+
+        $json_jwk_set = <<<JWK_SET
+        {
+ "keys":[
+  {
+   "kty":"RSA",
+   "n":"w9x1sXTkzuxJRHfLYdCv1DN2SsD90ufkSt_HOSjM7PSFsh-yGrqP85Hia2y_2bogz03L4GUrrGBXk8OlKxEK_U1QxhhRYyFKuyo2Y6jx2t8RXCE1duskyRikcEFMQtfacZiNeLlr_0SqlxQJBNgBi_e3g3UIFzyEXpRQS7X0AJ6xuRLT7-Nl1BT3QSB-cBsENgHb10zQNaOG3VnyNehrtofHzPyF4PO4q1dVK7qaqyjp50sX7ya7TXqG3e0dNV-vyIN5AVG-UKOGiON8XB9UQj0x4zWiIa7PYG298m6Jx_26ZLNU0RyF3kXbUzwDBdpOyhXjoyOwQ1V42BxDyqhaow",
+   "e":"AQAB",
+   "kid":"PHPOP-00S",
+   "use":"sig"
+  },
+    {"kty":"EC",
+          "crv":"P-256",
+          "x":"MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
+          "y":"4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
+          "use":"enc",
+          "kid":"1"},
+
+         {"kty":"RSA",
+          "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw",
+          "e":"AQAB",
+          "alg":"RS256",
+          "use":"enc",
+          "kid":"2011-04-29"},
+
+         {"kty":"RSA",
+      "use":"sig",
+      "kid":"1b94c",
+      "use":"enc",
+      "n":"vrjOfz9Ccdgx5nQudyhdoR17V-IubWMeOZCwX_jj0hgAsz2J_pqYW08PLbK_PdiVGKPrqzmDIsLI7sA25VEnHU1uCLNwBuUiCO11_-7dYbsr4iJmG0Qu2j8DsVyT1azpJC_NG84Ty5KKthuCaPod7iI7w0LK9orSMhBEwwZDCxTWq4aYWAchc8t-emd9qOvWtVMDC2BXksRngh6X5bUYLy6AyHKvj-nUy1wgzjYQDwHMTplCoLtU-o-8SNnZ1tmRoGE9uJkBLdh5gFENabWnU5m1ZqZPdwS-qo-meMvVfJb6jJVWRpl2SUtCnYG2C32qvbWbjZ_jBPD5eunqsIo1vQ",
+      "e":"AQAB",
+      "x5c":
+       [
+            "MIIDQjCCAiqgAwIBAgIGATz/FuLiMA0GCSqGSIb3DQEBBQUAMGIxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDTzEPMA0GA1UEBxMGRGVudmVyMRwwGgYDVQQKExNQaW5nIElkZW50aXR5IENvcnAuMRcwFQYDVQQDEw5CcmlhbiBDYW1wYmVsbDAeFw0xMzAyMjEyMzI5MTVaFw0xODA4MTQyMjI5MTVaMGIxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDTzEPMA0GA1UEBxMGRGVudmVyMRwwGgYDVQQKExNQaW5nIElkZW50aXR5IENvcnAuMRcwFQYDVQQDEw5CcmlhbiBDYW1wYmVsbDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL64zn8/QnHYMeZ0LncoXaEde1fiLm1jHjmQsF/449IYALM9if6amFtPDy2yvz3YlRij66s5gyLCyO7ANuVRJx1NbgizcAblIgjtdf/u3WG7K+IiZhtELto/A7Fck9Ws6SQvzRvOE8uSirYbgmj6He4iO8NCyvaK0jIQRMMGQwsU1quGmFgHIXPLfnpnfajr1rVTAwtgV5LEZ4Iel+W1GC8ugMhyr4/p1MtcIM42EA8BzE6ZQqC7VPqPvEjZ2dbZkaBhPbiZAS3YeYBRDWm1p1OZtWamT3cEvqqPpnjL1XyW+oyVVkaZdklLQp2Btgt9qr21m42f4wTw+Xrp6rCKNb0CAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAh8zGlfSlcI0o3rYDPBB07aXNswb4ECNIKG0CETTUxmXl9KUL+9gGlqCz5iWLOgWsnrcKcY0vXPG9J1r9AqBNTqNgHq2G03X09266X5CpOe1zFo+Owb1zxtp3PehFdfQJ610CDLEaS9V9Rqp17hCyybEpOGVwe8fnk+fbEL2Bo3UPGrpsHzUoaGpDftmWssZkhpBJKVMJyf/RuP2SmmaIzmnw9JiSlYhzo4tpzd5rFXhjRbg4zW9C+2qok+2+qDM1iJ684gPHMIY8aLWrdgQTxkumGmTqgawR+N5MDtdPTEQ0XfIBc2cJEUyMTY5MPvACWpkA6SdS4xSvdXK3IVfOWA=="
+       ]
+     }
+ ]
+}
+JWK_SET;
+
+        $jwk_set = JWKSet::fromJson($json_jwk_set);
+
+        $this->assertTrue(!is_null($jwk_set));
+        $count = count($jwk_set->getKeys());
+        $this->assertTrue( $count === 3);
+
+        $jwk = $jwk_set->getKeyById("2011-04-29");
+
+        $this->assertTrue(!is_null($jwk));
+
+
     }
 }

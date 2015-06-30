@@ -58,10 +58,18 @@ final class RSAJWKFactory implements IJWKFactory
             return $jwk;
         }
         if($spec instanceof RSAJWKParamsPublicKeySpecification){
-            $public_key = RSAFacade::getInstance()->buildPublicKey($spec->getModulus()->toBigInt(), $spec->getExponent()->toBigInt());
+
+            $public_key = RSAFacade::getInstance()->buildPublicKey(
+                $spec->getModulus()->toBigInt(),
+                $spec->getExponent()->toBigInt()
+            );
+
             $jwk = RSAJWK::fromPublicKey($public_key);
             $jwk->setAlgorithm($spec->getAlg());
             $jwk->setKeyUse($spec->getUse());
+            $jwk->setId($spec->getKeyId());
+            $jwk->setX509CertificateChain($spec->getX509CertificateChain());
+
             return $jwk;
         }
         if($spec instanceof RSAJWKPEMPublicKeySpecification){

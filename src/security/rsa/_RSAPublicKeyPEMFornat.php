@@ -60,7 +60,11 @@ class _RSAPublicKeyPEMFornat
      */
     public function getEncoded()
     {
-        return $this->pem_format;
+        $pem = $this->rsa_imp->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_PKCS8);
+        $pem = preg_replace('/\-+BEGIN PUBLIC KEY\-+/','',$pem);
+        $pem = preg_replace('/\-+END PUBLIC KEY\-+/','',$pem);
+        $pem = str_replace( array("\n","\r","\t"), '', trim($pem));
+        return $pem;
     }
 
     /**
@@ -68,7 +72,7 @@ class _RSAPublicKeyPEMFornat
      */
     public function getFormat()
     {
-        return 'PKCS1';
+        return 'PKCS8';
     }
 
     /**
