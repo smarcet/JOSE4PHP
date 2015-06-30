@@ -41,4 +41,9 @@ interface X509Certificate {
      * @return string
      */
     public function getPublicKey();
+
+    /**
+     * @return array
+     */
+    public function getInfo();
 }

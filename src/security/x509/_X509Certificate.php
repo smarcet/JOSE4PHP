@@ -87,4 +87,12 @@ final class _X509Certificate implements X509Certificate {
         $pem = str_replace( array("\n","\r"), '', trim($pem));
         return $pem;
     }
+
+    /**
+     * @return array
+     */
+    public function getInfo()
+    {
+        return $this->info;
+    }
 }
