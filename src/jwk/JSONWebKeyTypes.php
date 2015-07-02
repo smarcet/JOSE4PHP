@@ -37,7 +37,7 @@ abstract class JSONWebKeyTypes {
 
     const  RSA = 'RSA';
 
-    const  OctetSequence = 'oct';
+    const  OctetSequence = 'OCT';
 
 
     public static $valid_keys_set = array(

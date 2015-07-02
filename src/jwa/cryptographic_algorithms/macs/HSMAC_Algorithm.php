@@ -36,8 +36,10 @@ abstract class HSMAC_Algorithm implements MAC_Algorithm, HashFunctionAlgorithm {
      * @throws InvalidKeyLengthAlgorithmException
      */
     public function digest(SharedKey $key, $message){
+
         if($this->getMinKeyLen() > $key->getBitLength())
             throw new InvalidKeyLengthAlgorithmException(sprintf('min len %s - cur len %s.',$this->getMinKeyLen(), $key->getBitLength()));
+
         return hash_hmac($this->getHashingAlgorithm(), $message, $key->getSecret(), true);
     }
 
@@ -51,6 +53,7 @@ abstract class HSMAC_Algorithm implements MAC_Algorithm, HashFunctionAlgorithm {
      */
     public function verify(Key $key, $message, $digest){
         if(!($key instanceof SharedKey)) throw new InvalidKeyTypeAlgorithmException;
+
         return $digest === $this->digest($key, $message);
     }
 

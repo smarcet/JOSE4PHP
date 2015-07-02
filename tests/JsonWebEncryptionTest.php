@@ -33,6 +33,9 @@ use jwe\compression_algorithms\CompressionAlgorithmsNames;
 use utils\json_types\StringOrURI;
 use utils\json_types\JsonValue;
 
+use jwk\impl\OctetSequenceJWKSpecification;
+use jwk\impl\OctetSequenceJWKFactory;
+
 /**
  * Class JsonWebEncryptionTest
  */
@@ -92,6 +95,67 @@ class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue(!is_null($jws));
 
+        // load server public key from pem format
+        $server_key  = RSAJWKFactory::build(new RSAJWKPEMPublicKeySpecification(TestKeys::$public_key_pem));
+        $server_key->setId('rsa_server');
+        // and verify signature.
+        $res = $jws->setKey($server_key)->verify(JSONWebSignatureAndEncryptionAlgorithms::RS384);
+
+        $this->assertTrue($res);
+    }
+
+    public function testCreateDir(){
+
+        $claim_set = JWTClaimSetFactory::build(array(
+            RegisteredJWTClaimNames::Issuer         => 'joe',
+            RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+            "http://example.com/is_root"            => true,
+            'groups'                                => array('admin', 'sudo', 'devs')
+        ));
+
+        // load server key from pem format
+        $server_key  = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
+        $server_key->setId('rsa_server');
+        // and sign the jws with server private key
+        $alg     = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::RS384);
+        $jws     = JWSFactory::build( new JWS_ParamsSpecification ( $server_key, $alg, $claim_set));
+
+        $payload = $jws->toCompactSerialization();
+
+        //load shared key
+        $shared_key =  OctetSequenceJWKFactory::build(new OctetSequenceJWKSpecification('this_is_a_secret_key_long_enough'));
+        $shared_key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('shared_key');
+
+        $alg     = new  StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::Dir);
+        $enc     = new  StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256);
+        $jwe     = JWEFactory::build(new JWE_ParamsSpecification($shared_key, $alg, $enc, $payload ));
+
+        // and finally encrypt it ...
+        $compact_serialization = $jwe->toCompactSerialization();
+
+        $this->assertTrue(!empty($compact_serialization));
+    }
+
+    public function testDecryptDir(){
+
+        $jwe_compact_form = 'eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..Z0rVzErM4afxeyjYdxsg-z9g00G3oDsQKX0l8sTtSes.JJWRYo7YYy606qdg-Z2QcLe7mvg_k6MmXU5OjBOVG-lGySJMyy2i6zxqxFtikVWmghwloq-ABXgpPDOsXUz5KwiI1C1dYeG52lmkf0fTjjI5mV6waaZrNI42Ii4EEZTJm0PMJz-ElbqBGJUlwsmoIIEHPeI6nXT3wXwgrtcYf8-eDsr0W869GiPCylLxrecWzc8bD5Dlvpnmy9cIUKnm6WJIcLMbouuaHSC4BRS_nqV2aqHoLvqPNS17cshyFRiy7m8rWdr8cGWjD5HpJQclpm9hkdH6WvOg5JEHjKYaSByC4goGzst4CQ9BsC_PPF1Fq4PdI1OmhzIo0xPwCyOx9WmKM4SL8v3vD9WdsgBbeYTs1h67GSdiydF3Bc9F_lCy6CwQYMMGmgrxJxosUXR10gb7kkVRbj2pc18CP1wgGJg2YIiskDenOwO3jss9NXjKycRm9rTWqvm7PVtD_XPAcZV-a0OttxIT0Y05A2eDT4YjiRu-5Re7LQgh7HknPn_k39MXypyOqC7vcJajUa9UsaR9nvJMV7LgcDFSYQRYF9iURKAvhXQMoPeT5xhuAoQMAnWtjFV0HqSlFysxBr0YbqLnkUm8NGrVle9G2HyxCDtFVdgakoQ-06zKFvswLS7-prxMmE_qfx_mMMPSm4Nv-dqXMcqiqmcTSNQqjHvBxGGiY30gLl_41RJRh68bI7zWZZrCLibXcV45VTU6w2v5xCk_cqHC00qOK_5GYtrlPgDPVOXpIwQ5lQtgEwWu8PeLqGRMmHS0MjKdFX9SdFNkjDd5ykVHg44y1L0H5ztCc7xlaC-xXKOJe-T2AMzOA9pO3eyzV5TbAGRpkSiiypo1RqVFSkXGjNrCmtK5Haha3jZxF3PsW9ZsB9aY0fcll0N0MqstVudgjovcdwaJs5nlu_NlT2Bm8mW4l30GHgjAoIYvbyGp0t43uFirUOGdxAmq1g1Q_hWs3CiGswsLBMkzk4rMMEuEGjACdjGGyK9Cxd4SzwlDWi7e0o5ALCaQoC7ZVjQrnc34MPYrDp1vQMhkPYq6-NwHWnNYLAtxYBOlq1-kc4qhtK7q03UiUstPsqqgwzM5sgkLraXrONkgibLG5nx0rHg8z3AOLuQ50xDURFZRqB9EAuqtHoorVsRHFf-j55kkxqksbwkx3_ReD3M3SkFh0vwK-aHxro5iAv0scLQOJawOzP_Bpx3JV0F91SCZr0rny1bvobCZE_U38BWZvTh5h3L9Gf2IMxPgVcHDYB9I4C4N9i3uKvFMdEqozJ26MmKrFyPQq60OX8WRb7QLesTCI8fcMepFuDonlqLdtOsj31u1wnxnAGvkQw4N08Iupe6MZEraWpKIRM9AGhKWRxgy1fLJscYbm3_yK5VF_gUSjTqe_OXSfnCQeqCuEzh8OlmAR7jGgCWAkBVQ9bhPo3MBnr_cJmcaeBqFzSW0GiQ7E-_22b0ak6f3RtLmd3HI.fwqQhABaFMFi-suUuhNPrw';
+        //load shared key
+        $shared_key = OctetSequenceJWKFactory::build(new OctetSequenceJWKSpecification('this_is_a_secret_key_long_enough'));
+        $shared_key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('shared_key');
+
+        $jwe_2 = JWEFactory::build(new JWE_CompactFormatSpecification( $jwe_compact_form));
+
+        $this->assertTrue(!is_null($jwe_2));
+
+        $jwe_2->setRecipientKey($shared_key);
+
+        $payload_jws = $jwe_2->getPlainText();
+
+        $this->assertTrue(!empty($payload_jws));
+
+        $jws = JWSFactory::build( new JWS_CompactFormatSpecification ($payload_jws));
+
+        $this->assertTrue(!is_null($jws));
 
         // load server public key from pem format
         $server_key  = RSAJWKFactory::build(new RSAJWKPEMPublicKeySpecification(TestKeys::$public_key_pem));
@@ -100,6 +164,7 @@ class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase {
         $res = $jws->setKey($server_key)->verify(JSONWebSignatureAndEncryptionAlgorithms::RS384);
 
         $this->assertTrue($res);
+
     }
 
     public function testCreateWithZip(){

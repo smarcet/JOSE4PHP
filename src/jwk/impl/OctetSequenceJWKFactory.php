@@ -16,6 +16,7 @@ namespace jwk\impl;
 
 use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
 use jwk\exceptions\InvalidJWKAlgorithm;
+use jwk\exceptions\JWKInvalidSpecException;
 use jwk\IJWKSpecification;
 use jwk\JSONWebKeyTypes;
 use security\SymmetricSharedKey;
@@ -32,6 +33,7 @@ final class OctetSequenceJWKFactory {
      * @param IJWKSpecification $spec
      * @return IJWK
      * @throws InvalidJWKAlgorithm
+     * @throws JWKInvalidSpecException
      */
     static public function build(IJWKSpecification $spec){
 
@@ -40,10 +42,21 @@ final class OctetSequenceJWKFactory {
         $algorithm = DigitalSignatures_MACs_Registry::getInstance()->get($spec->getAlg());
 
         if(is_null($algorithm)) throw new InvalidJWKAlgorithm(sprintf('alg %s not supported!',$spec->getAlg()));
-        if($algorithm->getKeyType() !== JSONWebKeyTypes::OctetSequence) throw new InvalidJWKAlgorithm(sprintf('key type %s not supported!', $algorithm->getKeyType()));
-        $generator = Utils_Registry::getInstance()->get(Utils_Registry::RandomNumberGeneratorService);
-        $rnd       = $generator->invoke($algorithm->getMinKeyLen()/8);
-        return OctetSequenceJWK::fromSecret(new SymmetricSharedKey($rnd), $spec->getAlg(), $spec->getUse());
+
+        if($algorithm->getKeyType() !== JSONWebKeyTypes::OctetSequence)
+            throw new InvalidJWKAlgorithm(sprintf('key type %s not supported!', $algorithm->getKeyType()));
+
+        if(!($spec instanceof OctetSequenceJWKSpecification)) throw new JWKInvalidSpecException;
+
+        $shared_secret = $spec->getSharedSecret();
+        $secret_len    = strlen($shared_secret);
+
+        if($secret_len === 0 ) {
+            $generator = Utils_Registry::getInstance()->get(Utils_Registry::RandomNumberGeneratorService);
+            $shared_secret = $generator->invoke($algorithm->getMinKeyLen() / 8);
+        }
+
+        return OctetSequenceJWK::fromSecret(new SymmetricSharedKey($shared_secret), $spec->getAlg(), $spec->getUse());
     }
 
 }

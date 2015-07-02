@@ -23,6 +23,8 @@ use jwk\JSONWebKeyTypes;
 use security\Key;
 use security\PrivateKey;
 use security\PublicKey;
+use security\rsa\RSAPrivateKey;
+use security\rsa\RSAPublicKey;
 
 /**
  * Class RSA_Algorithm
@@ -42,6 +44,8 @@ abstract class RSA_Algorithm
      */
     public function sign(PrivateKey $private_key, $message)
     {
+        if(!($private_key instanceof RSAPrivateKey)) throw new InvalidKeyTypeAlgorithmException;
+
         if($this->getMinKeyLen() > $private_key->getBitLength())
             throw new InvalidKeyLengthAlgorithmException(sprintf('min len %s - cur len %s.',$this->getMinKeyLen(), $private_key->getBitLength()));
 
@@ -65,7 +69,7 @@ abstract class RSA_Algorithm
      */
     public function verify(Key $key, $message, $signature)
     {
-        if(!($key instanceof PublicKey)) throw new InvalidKeyTypeAlgorithmException;
+        if(!($key instanceof RSAPublicKey)) throw new InvalidKeyTypeAlgorithmException;
 
         if($this->getMinKeyLen() > $key->getBitLength())
             throw new InvalidKeyLengthAlgorithmException(sprintf('min len %s - cur len %s.',$this->getMinKeyLen(), $key->getBitLength()));

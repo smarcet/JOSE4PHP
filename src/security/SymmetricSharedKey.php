@@ -14,6 +14,7 @@
 
 namespace security;
 
+use jwk\JSONWebKeyTypes;
 use utils\ByteUtil;
 
 /**
@@ -37,7 +38,7 @@ final class SymmetricSharedKey
      */
     public function getAlgorithm()
     {
-        return 'OCT';
+        return JSONWebKeyTypes::OctetSequence;
     }
 
     /**
@@ -53,7 +54,7 @@ final class SymmetricSharedKey
      */
     public function getFormat()
     {
-        return 'RAW';
+        return JSONWebKeyTypes::OctetSequence;
     }
 
     /**

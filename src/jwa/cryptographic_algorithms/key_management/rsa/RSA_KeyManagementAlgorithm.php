@@ -17,6 +17,7 @@ namespace jwa\cryptographic_algorithms\key_management\rsa;
 use jwa\cryptographic_algorithms\Abstract_RSA_Algorithm;
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyTypeAlgorithmException;
+use jwa\cryptographic_algorithms\key_management\modes\KeyEncryption;
 use security\Key;
 use security\rsa\RSAPrivateKey;
 use security\rsa\RSAPublicKey;
@@ -27,7 +28,7 @@ use security\rsa\RSAPublicKey;
  */
 abstract class RSA_KeyManagementAlgorithm
     extends Abstract_RSA_Algorithm
-    implements EncryptionAlgorithm {
+    implements EncryptionAlgorithm, KeyEncryption {
 
     public function __construct(){
 

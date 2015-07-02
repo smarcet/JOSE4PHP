@@ -14,6 +14,7 @@
 
 namespace jwa\cryptographic_algorithms;
 
+use jwa\cryptographic_algorithms\key_management\DirAlgorithm;
 use jwa\cryptographic_algorithms\key_management\rsa\OAEP\RSA_OAEP_256_KeyManagementAlgorithm;
 use jwa\cryptographic_algorithms\key_management\rsa\OAEP\RSA_OAEP_KeyManagementAlgorithm;
 use jwa\cryptographic_algorithms\key_management\rsa\PKCS1\RSA1_5_KeyManagementAlgorithm;
@@ -37,6 +38,7 @@ final class KeyManagementAlgorithms_Registry {
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::RSA1_5] = new RSA1_5_KeyManagementAlgorithm;
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::RSA_OAEP] = new RSA_OAEP_KeyManagementAlgorithm;
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::RSA_OAEP_256] = new RSA_OAEP_256_KeyManagementAlgorithm;
+        $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::Dir] = new DirAlgorithm;
     }
 
     private function __clone(){}

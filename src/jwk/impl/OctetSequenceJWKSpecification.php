@@ -27,14 +27,33 @@ final class OctetSequenceJWKSpecification
     extends JWKSpecification {
 
     /**
-     *
+     * @var string
+     */
+    private $shared_secret;
+
+    /**
+     * @param string $shared_secret
      * @param string $alg
      * @param string $use
      * @throws InvalidJWKAlgorithm
      */
-    public function __construct($alg = JSONWebSignatureAndEncryptionAlgorithms::HS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
+    public function __construct(
+        $shared_secret = '',
+        $alg = JSONWebSignatureAndEncryptionAlgorithms::HS256,
+        $use = JSONWebKeyPublicKeyUseValues::Signature
+    ) {
         if(!in_array($alg, OctetSequenceKeysParameters::$valid_algorithms_values))
             throw new InvalidJWKAlgorithm(sprintf('alg %s', $alg));
+
         parent::__construct($alg, $use);
+
+        $this->shared_secret = $shared_secret;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSharedSecret(){
+        return $this->shared_secret;
     }
 }

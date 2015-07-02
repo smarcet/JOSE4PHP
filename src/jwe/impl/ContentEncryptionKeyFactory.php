@@ -14,6 +14,7 @@
 
 namespace jwe\impl;
 
+use jwa\cryptographic_algorithms\content_encryption\ContentEncryptionAlgorithm;
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
 use jwe\KeyManagementModeValues;
 use security\Key;
@@ -32,25 +33,47 @@ final class ContentEncryptionKeyFactory
     /**
      * @param Key $management_key
      * @param $key_management_mode
-     * @param EncryptionAlgorithm $alg
+     * @param ContentEncryptionAlgorithm $enc
      * @return Key
+     * @throws \Exception
      */
-    static public function build(Key $management_key, $key_management_mode, EncryptionAlgorithm $alg)
+    static public function build(Key $management_key, $key_management_mode, ContentEncryptionAlgorithm $enc)
     {
 
         $cek = null;
 
         switch ($key_management_mode) {
+            /**
+             * When Key Wrapping, Key Encryption, or Key Agreement with Key
+             * Wrapping are employed, generate a random CEK value
+             */
             case KeyManagementModeValues::KeyWrapping:
-            case KeyManagementModeValues::KeyEncryption: {
+            case KeyManagementModeValues::KeyEncryption:
+            case KeyManagementModeValues::KeyAgreementWithKeyWrapping:
+            {
                 // calculate it
                 $generator = Utils_Registry::getInstance()->get(Utils_Registry::RandomNumberGeneratorService);
-                $rnd       = $generator->invoke($alg->getMinKeyLen()/8);
-                $cek       = new _ContentEncryptionKey($alg->getName(), 'RAW', $rnd);
+                /**
+                 * The CEK MUST have a length equal to that required for the
+                 * content encryption algorithm.
+                 */
+                $rnd       = $generator->invoke($enc->getMinKeyLen()/8);
+                $cek       = new _ContentEncryptionKey($enc->getName(), 'RAW', $rnd);
             }
             break;
-            case KeyManagementModeValues::DirectEncryption: {
+            case KeyManagementModeValues::DirectEncryption:
+            {
                 $cek = $management_key;
+            }
+            break;
+            case KeyManagementModeValues::DirectKeyAgreement:
+            {
+                throw new \Exception('unsupported KKM!');
+            }
+            break;
+            default:
+            {
+                throw new \Exception('unsupported KKM!');
             }
             break;
         }

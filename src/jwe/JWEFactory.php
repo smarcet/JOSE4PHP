@@ -39,7 +39,7 @@ final class JWEFactory {
         if($spec instanceof IJWE_ParamsSpecification){
 
             if($spec->getRecipientKey()->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Encryption)
-                throw new InvalidJWKType(sprintf('use % not supported (should be "enc")',$spec->getRecipientKey()->getKeyUse()->getString()));
+                throw new InvalidJWKType(sprintf('use %s not supported (should be "enc")', $spec->getRecipientKey()->getKeyUse()->getString()));
 
             $header = new JWEJOSEHeader($spec->getAlg(), $spec->getEnc());
 
