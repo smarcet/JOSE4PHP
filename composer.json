@@ -1,6 +1,5 @@
 {
   "name": "smarcet/jose4php",
-  "version": "1.0.2",
   "description": "JWT, JWS, JWE, JWA and JWK implementation in PHP",
   "keywords": [
     "JSON Web Token", "JSON Web Signature", "JSON Web Encryption", "JSON Web Algorithms",
