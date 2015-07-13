@@ -22,10 +22,10 @@ use security\KeyPair;
 use security\x509\X509Certificate;
 
 /**
- * Interface IAsymetricJWK
+ * Interface IAsymmetricJWK
  * @package jwk
  */
-interface IAsymetricJWK extends IJWK {
+interface IAsymmetricJWK extends IJWK {
 
     /**
      * @return PrivateKey
@@ -87,19 +87,19 @@ interface IAsymetricJWK extends IJWK {
 
     /**
      * @param KeyPair $keys
-     * @return IAsymetricJWK
+     * @return IAsymmetricJWK
      */
     static public function fromKeys(KeyPair $keys);
 
     /**
      * @param PublicKey $public_key
-     * @return IAsymetricJWK
+     * @return IAsymmetricJWK
      */
     static public function fromPublicKey(PublicKey $public_key);
 
     /**
      * @param PrivateKey $private_key
-     * @return IAsymetricJWK
+     * @return IAsymmetricJWK
      */
     static public function fromPrivateKey(PrivateKey $private_key);
 

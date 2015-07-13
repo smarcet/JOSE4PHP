@@ -35,8 +35,7 @@ final class UnsecuredJWT extends JWT implements IJWTSnapshot {
      */
     protected function __construct(IJWTClaimSet $claim_set){
 
-        $this->header    = new JOSEHeader(new StringOrURI('none'), new StringOrURI('JWT'));
-        $this->claim_set = $claim_set;
+        parent::__construct( new JOSEHeader( new StringOrURI('none'), new StringOrURI('JWT')), $claim_set);
         $this->signature = self::EmptySignature;
     }
 
@@ -64,6 +63,10 @@ final class UnsecuredJWT extends JWT implements IJWTSnapshot {
     public static function fromCompactSerialization($compact_serialization)
     {
         list($header, $payload, $signature) = JWTSerializer::deserialize($compact_serialization);
+
+        if(!($payload instanceof IJWTClaimSet))
+            throw new \RuntimeException('Invalid payload type!');
+
         $jwt = new UnsecuredJWT($payload);
         $jwt->header = $header;
         return $jwt;

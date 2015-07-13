@@ -97,7 +97,7 @@ final class JWKSet
 
     /**
      * @param $json
-     * @return JWKSet
+     * @return IJWKSet
      * @throws InvalidJWKAlgorithm
      * @throws JWKInvalidIdentifierException
      */

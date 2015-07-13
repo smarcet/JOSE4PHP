@@ -18,7 +18,7 @@ use jwk\exceptions\InvalidJWKType;
 use jwk\exceptions\InvalidJWKUseException;
 use jwk\exceptions\RSAJWKMissingPrivateKeyParamException;
 use jwk\exceptions\RSAJWKMissingPublicKeyParamException;
-use jwk\IAsymetricJWK;
+use jwk\IAsymmetricJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
 use jwk\JSONWebKeyParameters;
 use jwk\JSONWebKeyTypes;
@@ -108,22 +108,28 @@ final class RSAJWK extends AsymmetricJWK
 
     /**
      * @param KeyPair $keys
-     * @return IAsymetricJWK
+     * @return IAsymmetricJWK
      */
     static public function fromKeys(KeyPair $keys)
     {
-        $jwk = new RSAJWK();
-        $jwk->public_key = $keys->getPublic();
-        $jwk->private_key = $keys->getPrivate();
-        $jwk->set[RSAKeysParameters::Exponent] = Base64urlUInt::fromBigInt($jwk->public_key->getPublicExponent());
-        $jwk->set[RSAKeysParameters::Modulus] = Base64urlUInt::fromBigInt($jwk->public_key->getModulus());
+        if(!($keys->getPrivate() instanceof RSAPrivateKey))
+            throw new \RuntimeException('Private key of invalid type!');
+
+        if(!($keys->getPublic() instanceof RSAPublicKey))
+            throw new \RuntimeException('Public key of invalid type!');
+
+        $jwk                                          = new RSAJWK();
+        $jwk->public_key                              = $keys->getPublic();
+        $jwk->private_key                             = $keys->getPrivate();
+        $jwk->set[RSAKeysParameters::Exponent]        = Base64urlUInt::fromBigInt($jwk->public_key->getPublicExponent());
+        $jwk->set[RSAKeysParameters::Modulus]         = Base64urlUInt::fromBigInt($jwk->public_key->getModulus());
         $jwk->set[RSAKeysParameters::PrivateExponent] = Base64urlUInt::fromBigInt($jwk->private_key->getPrivateExponent());
         return $jwk;
     }
 
     /**
      * @param PublicKey $public_key
-     * @return IAsymetricJWK
+     * @return IAsymmetricJWK
      * @throws InvalidJWKType
      */
     static public function fromPublicKey(PublicKey $public_key)
@@ -138,7 +144,7 @@ final class RSAJWK extends AsymmetricJWK
 
     /**
      * @param PrivateKey $private_key
-     * @return IAsymetricJWK|null
+     * @return IAsymmetricJWK|null
      * @throws InvalidJWKType
      */
     static public function fromPrivateKey(PrivateKey $private_key)

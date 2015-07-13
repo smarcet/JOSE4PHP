@@ -27,7 +27,7 @@ use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 final class KeyManagementAlgorithms_Registry {
 
     /**
-     * @var KeyManagement_Registry
+     * @var KeyManagementAlgorithms_Registry
      */
     private static $instance;
 

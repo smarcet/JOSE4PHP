@@ -49,8 +49,6 @@ final class OctetSequenceJWK extends JWK {
 
         if(count($headers) === 0 ) return;
 
-        $this->visibility = JSONWebKeyVisibility::IncludeSymmetric;
-
         $b64 = new Base64UrlRepresentation();
 
         $this->key = $secret;

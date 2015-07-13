@@ -15,7 +15,7 @@
 namespace jwk\impl;
 
 use jwk\exceptions\InvalidJWKVisibilityException;
-use jwk\IAsymetricJWK;
+use jwk\IAsymmetricJWK;
 use jwk\JSONWebKeyVisibility;
 use jwk\PublicJSONWebKeyParameters;
 use security\exceptions\X509CertMismatchException;
@@ -32,7 +32,7 @@ use utils\json_types\StringOrURI;
  */
 abstract class AsymmetricJWK
     extends JWK
-    implements IAsymetricJWK
+    implements IAsymmetricJWK
 {
 
     /**

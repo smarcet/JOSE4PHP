@@ -42,7 +42,7 @@ final class _ContentEncryptionKey implements Key {
     /**
      * @param string $alg
      * @param string $format
-     * @param sting $value
+     * @param string $value
      */
     public function __construct($alg, $format, $value){
         $this->alg    = $alg;

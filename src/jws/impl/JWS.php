@@ -17,7 +17,7 @@ namespace jws\impl;
 use jwa\cryptographic_algorithms\digital_signatures\DigitalSignatureAlgorithm;
 use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
 use jwa\cryptographic_algorithms\macs\MAC_Algorithm;
-use jwk\IAsymetricJWK;
+use jwk\IAsymmetricJWK;
 use jwk\IJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
 use jwk\JSONWebKeyPublicKeyUseValues;
@@ -99,7 +99,7 @@ final class JWS
     {
         if(!is_null($this->jwk->getId()))
             $this->header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::KeyID, $this->jwk->getId()));
-        if($this->jwk instanceof IAsymetricJWK) {
+        if($this->jwk instanceof IAsymmetricJWK) {
             // we should add the public key on the header
             $public_key = clone $this->jwk;
 
