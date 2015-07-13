@@ -14,6 +14,7 @@ Implementation
 [![Total Downloads](https://poser.pugx.org/smarcet/jose4php/downloads)](https://packagist.org/packages/smarcet/jose4php)
 [![Latest Unstable Version](https://poser.pugx.org/smarcet/jose4php/v/unstable)](https://packagist.org/packages/smarcet/jose4php)
 [![License](https://poser.pugx.org/smarcet/jose4php/license)](https://packagist.org/packages/smarcet/jose4php)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/smarcet/JOSE4PHP/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/smarcet/JOSE4PHP/?branch=master)
 
 ## Prerequisites
 
