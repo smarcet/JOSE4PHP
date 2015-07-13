@@ -10,6 +10,10 @@ Implementation
     * https://tools.ietf.org/html/rfc7518
 
 [![Build Status](https://travis-ci.org/smarcet/JOSE4PHP.svg)](https://travis-ci.org/smarcet/JOSE4PHP)
+[![Latest Stable Version](https://poser.pugx.org/smarcet/jose4php/v/stable)](https://packagist.org/packages/smarcet/jose4php)
+[![Total Downloads](https://poser.pugx.org/smarcet/jose4php/downloads)](https://packagist.org/packages/smarcet/jose4php)
+[![Latest Unstable Version](https://poser.pugx.org/smarcet/jose4php/v/unstable)](https://packagist.org/packages/smarcet/jose4php)
+[![License](https://poser.pugx.org/smarcet/jose4php/license)](https://packagist.org/packages/smarcet/jose4php)
 
 ## Prerequisites
 
