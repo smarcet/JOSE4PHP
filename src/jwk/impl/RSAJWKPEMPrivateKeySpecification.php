@@ -14,16 +14,42 @@
 
 namespace jwk\impl;
 
+use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+use jwk\JSONWebKeyPublicKeyUseValues;
+
 /**
  * Class RSAJWKPEMPrivateKeySpecification
  * @package jwk\impl
  */
-final class RSAJWKPEMPrivateKeySpecification extends RSAJWKPEMKeySpecification {
+final class RSAJWKPEMPrivateKeySpecification extends RSAJWKPEMKeySpecification
+{
 
+    /**
+     * @var string
+     */
+    private $password;
+
+    /**
+     * @param string $key_pem
+     * @param string $password;
+     * @param string $alg
+     * @param string $use
+     */
+    public function __construct($key_pem, $password = null, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
+        parent::__construct($key_pem , $alg, $use);
+        $this->password = $password;
+    }
     /**
      * @return string
      */
     public function getPrivateKeyPEM(){
         return $this->getPEM();
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPrivateKeyPassword(){
+        return $this->password;
     }
 }

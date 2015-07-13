@@ -31,10 +31,11 @@ class _RSAPublicKeyPEMFornat
 
     /**
      * @param $pem_format
+     * @param string $password
      * @throws RSABadPEMFormat
      */
-    public function __construct($pem_format){
-        parent::__construct($pem_format);
+    public function __construct($pem_format, $password = null){
+        parent::__construct($pem_format, $password);
         $this->e = $this->rsa_imp->publicExponent;
     }
 

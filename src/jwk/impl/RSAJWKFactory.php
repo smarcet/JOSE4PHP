@@ -50,7 +50,7 @@ final class RSAJWKFactory implements IJWKFactory
         if($algorithm->getKeyType() !== JSONWebKeyTypes::RSA) throw new InvalidJWKAlgorithm(sprintf('key type %s not supported!', $algorithm->getKeyType()));
 
         if ($spec instanceof RSAJWKPEMPrivateKeySpecification) {
-            $private_key  = RSAFacade::getInstance()->buildPrivateKeyFromPEM($spec->getPEM());
+            $private_key  = RSAFacade::getInstance()->buildPrivateKeyFromPEM($spec->getPEM(), $spec->getPrivateKeyPassword());
             $public_key   = RSAFacade::getInstance()->buildPublicKey($private_key->getModulus(), $private_key->getPublicExponent());
             $jwk = RSAJWK::fromKeys(new KeyPair($public_key, $private_key));
             $jwk->setAlgorithm($spec->getAlg());

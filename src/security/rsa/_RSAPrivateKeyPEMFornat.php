@@ -30,11 +30,12 @@ final class _RSAPrivateKeyPEMFornat
 
     /**
      * @param $pem_format
+     * @param string $password
      * @throws RSABadPEMFormat
      */
-    public function __construct($pem_format){
+    public function __construct($pem_format, $password = null){
 
-        parent::__construct($pem_format);
+        parent::__construct($pem_format, $password);
         $this->d = $this->rsa_imp->exponent;
         if($this->d->toString() === $this->e->toString())
             throw new RSABadPEMFormat(sprintf('pem %s is a public key!', $pem_format));

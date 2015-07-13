@@ -116,11 +116,12 @@ final class RSAFacade {
 
     /**
      * @param string $private_key_pem
+     * @param string $password
      * @return RSAPrivateKey
      * @throws RSABadPEMFormat
      */
-    public function buildPrivateKeyFromPEM($private_key_pem){
-       return new _RSAPrivateKeyPEMFornat($private_key_pem);
+    public function buildPrivateKeyFromPEM($private_key_pem, $password = null){
+       return new _RSAPrivateKeyPEMFornat($private_key_pem, $password);
     }
 
     /**

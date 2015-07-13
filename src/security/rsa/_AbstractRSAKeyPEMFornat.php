@@ -39,13 +39,17 @@ abstract class _AbstractRSAKeyPEMFornat {
 
 
     /**
-     * @param $pem_format
+     * @param string $pem_format
+     * @param string $password
      * @throws RSABadPEMFormat
      */
-    public function __construct($pem_format){
+    public function __construct($pem_format, $password = null){
 
         $this->pem_format = $pem_format;
         $this->rsa_imp    = new \Crypt_RSA();
+
+        if(!empty($password))
+            $this->rsa_imp->setPassword($password);
 
         $res = $this->rsa_imp->loadKey($this->pem_format, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
 
