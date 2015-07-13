@@ -57,7 +57,7 @@ final class JWKSet
     public function getKeys()
     {
         if(isset($this->set[JWKSetParameters::Keys]))
-            return $this->set[JWKSetParameters::Keys]-> RSAJWKPEMPrivateKeySpecificationgetValue();
+            return $this->set[JWKSetParameters::Keys]->getValue();
         return array();
     }
 
