@@ -31,7 +31,7 @@ final class RSAJWKPEMPrivateKeySpecification extends RSAJWKPEMKeySpecification
 
     /**
      * @param string $key_pem
-     * @param string $password;
+     * @param string $password
      * @param string $alg
      * @param string $use
      */

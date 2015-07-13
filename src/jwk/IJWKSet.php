@@ -64,7 +64,7 @@ interface IJWKSet {
 
     /**
      * @param $json
-     * @return IJWK
+     * @return IJWKSet
      */
     static public function fromJson($json);
 

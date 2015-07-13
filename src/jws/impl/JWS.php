@@ -77,7 +77,8 @@ final class JWS
 
         parent::__construct($header, $claim_set);
 
-        $this->setPayload($payload);
+        if(!is_null($payload))
+            $this->setPayload($payload);
 
         $this->signature = $signature;
     }
