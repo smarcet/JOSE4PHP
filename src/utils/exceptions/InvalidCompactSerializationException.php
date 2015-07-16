@@ -12,23 +12,15 @@
  * limitations under the License.
  **/
 
-namespace jwt;
+namespace utils\exceptions;
+
+use Exception;
 
 /**
- * Interface IJWT
- * @package jwt
+ * Class InvalidCompactSerializationException
+ * @package utils\exceptions
  */
-interface IJWT extends IBasicJWT
+final class InvalidCompactSerializationException extends Exception
 {
-
-    /**
-     * @return IJWTClaimSet
-     */
-    public function getClaimSet();
-
-    /**
-     * @return string|null
-     */
-    public function getSignature();
 
 }

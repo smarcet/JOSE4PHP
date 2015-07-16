@@ -15,6 +15,7 @@
 namespace jwe\impl;
 
 use jwe\exceptions\JWEInvalidCompactFormatException;
+use jwt\IBasicJWT;
 use jwt\utils\JWTRawSerializer;
 use jwt\utils\JOSEHeaderSerializer;
 
@@ -45,7 +46,7 @@ final class JWESerializer
     }
 
     static public function deserialize($input){
-        $parts = explode('.', $input);
+        $parts = explode(IBasicJWT::SegmentSeparator, $input);
         if (count($parts) !== 5) throw new JWEInvalidCompactFormatException;
 
         $header = JWEJOSEHeaderSerializer::deserialize($parts[0]);

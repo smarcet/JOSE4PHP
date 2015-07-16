@@ -29,6 +29,7 @@ use jws\IJWS;
 use jws\IJWSPayloadClaimSetSpec;
 use jws\IJWSPayloadSpec;
 use jws\payloads\JWSPayloadFactory;
+use jwt\IBasicJWT;
 use jwt\IJOSEHeader;
 use jwt\impl\JWT;
 use jwt\impl\JWTSerializer;
@@ -132,7 +133,7 @@ final class JWS
 
         if(is_null($alg)) throw new JWSNotSupportedAlgorithm(sprintf('alg %s.',$this->header->getAlgorithm()->getString()));
 
-        $secured_input_bytes = JOSEHeaderSerializer::serialize($this->header) . '.' .$this->getEncodedPayload();
+        $secured_input_bytes = JOSEHeaderSerializer::serialize($this->header) . IBasicJWT::SegmentSeparator .$this->getEncodedPayload();
 
         $key  = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::ComputeDigitalSignatureOrMAC);
 
@@ -231,7 +232,7 @@ final class JWS
         if($former_alg != $original_alg)
             throw new JWSNotSupportedAlgorithm(sprintf('former alg %s - original alg %s', $former_alg, $original_alg));
 
-        $secured_input_bytes = JOSEHeaderSerializer::serialize($this->header) . '.' .$this->getEncodedPayload();
+        $secured_input_bytes = JOSEHeaderSerializer::serialize($this->header) . IBasicJWT::SegmentSeparator .$this->getEncodedPayload();
 
         // use public key / secret
         $key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::VerifyDigitalSignatureOrMAC);

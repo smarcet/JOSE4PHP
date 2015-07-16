@@ -15,20 +15,25 @@
 namespace jwt;
 
 /**
- * Interface IJWT
+ * Interface IBasicJWT
  * @package jwt
  */
-interface IJWT extends IBasicJWT
+interface IBasicJWT
 {
+    const SegmentSeparator = '.';
+    /**
+     * @return IJOSEHeader
+     */
+    public function getJOSEHeader();
 
     /**
-     * @return IJWTClaimSet
+     * @return string
      */
-    public function getClaimSet();
+    public function toCompactSerialization();
 
     /**
-     * @return string|null
+     * @param string $compact_serialization
+     * @return IBasicJWT
      */
-    public function getSignature();
-
+    public static function fromCompactSerialization($compact_serialization);
 }

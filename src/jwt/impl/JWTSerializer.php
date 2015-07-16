@@ -15,6 +15,7 @@
 namespace jwt\impl;
 
 use jwt\exceptions\InvalidJWTException;
+use jwt\IBasicJWT;
 use jwt\utils\JOSEHeaderSerializer;
 use jwt\utils\JWTClaimSetSerializer;
 use jwt\utils\JWTRawSerializer;
@@ -47,7 +48,7 @@ final class JWTSerializer {
      */
     static public function deserialize($input){
 
-        $e_parts = explode('.',$input);
+        $e_parts = explode(IBasicJWT::SegmentSeparator, $input);
 
         if(count($e_parts) < 2)
             throw new InvalidJWTException(sprintf('%s has only 2 or less encoded parts!'));

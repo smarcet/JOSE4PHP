@@ -21,12 +21,13 @@ use jwe\exceptions\JWEUnsupportedContentEncryptionAlgorithmException;
 use jwe\exceptions\JWEUnsupportedKeyManagementAlgorithmException;
 use jwk\IJWK;
 use jws\IJWSPayloadSpec;
+use jwt\IBasicJWT;
 
 /**
  * Interface IJWE
  * @package jwe
  */
-interface IJWE {
+interface IJWE extends IBasicJWT {
 
     /**
      * @param IJWSPayloadSpec $payload
