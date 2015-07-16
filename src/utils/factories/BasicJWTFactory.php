@@ -35,7 +35,7 @@ final class BasicJWTFactory
      * @throws InvalidJWKType
      * @throws InvalidCompactSerializationException
      */
-    public function build($compact_serialization)
+    static public function build($compact_serialization)
     {
         $segments = explode(IBasicJWT::SegmentSeparator, $compact_serialization);
         // JWSs have three segments separated by two period ('.') characters.
