@@ -20,6 +20,8 @@ use jws\impl\specs\JWS_CompactFormatSpecification;
 use jws\JWSFactory;
 use jwt\IBasicJWT;
 use jwk\exceptions\InvalidJWKType;
+use jwt\impl\UnsecuredJWT;
+use jwt\utils\JOSEHeaderSerializer;
 use utils\exceptions\InvalidCompactSerializationException;
 
 /**
@@ -42,7 +44,10 @@ final class BasicJWTFactory
         // JWEs have five segments separated by four period ('.') characters.
         switch(count($segments)){
             case 3:
-                // JWS
+                // JWS or unsecured one
+                $header = JOSEHeaderSerializer::deserialize($segments[0]);
+                if($header->getAlgorithm()->getString() === 'none' && empty($segments[2]))
+                    return UnsecuredJWT::fromCompactSerialization($compact_serialization);
                 return JWSFactory::build( new JWS_CompactFormatSpecification($compact_serialization) );
             break;
             case 5:
