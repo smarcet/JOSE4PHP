@@ -97,4 +97,19 @@ abstract class JWT
             $this->signature
           );
     }
+
+    /**
+     * @param int $tolerance seconds of tolerance for iat
+     * @return bool
+     */
+    public function isExpired($tolerance = 180)
+    {
+        $now = new \DateTime();
+        $exp = $this->getClaimSet()->getExpirationTime()->getDateTime();
+        if($exp < $now) return true;
+        $iat = $this->getClaimSet()->getIssuedAt()->getDateTime();
+        if($iat > $now) return true;
+        $diff = $now->getTimestamp() - $iat->getTimestamp();
+        return $diff < $tolerance;
+    }
 }

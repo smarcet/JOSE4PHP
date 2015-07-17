@@ -31,4 +31,9 @@ interface IJWT extends IBasicJWT
      */
     public function getSignature();
 
+    /**
+     * @param int $tolerance seconds of tolerance for iat
+     * @return bool
+     */
+    public function isExpired($tolerance = 180);
 }
