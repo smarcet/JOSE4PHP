@@ -14,30 +14,33 @@
 
 namespace jwa\cryptographic_algorithms\content_encryption;
 
+
 use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
-use jwa\cryptographic_algorithms\HashFunctionAlgorithm;
+use jwa\JSONWebSignatureAndEncryptionAlgorithms;
+use jwk\JSONWebKeyTypes;
 
 /**
- * Interface ContentEncryptionAlgorithm
+ * Class DirAlgorithm
  * @package jwa\cryptographic_algorithms\content_encryption
  */
-interface ContentEncryptionAlgorithm extends HashFunctionAlgorithm
+final class DirAlgorithm implements ContentEncryptionAlgorithm
 {
 
     /**
      * https://tools.ietf.org/html/rfc7518#section-5.2.2.1
-     *
      * @param string $plain_text
      * @param string $key
      * @param string $iv
      * @param string $aad
      * @return string[]
      */
-     public function encrypt($plain_text, $key, $iv, $aad);
+     public function encrypt($plain_text, $key, $iv, $aad)
+     {
+            return $plain_text;
+     }
 
     /**
      * https://tools.ietf.org/html/rfc7518#section-5.2.2.2
-     *
      * @param string $cypher_text
      * @param string $key
      * @param string $iv
@@ -46,15 +49,57 @@ interface ContentEncryptionAlgorithm extends HashFunctionAlgorithm
      * @return string
      * @throws InvalidAuthenticationTagException
      */
-    public function decrypt($cypher_text, $key, $iv, $aad, $tag);
+    public function decrypt($cypher_text, $key, $iv, $aad, $tag)
+    {
+        return $cypher_text;
+    }
 
     /**
      * @return int|null
      */
-    public function getIVSize();
+    public function getIVSize()
+    {
+        return null;
+    }
 
     /**
      * @return int
      */
-    public function getCEKSize();
+    public function getCEKSize()
+    {
+       return 256;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHashingAlgorithm()
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return JSONWebSignatureAndEncryptionAlgorithms::Dir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKeyType()
+    {
+        return JSONWebKeyTypes::OctetSequence;
+    }
+
+    /**
+     * unit is on bits
+     * @return int
+     */
+    public function getMinKeyLen()
+    {
+       return 256;
+    }
 }

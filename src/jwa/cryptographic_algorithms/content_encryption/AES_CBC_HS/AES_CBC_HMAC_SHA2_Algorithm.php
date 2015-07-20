@@ -25,7 +25,8 @@ use utils\ByteUtil;
  *
  * https://tools.ietf.org/html/rfc7518#section-5.2.2
  */
-abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm {
+abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
+{
 
     /**
      * @var \Crypt_AES()

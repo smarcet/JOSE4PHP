@@ -18,12 +18,14 @@ namespace jwk\impl;
  * Class RSAJWKPEMPublicKeySpecification
  * @package jwk\impl
  */
-final class RSAJWKPEMPublicKeySpecification extends RSAJWKPEMKeySpecification {
+final class RSAJWKPEMPublicKeySpecification extends RSAJWKPEMKeySpecification
+{
 
     /**
      * @return string
      */
-    public function getPublicKeyPEM(){
+    public function getPublicKeyPEM()
+    {
         return $this->getPEM();
     }
 }

@@ -18,6 +18,7 @@ namespace jwk\exceptions;
  * Class InvalidJWKAlgorithm
  * @package jwk\exceptions
  */
-final class InvalidJWKAlgorithm extends \Exception {
+final class InvalidJWKAlgorithm extends \Exception
+{
 
 }

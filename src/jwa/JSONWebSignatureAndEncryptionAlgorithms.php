@@ -216,7 +216,8 @@ abstract class JSONWebSignatureAndEncryptionAlgorithms {
      */
     const A256GCM = 'A256GCM';
 
-    public static $header_location_alg = array (
+    public static $header_location_alg = array
+    (
         self::HS256,
         self::HS384,
         self::HS512,
@@ -250,7 +251,8 @@ abstract class JSONWebSignatureAndEncryptionAlgorithms {
         self::PBES2_HS512_A256KW,
     );
 
-    public static $header_location_enc = array (
+    public static $header_location_enc = array
+    (
         self::A128CBC_HS256,
         self::A192CBC_HS384,
         self::A256CBC_HS512,

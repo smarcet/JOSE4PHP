@@ -22,7 +22,8 @@ use jwa\JSONWebSignatureAndEncryptionAlgorithms;
  *
  * https://tools.ietf.org/html/rfc7518#section-6.4
  */
-abstract class OctetSequenceKeysParameters {
+abstract class OctetSequenceKeysParameters
+{
 
     /**
      * The "k" (key value) parameter contains the value of the symmetric (or
@@ -31,9 +32,14 @@ abstract class OctetSequenceKeysParameters {
      */
     const Key = 'k';
 
-    public static $valid_algorithms_values = array(
+    public static $valid_algorithms_values = array
+    (
         JSONWebSignatureAndEncryptionAlgorithms::HS256,
         JSONWebSignatureAndEncryptionAlgorithms::HS384,
         JSONWebSignatureAndEncryptionAlgorithms::HS512,
+        JSONWebSignatureAndEncryptionAlgorithms::Dir,
+        JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256,
+        JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384,
+        JSONWebSignatureAndEncryptionAlgorithms::A256CBC_HS512,
     );
 }

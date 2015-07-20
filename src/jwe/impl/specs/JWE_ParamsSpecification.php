@@ -63,7 +63,8 @@ final class JWE_ParamsSpecification
      * @throws JWEInvalidPayloadException
      * @throws JWEInvalidRecipientKeyException
      */
-    public function __construct(IJWK $key, StringOrURI $alg, StringOrURI $enc, $payload,  JsonValue $zip = null){
+    public function __construct(IJWK $key, StringOrURI $alg, StringOrURI $enc, $payload,  JsonValue $zip = null)
+    {
 
         if(is_null($key))
             throw new JWEInvalidRecipientKeyException();
@@ -75,6 +76,7 @@ final class JWE_ParamsSpecification
         $this->alg     = $alg;
         $this->enc     = $enc;
         $this->zip     = $zip;
+
         $this->payload = JWSPayloadFactory::build($payload);
     }
 

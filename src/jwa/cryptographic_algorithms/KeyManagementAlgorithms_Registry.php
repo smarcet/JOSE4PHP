@@ -24,7 +24,8 @@ use jwa\JSONWebSignatureAndEncryptionAlgorithms;
  * Class KeyManagementAlgorithms_Registry
  * @package jwa\cryptographic_algorithms
  */
-final class KeyManagementAlgorithms_Registry {
+final class KeyManagementAlgorithms_Registry
+{
 
     /**
      * @var KeyManagementAlgorithms_Registry
@@ -33,7 +34,8 @@ final class KeyManagementAlgorithms_Registry {
 
     private $algorithms = array();
 
-    private function __construct(){
+    private function __construct()
+    {
 
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::RSA1_5] = new RSA1_5_KeyManagementAlgorithm;
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::RSA_OAEP] = new RSA_OAEP_KeyManagementAlgorithm;
@@ -46,8 +48,10 @@ final class KeyManagementAlgorithms_Registry {
     /**
      * @return KeyManagementAlgorithms_Registry
      */
-    public static function getInstance(){
-        if(!is_object(self::$instance)){
+    public static function getInstance()
+    {
+        if(!is_object(self::$instance))
+        {
             self::$instance = new KeyManagementAlgorithms_Registry();
         }
         return self::$instance;
@@ -57,7 +61,8 @@ final class KeyManagementAlgorithms_Registry {
      * @param string $alg
      * @return bool
      */
-    public function isSupported($alg){
+    public function isSupported($alg)
+    {
         return array_key_exists($alg, $this->algorithms);
     }
 
@@ -65,7 +70,8 @@ final class KeyManagementAlgorithms_Registry {
      * @param $alg
      * @return null|EncryptionAlgorithm
      */
-    public function get($alg){
+    public function get($alg)
+    {
         if(!$this->isSupported($alg)) return null;
         return $this->algorithms[$alg];
     }

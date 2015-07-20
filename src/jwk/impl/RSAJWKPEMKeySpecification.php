@@ -21,7 +21,8 @@ use jwk\JSONWebKeyPublicKeyUseValues;
  * Class RSAJWKPEMKeySpecification
  * @package jwk\impl
  */
-abstract class RSAJWKPEMKeySpecification extends RSAJWKSpecification {
+abstract class RSAJWKPEMKeySpecification extends RSAJWKSpecification
+{
 
     /**
      * @var string
@@ -33,15 +34,23 @@ abstract class RSAJWKPEMKeySpecification extends RSAJWKSpecification {
      * @param string $alg
      * @param string $use
      */
-    public function __construct($key_pem, $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature){
+    public function __construct
+    (
+        $key_pem,
+        $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256,
+        $use = JSONWebKeyPublicKeyUseValues::Signature
+    )
+    {
         parent::__construct($alg, $use);
+
         $this->key_pem = $key_pem;
     }
 
     /**
      * @return string
      */
-    public function getPEM(){
+    public function getPEM()
+    {
         return $this->key_pem;
     }
 

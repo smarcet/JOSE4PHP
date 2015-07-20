@@ -42,20 +42,42 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
      * @throws \jwk\exceptions\InvalidJWKAlgorithm
      * @throws \jwk\exceptions\InvalidJWKType
      */
-    public function testSignAndVerificationToken(){
+    public function testSignAndVerificationToken()
+    {
 
-        $claim_set = JWTClaimSetFactory::build(array(
-            RegisteredJWTClaimNames::Issuer         => 'joe',
-            RegisteredJWTClaimNames::ExpirationTime => 1300819380,
-            "http://example.com/is_root"            => true,
-            'groups'                                => array('admin', 'sudo', 'devs')
-        ));
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
 
-        $key = OctetSequenceJWKFactory::build(new OctetSequenceJWKSpecification);
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS512
+            )
+        );
+
         $key->setId('sym_key');
 
-        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256);
-        $jws = JWSFactory::build( new JWS_ParamsSpecification( $key, $alg, $claim_set));
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS512);
+
+        $jws = JWSFactory::build
+        (
+            new JWS_ParamsSpecification
+            (
+                $key,
+                $alg,
+                $claim_set
+            )
+        );
 
         $compact_serialization = $jws->toCompactSerialization();
 
@@ -77,15 +99,30 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
      */
     public function testSignAndVerificationTokenRSA(){
 
-        $claim_set = JWTClaimSetFactory::build(array(
-            RegisteredJWTClaimNames::Issuer         => 'joe',
-            RegisteredJWTClaimNames::ExpirationTime => 1300819380,
-            "http://example.com/is_root"            => true,
-            'groups'                                => array('admin', 'sudo', 'devs')
-        ));
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        )
+        ;
         //load server private key.
-        $key = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
+        $key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPrivateKeySpecification
+            (
+                TestKeys::$private_key_pem,
+                RSAJWKPEMPrivateKeySpecification::WithoutPassword,
+                JSONWebSignatureAndEncryptionAlgorithms::PS512
+            )
+        );
+
         $key->setId('server_key');
+
         $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::PS512);
         $jws = JWSFactory::build( new JWS_ParamsSpecification($key,$alg, $claim_set) );
         // and sign with server private key
@@ -124,16 +161,30 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
      * @throws \jwk\exceptions\InvalidJWKAlgorithm
      * @throws \jwk\exceptions\InvalidJWKType
      */
-    public function testSignAndVerificationTokenRSAUnicode(){
+    public function testSignAndVerificationTokenRSAUnicode()
+    {
 
-        $claim_set = JWTClaimSetFactory::build(array(
-            RegisteredJWTClaimNames::Issuer         => 'セバスチャン',
-            RegisteredJWTClaimNames::ExpirationTime => 1300819380,
-            "http://example.com/is_root"            => true,
-            'groups'                                => array('admin', 'sudo', 'devs')
-        ));
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'セバスチャン',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
         //load server private key.
-        $key = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
+        $key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPrivateKeySpecification
+            (
+                TestKeys::$private_key_pem,
+                RSAJWKPEMPrivateKeySpecification::WithoutPassword,
+                JSONWebSignatureAndEncryptionAlgorithms::PS512
+            )
+        );
+
         $key->setId('server_key');
         $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::PS512);
         $jws = JWSFactory::build( new JWS_ParamsSpecification($key,$alg, $claim_set) );
@@ -144,7 +195,13 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(!empty($compact_serialization));
 
         // then on client side, load the JWS from compact format
-        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+        $jws_1 = JWSFactory::build
+        (
+            new JWS_CompactFormatSpecification
+            (
+                $compact_serialization
+            )
+        );
 
         $this->assertTrue(!is_null($jws_1));
 
@@ -156,10 +213,16 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
 
         $public_key = $public_key->getRawValue();
         // and re built it from params
-        $public_key = RSAJWKFactory::build(new RSAJWKParamsPublicKeySpecification($public_key[RSAKeysParameters::Modulus],
-            $public_key[RSAKeysParameters::Exponent],
-            $public_key[JSONWebKeyParameters::Algorithm],
-            $public_key[JSONWebKeyParameters::PublicKeyUse]));
+        $public_key = RSAJWKFactory::build
+        (
+            new RSAJWKParamsPublicKeySpecification
+            (
+                $public_key[RSAKeysParameters::Modulus],
+                $public_key[RSAKeysParameters::Exponent],
+                $public_key[JSONWebKeyParameters::Algorithm],
+                $public_key[JSONWebKeyParameters::PublicKeyUse]
+            )
+        );
 
         //set the server public key and then proceed to verify signature
 

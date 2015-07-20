@@ -17,6 +17,7 @@ namespace jws\impl;
 use jwa\cryptographic_algorithms\digital_signatures\DigitalSignatureAlgorithm;
 use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
 use jwa\cryptographic_algorithms\macs\MAC_Algorithm;
+use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\IAsymmetricJWK;
 use jwk\IJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
@@ -207,6 +208,7 @@ final class JWS
     /**
      * @param string $original_alg
      * @return bool
+     * @throws InvalidJWKAlgorithm
      * @throws JWSInvalidJWKException
      * @throws JWSInvalidPayloadException
      * @throws JWSNotSupportedAlgorithm
@@ -217,7 +219,17 @@ final class JWS
             throw new JWSInvalidJWKException;
 
         if($this->jwk->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
-            throw new JWSInvalidJWKException(sprintf('use %s not supported ', $this->jwk->getKeyUse()->getString()));
+            throw new JWSInvalidJWKException
+            (
+                sprintf
+                (
+                    'use %s not supported ',
+                    $this->jwk->getKeyUse()->getString()
+                )
+            );
+
+        if(is_null($this->jwk->getAlgorithm()))
+            throw new InvalidJWKAlgorithm('algorithm intended for use with the key is not set! ');
 
         if(!is_null($this->jwk->getId()) && !is_null($this->header->getKeyID()) && $this->header->getKeyID()->getValue() != $this->jwk->getId()->getValue())
             throw new JWSInvalidJWKException(sprintf('original kid %s - current kid %s', $this->header->getKeyID()->getValue() , $this->jwk->getId()->getValue()));
@@ -230,7 +242,26 @@ final class JWS
         $former_alg = $this->header->getAlgorithm()->getString();
 
         if($former_alg != $original_alg)
-            throw new JWSNotSupportedAlgorithm(sprintf('former alg %s - original alg %s', $former_alg, $original_alg));
+            throw new JWSNotSupportedAlgorithm
+            (
+                sprintf
+                (
+                    'former alg %s - original alg %s',
+                    $former_alg,
+                    $original_alg
+                )
+            );
+
+        if($this->jwk->getAlgorithm()->getValue() !==  $original_alg)
+            throw new InvalidJWKAlgorithm
+            (
+                sprintf
+                (
+                    'mismatch between algorithm intended for use with the key %s and the cryptographic algorithm used to secure the JWS %s',
+                    $this->jwk->getAlgorithm()->getValue(),
+                    $original_alg
+                )
+            );
 
         $secured_input_bytes = JOSEHeaderSerializer::serialize($this->header) . IBasicJWT::SegmentSeparator .$this->getEncodedPayload();
 

@@ -32,6 +32,7 @@ use jwe\exceptions\JWEUnsupportedKeyManagementAlgorithmException;
 use jwe\IJWEJOSEHeader;
 use jwe\IJWE;
 use jwe\KeyManagementModeValues;
+use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\IJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
 use jws\IJWSPayloadSpec;
@@ -149,11 +150,13 @@ final class JWE
      */
     public function getPlainText()
     {
-        if ($this->should_decrypt) {
+        if ($this->should_decrypt)
+        {
             $this->decrypt();
         }
 
-        if (is_null($this->payload)) $this->payload = JWSPayloadFactory::build('');
+        if (is_null($this->payload))
+            $this->payload = JWSPayloadFactory::build('');
 
         return $this->payload->getRaw();
     }
@@ -223,6 +226,7 @@ final class JWE
 
     /**
      * @return $this
+     * @throws InvalidJWKAlgorithm
      * @throws InvalidKeyTypeAlgorithmException
      * @throws JWEInvalidRecipientKeyException
      * @throws JWEUnsupportedContentEncryptionAlgorithmException
@@ -235,6 +239,17 @@ final class JWE
         if (is_null($this->jwk))
             throw new JWEInvalidRecipientKeyException;
 
+        if($this->jwk->getAlgorithm()->getValue()!== $this->header->getAlgorithm()->getString())
+            throw new InvalidJWKAlgorithm
+            (
+                sprintf
+                (
+                    'mismatch between algorithm intended for use with the key %s and the cryptographic algorithm used to encrypt or determine the value of the CEK %s',
+                    $this->jwk->getAlgorithm()->getValue(),
+                    $this->header->getAlgorithm()->getString()
+                )
+            );
+
         $recipient_public_key     = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::EncryptContent);
 
         $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
@@ -243,16 +258,39 @@ final class JWE
             throw new JWEUnsupportedKeyManagementAlgorithmException(sprintf('alg %s', $this->header->getAlgorithm()->getString()));
 
         if($key_management_algorithm->getKeyType() !== $recipient_public_key->getAlgorithm())
-            throw new InvalidKeyTypeAlgorithmException(sprintf('key should be for alg %s, %s instead.', $key_management_algorithm->getKeyType(), $recipient_public_key->getAlgorithm()));
+            throw new InvalidKeyTypeAlgorithmException
+            (
+                sprintf
+                (
+                    'key should be for alg %s, %s instead.',
+                    $key_management_algorithm->getKeyType(),
+                    $recipient_public_key->getAlgorithm()
+                )
+            );
 
-        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get($this->header->getEncryptionAlgorithm()->getString());
+        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get
+        (
+            $this->header->getEncryptionAlgorithm()->getString()
+        );
 
         if (is_null($content_encryption_algorithm))
-            throw new JWEUnsupportedContentEncryptionAlgorithmException(sprintf('enc %s', $this->header->getEncryptionAlgorithm()->getString()));
+            throw new JWEUnsupportedContentEncryptionAlgorithmException
+            (
+                sprintf
+                (
+                    'enc %s',
+                    $this->header->getEncryptionAlgorithm()->getString()
+                )
+            );
 
         $key_management_mode = $this->getKeyManagementMode($key_management_algorithm);
 
-        $this->cek     = ContentEncryptionKeyFactory::build($recipient_public_key, $key_management_mode, $content_encryption_algorithm);
+        $this->cek     = ContentEncryptionKeyFactory::build
+        (
+            $recipient_public_key,
+            $key_management_mode,
+            $content_encryption_algorithm
+        );
 
         $this->enc_cek = $this->getJWEEncryptedKey($key_management_algorithm, $recipient_public_key, $this->cek);
 
@@ -263,7 +301,9 @@ final class JWE
          * empty octet sequence.
          */
         $this->iv      = '';
-        if (!is_null($iv_size = $content_encryption_algorithm->getIVSize())) {
+
+        if (!is_null($iv_size = $content_encryption_algorithm->getIVSize()))
+        {
             $this->iv = $this->createIV($iv_size);
         }
         // We encrypt the payload and get the tag
@@ -277,7 +317,8 @@ final class JWE
          * sequence representing the compressed plaintext; otherwise, let M
          * be the octet sequence representing the plaintext.
          */
-        if(!is_null($zip)){
+        if(!is_null($zip))
+        {
             $compression__algorithm = CompressionAlgorithms_Registry::getInstance()->get($zip->getValue());
             $payload  = $compression__algorithm->compress($payload);
         }
@@ -289,7 +330,13 @@ final class JWE
          * JWE Authentication Tag (which is the Authentication Tag output
          * from the encryption operation).
          */
-        list($this->cipher_text, $this->tag) = $content_encryption_algorithm->encrypt($payload, $this->cek->getEncoded(), $this->iv, $jwt_shared_protected_header);
+        list($this->cipher_text, $this->tag) = $content_encryption_algorithm->encrypt
+        (
+            $payload,
+            $this->cek->getEncoded(),
+            $this->iv,
+            $jwt_shared_protected_header
+        );
 
         return $this;
     }
@@ -308,7 +355,15 @@ final class JWE
         $recipient_private_key = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::DecryptContentAndValidateDecryption);
 
         if($alg->getKeyType() !== $recipient_private_key->getAlgorithm())
-            throw new InvalidKeyTypeAlgorithmException(sprintf('key should be for alg %s, %s instead.', $alg->getKeyType(), $recipient_private_key->getAlgorithm()));
+            throw new InvalidKeyTypeAlgorithmException
+            (
+                sprintf
+                (
+                    'key should be for alg %s, %s instead.',
+                    $alg->getKeyType(),
+                    $recipient_private_key->getAlgorithm()
+                )
+            );
 
         switch($key_management_mode){
             /**
@@ -347,10 +402,13 @@ final class JWE
 
     /**
      * @return $this
+     * @throws InvalidJWKAlgorithm
+     * @throws InvalidKeyTypeAlgorithmException
+     * @throws JWEInvalidCompactFormatException
      * @throws JWEInvalidRecipientKeyException
      * @throws JWEUnsupportedContentEncryptionAlgorithmException
      * @throws JWEUnsupportedKeyManagementAlgorithmException
-     * @throws InvalidAuthenticationTagException
+     * @throws \Exception
      */
     private function decrypt()
     {
@@ -359,14 +417,46 @@ final class JWE
 
         if (!$this->should_decrypt) return $this;
 
-        $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
+        if($this->jwk->getAlgorithm()->getValue()!== $this->header->getAlgorithm()->getString())
+            throw new InvalidJWKAlgorithm
+            (
+                sprintf
+                (
+                    'mismatch between algorithm intended for use with the key %s and the cryptographic algorithm used to encrypt or determine the value of the CEK %s',
+                    $this->jwk->getAlgorithm()->getValue(),
+                    $this->header->getAlgorithm()->getString()
+                )
+            );
 
-        if (is_null($key_management_algorithm)) throw new JWEUnsupportedKeyManagementAlgorithmException(sprintf('alg %s', $this->header->getAlgorithm()->getString()));
+        $key_management_algorithm = KeyManagementAlgorithms_Registry::getInstance()->get
+        (
+            $this->header->getAlgorithm()->getString()
+        );
 
+        if (is_null($key_management_algorithm))
+            throw new JWEUnsupportedKeyManagementAlgorithmException
+            (
+                sprintf
+                (
+                    'alg %s',
+                    $this->header->getAlgorithm()->getString()
+                )
+            );
 
-        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get($this->header->getEncryptionAlgorithm()->getString());
+        $content_encryption_algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get
+        (
+            $this->header->getEncryptionAlgorithm()->getString()
+        );
 
-        if (is_null($content_encryption_algorithm)) throw new JWEUnsupportedContentEncryptionAlgorithmException(sprintf('enc %s', $this->header->getEncryptionAlgorithm()->getString()));
+        if (is_null($content_encryption_algorithm))
+            throw new JWEUnsupportedContentEncryptionAlgorithmException
+            (
+                sprintf
+                (
+                    'enc %s',
+                    $this->header->getEncryptionAlgorithm()->getString()
+                )
+            );
 
         $this->cek = $this->decryptJWEEncryptedKey($key_management_algorithm);
 
@@ -383,14 +473,22 @@ final class JWE
          * rejecting the input without emitting any decrypted output if the
          * JWE Authentication Tag is incorrect.
          */
-        $plain_text = $content_encryption_algorithm->decrypt($this->cipher_text, $this->cek->getEncoded(), $this->iv, $jwt_shared_protected_header, $this->tag);
+        $plain_text = $content_encryption_algorithm->decrypt
+        (
+            $this->cipher_text,
+            $this->cek->getEncoded(),
+            $this->iv,
+            $jwt_shared_protected_header,
+            $this->tag
+        );
 
         $zip     = $this->header->getCompressionAlgorithm();
         /**
          * If a "zip" parameter was included, uncompress the decrypted
          * plaintext using the specified compression algorithm.
          */
-        if(!is_null($zip)){
+        if(!is_null($zip))
+        {
             $compression__algorithm = CompressionAlgorithms_Registry::getInstance()->get($zip->getValue());
             $plain_text = $compression__algorithm->uncompress($plain_text);
         }

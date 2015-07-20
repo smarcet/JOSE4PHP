@@ -14,6 +14,7 @@
 
 namespace jwa\cryptographic_algorithms;
 
+use jwa\cryptographic_algorithms\content_encryption\DirAlgorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A128CBCHS256_Algorithm;
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A192CBCHS384_Algorithm;
@@ -24,7 +25,8 @@ use jwa\cryptographic_algorithms\content_encryption\ContentEncryptionAlgorithm;
  * Class ContentEncryptionAlgorithms_Registry
  * @package jwa\cryptographic_algorithms
  */
-final class ContentEncryptionAlgorithms_Registry {
+final class ContentEncryptionAlgorithms_Registry
+{
 
     /**
      * @var ContentEncryptionAlgorithms_Registry
@@ -33,11 +35,14 @@ final class ContentEncryptionAlgorithms_Registry {
 
     private $algorithms = array();
 
-    private function __construct(){
+    private function __construct()
+    {
 
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256] = new A128CBCHS256_Algorithm;
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384] = new A192CBCHS384_Algorithm;
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::A256CBC_HS512] = new A256CBCHS512_Algorithm;
+        // dummy one
+        $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::Dir]           = new DirAlgorithm;
     }
 
     private function __clone(){}

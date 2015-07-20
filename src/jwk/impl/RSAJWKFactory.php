@@ -15,6 +15,7 @@
 namespace jwk\impl;
 
 use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
+use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
 use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\exceptions\InvalidJWKType;
 use jwk\IJWK;
@@ -23,7 +24,6 @@ use jwk\IJWKSpecification;
 use jwk\JSONWebKeyTypes;
 use security\KeyPair;
 use security\rsa\RSAFacade;
-
 
 /**
  * Class RSAJWKFactory
@@ -45,11 +45,33 @@ final class RSAJWKFactory implements IJWKFactory
 
         $algorithm = DigitalSignatures_MACs_Registry::getInstance()->get($spec->getAlg());
 
-        if(is_null($algorithm)) throw new InvalidJWKAlgorithm(sprintf('alg %s not supported!',$spec->getAlg()));
+        if(is_null($algorithm))
+        {
+            $algorithm = KeyManagementAlgorithms_Registry::getInstance()->get($spec->getAlg());
+        }
 
-        if($algorithm->getKeyType() !== JSONWebKeyTypes::RSA) throw new InvalidJWKAlgorithm(sprintf('key type %s not supported!', $algorithm->getKeyType()));
+        if(is_null($algorithm))
+            throw new InvalidJWKAlgorithm
+            (
+                sprintf
+                (
+                    'alg %s not supported!',
+                    $spec->getAlg()
+                )
+            );
 
-        if ($spec instanceof RSAJWKPEMPrivateKeySpecification) {
+        if($algorithm->getKeyType() !== JSONWebKeyTypes::RSA)
+            throw new InvalidJWKAlgorithm
+            (
+                sprintf
+                (
+                    'key type %s not supported!',
+                    $algorithm->getKeyType()
+                )
+            );
+
+        if ($spec instanceof RSAJWKPEMPrivateKeySpecification)
+        {
             $private_key  = RSAFacade::getInstance()->buildPrivateKeyFromPEM($spec->getPEM(), $spec->getPrivateKeyPassword());
             $public_key   = RSAFacade::getInstance()->buildPublicKey($private_key->getModulus(), $private_key->getPublicExponent());
             $jwk = RSAJWK::fromKeys(new KeyPair($public_key, $private_key));
@@ -57,9 +79,11 @@ final class RSAJWKFactory implements IJWKFactory
             $jwk->setKeyUse($spec->getUse());
             return $jwk;
         }
-        if($spec instanceof RSAJWKParamsPublicKeySpecification){
+        if($spec instanceof RSAJWKParamsPublicKeySpecification)
+        {
 
-            $public_key = RSAFacade::getInstance()->buildPublicKey(
+            $public_key = RSAFacade::getInstance()->buildPublicKey
+            (
                 $spec->getModulus()->toBigInt(),
                 $spec->getExponent()->toBigInt()
             );
@@ -72,7 +96,8 @@ final class RSAJWKFactory implements IJWKFactory
 
             return $jwk;
         }
-        if($spec instanceof RSAJWKPEMPublicKeySpecification){
+        if($spec instanceof RSAJWKPEMPublicKeySpecification)
+        {
             $public_key = RSAFacade::getInstance()->buildPublicKeyFromPEM($spec->getPEM());
             $jwk = RSAJWK::fromPublicKey($public_key);
             $jwk->setAlgorithm($spec->getAlg());

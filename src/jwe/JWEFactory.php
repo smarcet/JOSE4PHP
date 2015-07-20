@@ -18,6 +18,7 @@ use jwe\IJWE;
 use jwe\IJWE_CompactFormatSpecification;
 use jwe\IJWE_ParamsSpecification;
 use jwe\IJWE_Specification;
+use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\exceptions\InvalidJWKType;
 use jwk\JSONWebKeyPublicKeyUseValues;
 
@@ -25,26 +26,46 @@ use jwk\JSONWebKeyPublicKeyUseValues;
  * Class JWEFactory
  * @package jwe\impl
  */
-final class JWEFactory {
-
-
+final class JWEFactory
+{
     /**
      * @param IJWE_Specification $spec
      * @return IJWE
+     * @throws InvalidJWKAlgorithm
      * @throws InvalidJWKType
      */
-    static public function build(IJWE_Specification $spec){
+    static public function build(IJWE_Specification $spec)
+    {
 
-
-        if($spec instanceof IJWE_ParamsSpecification){
+        if($spec instanceof IJWE_ParamsSpecification)
+        {
 
             if($spec->getRecipientKey()->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Encryption)
-                throw new InvalidJWKType(sprintf('use %s not supported (should be "enc")', $spec->getRecipientKey()->getKeyUse()->getString()));
+                throw new InvalidJWKType
+                (
+                    sprintf
+                    (
+                        'use %s not supported (should be "enc")',
+                        $spec->getRecipientKey()->getKeyUse()->getString()
+                    )
+                );
+
+            if($spec->getAlg()->getString() !== $spec->getRecipientKey()->getAlgorithm()->getString())
+                throw new InvalidJWKAlgorithm
+                (
+                    sprintf
+                    (
+                        'mismatch between algorithm intended for use with the key %s and the cryptographic algorithm used to encrypt or determine the value of the CEK %s',
+                        $spec->getAlg()->getString(),
+                        $spec->getRecipientKey()->getAlgorithm()->getString()
+                    )
+                );
 
             $header = new JWEJOSEHeader($spec->getAlg(), $spec->getEnc());
 
             //set zip alg
             $zip    = $spec->getZip();
+
             if(!is_null($zip))
                 $header->setCompressionAlgorithm($zip);
 
@@ -54,7 +75,9 @@ final class JWEFactory {
 
             return $jwe;
         }
-        if($spec instanceof IJWE_CompactFormatSpecification){
+
+        if($spec instanceof IJWE_CompactFormatSpecification)
+        {
             return JWE::fromCompactSerialization($spec->getCompactFormat());
         }
         throw new \RuntimeException('invalid JWE spec!');

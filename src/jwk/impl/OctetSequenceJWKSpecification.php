@@ -23,9 +23,10 @@ use jwk\OctetSequenceKeysParameters;
  * Class OctetSequenceJWKSpecification
  * @package jwk\impl
  */
-final class OctetSequenceJWKSpecification
-    extends JWKSpecification {
+final class OctetSequenceJWKSpecification extends JWKSpecification
+{
 
+    const GenerateSecret = '';
     /**
      * @var string
      */
@@ -37,11 +38,13 @@ final class OctetSequenceJWKSpecification
      * @param string $use
      * @throws InvalidJWKAlgorithm
      */
-    public function __construct(
-        $shared_secret = '',
+    public function __construct
+    (
+        $shared_secret = self::GenerateSecret,
         $alg = JSONWebSignatureAndEncryptionAlgorithms::HS256,
         $use = JSONWebKeyPublicKeyUseValues::Signature
-    ) {
+    )
+    {
         if(!in_array($alg, OctetSequenceKeysParameters::$valid_algorithms_values))
             throw new InvalidJWKAlgorithm(sprintf('alg %s', $alg));
 
@@ -53,7 +56,8 @@ final class OctetSequenceJWKSpecification
     /**
      * @return string
      */
-    public function getSharedSecret(){
+    public function getSharedSecret()
+    {
         return $this->shared_secret;
     }
 }
