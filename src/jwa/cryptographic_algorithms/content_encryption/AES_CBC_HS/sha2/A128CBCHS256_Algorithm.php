@@ -32,7 +32,7 @@ final class A128CBCHS256_Algorithm extends AES_CBC_HMAC_SHA2_Algorithm {
      */
     public function getName()
     {
-        JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256;
+        return JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256;
     }
 
     /**

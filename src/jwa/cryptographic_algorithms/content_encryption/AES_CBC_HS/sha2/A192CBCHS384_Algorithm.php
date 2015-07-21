@@ -36,7 +36,7 @@ final class A192CBCHS384_Algorithm extends AES_CBC_HMAC_SHA2_Algorithm {
      */
     public function getName()
     {
-        JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384;
+        return JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384;
     }
 
     /**

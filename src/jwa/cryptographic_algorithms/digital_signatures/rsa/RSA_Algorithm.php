@@ -32,7 +32,8 @@ use security\rsa\RSAPublicKey;
  */
 abstract class RSA_Algorithm
     extends Abstract_RSA_Algorithm
-    implements DigitalSignatureAlgorithm, HashFunctionAlgorithm {
+    implements DigitalSignatureAlgorithm, HashFunctionAlgorithm
+{
 
 
     /**
