@@ -21,6 +21,9 @@ use \utils\Base64UrlRepresentation;
 use \jwt\impl\UnsecuredJWT;
 use \jwt\utils\JWTClaimSetFactory;
 use \jwt\RegisteredJWTClaimNames;
+use utils\factories\BasicJWTFactory;
+use jwe\IJWE;
+
 /**
  * Class JsonWebTokenTest
  */
@@ -118,6 +121,17 @@ class JsonWebTokenTest extends PHPUnit_Framework_TestCase {
         $should        = 'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpc3MiOiJqb2UiLCJleHAiOjEzMDA4MTkzODAsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlLCJncm91cHMiOlsiYWRtaW4iLCJzdWRvIiwiZGV2cyJdfQ.';
 
         $this->assertTrue( $res == $should);
+    }
+
+
+    public function testBasiFactory()
+    {
+        $jwe = 'eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJraWQiOiJwdWJsaWNfa2V5XzEiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIn0.GXnU3QJejpG-AZkps3CDaiwCqCNAfHtiDNPrA7MLp-yQhoRvozpvMbUujQKP-7YzgPQuSMomJwhYIo6J1lyJS7me_8h0ARKoBmZ9sKDAHJrTRY0lRjZmdyKKMZScIrYbXjuKTLmCr3VYTlDatF77rf0C4FXWcWyB6d1SsrT6hOpPWkynVh7L1sGqCaYQRFPq3Q60Ryo-02L5KvB5WVTsHKN2NcqF6sOwO3uLXI_6mPlCMMqMGk5Q8Cu7BnVA4IuK2NB-X9xd1xI7iaa6SS6TYou3ZludfexMFLSzWNxi0w0G9bpUso-b0TxzXmCRVEOhmkfzypqhdWfqKtSz1Jx7Cw.K4nz2gCrqbq6f0pc-WsVLbsv9xK_KXmk1iEzQkHSfsVcckrv8KupmqCb9XINZ1X0NfshNuUIYJ9c_YRVFmsfTA.Ip_XrCxV2-oS5Srx1XwcO0YeT6rFveTkzACmV92K27ihDnkio_vxWwss_tZEPGdhLERNeXSrHoeSiGbEYR1GHvMcLJ32dqOIrkFBdI5kCqO2I0LPPzBX61YuEAf8JDbp9dsjdKmhUymfpFzTrSM-C-E8MtNyfgTvtRAELWr_H6ErJHatkPrRAhh1bzM0BVo_HSViB2VsVdG_PgyA3BLF_BUvCYMwxLpi8Jxlv1SefUsyTAPvDQVE9Sol0i-31662DGZoi3I6VDD3Fox8_8vjabARxjV4LUZ8N4Jt4IzY6IucsDON9MzPNaDk1WkncknqLwDQp0EvwlzCG_WQUsw2HPGn3Y_U-Ju--wOXQQMS0yzZP7GckEP_OpgRhVLLNmV8n300ct4goqg2AmTqpbVbKImje1ldfbqYgFDrMWb6VqKRXXINNYCa5EFBRixZSeur0LIgdoovem4sdwyNrzw6pBxQzMQNt6Jlsf9IExhyuKFXkgIB7NmqbO9SDxYn5q2zE11NBBLZ98F2ylU98N_oovITvz4S6FD9hQ-GqmgQNHx_bl3mBrvTR8NwGsGsyoInhxOx8IA-Mt2az0iVU1KNCGTSwn9jlhqN95-spFjSGw0.Z-jvQzFXXi2liOXetvvXKhSaVnsuLFGZvdE6S9V2kbs';
+
+        $jwt = BasicJWTFactory::build($jwe);
+
+        $this->assertTrue(!is_null($jwt));
+        $this->assertTrue($jwt instanceof IJWE);
     }
 
 }

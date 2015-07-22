@@ -46,7 +46,7 @@ final class JWEJOSEHeader extends JOSEHeader implements IJWEJOSEHeader
         StringOrURI $cty  = null
     )
     {
-        parent::__construct($alg, $type,$kid, $cty);
+        parent::__construct($alg, $type, $kid, $cty);
 
         $this->set[RegisteredJWEJOSEHeaderNames::EncryptionAlgorithm] = $enc;
 
