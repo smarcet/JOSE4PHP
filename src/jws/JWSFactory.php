@@ -21,6 +21,7 @@ use jws\impl\JWS;
 use jwt\impl\JOSEHeader;
 use jwt\JOSEHeaderParam;
 use jwt\RegisteredJOSEHeaderNames;
+use utils\json_types\StringOrURI;
 
 /**
  * Class JWSFactory
@@ -61,7 +62,13 @@ final class JWSFactory
                     )
                 );
 
-            $header = new JOSEHeader($spec->getAlg());
+            $header = new JOSEHeader
+            (
+                $spec->getAlg(),
+                new StringOrURI('JWT'),
+                $spec->getKey()->getId()
+            );
+
             $jws = JWS::fromHeaderClaimsAndSignature($header, $spec->getPayload(), $spec->getSignature());
             $jws->setKey($spec->getKey());
             return $jws;

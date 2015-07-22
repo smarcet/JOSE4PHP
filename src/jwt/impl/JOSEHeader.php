@@ -25,22 +25,27 @@ use utils\json_types\StringOrURI;
  * Class JOSEHeader
  * @package jwt\impl
  */
-class JOSEHeader
-    extends JsonObject
-    implements IJOSEHeader {
-
+class JOSEHeader extends JsonObject implements IJOSEHeader
+{
     /**
      * @param StringOrURI $alg
-     * @param StringOrURI $type
-     * @param StringOrURI $cty
-     * @param JsonValue   $kid
+     * @param StringOrURI|null $type
+     * @param JsonValue|null $kid
+     * @param StringOrURI|null $cty
      */
-    public function __construct(StringOrURI $alg, StringOrURI $type = null, StringOrURI $cty = null, JsonValue  $kid = null){
+    public function __construct
+    (
+        StringOrURI $alg,
+        StringOrURI $type = null,
+        JsonValue   $kid  = null,
+        StringOrURI $cty  = null
+    )
+    {
 
         $this->set[RegisteredJOSEHeaderNames::Algorithm]   = $alg;
         $this->set[RegisteredJOSEHeaderNames::Type]        = $type;
-        $this->set[RegisteredJOSEHeaderNames::ContentType] = $cty;
         $this->set[RegisteredJOSEHeaderNames::KeyID]       = $kid;
+        $this->set[RegisteredJOSEHeaderNames::ContentType] = $cty;
     }
 
     /**

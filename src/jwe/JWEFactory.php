@@ -61,7 +61,12 @@ final class JWEFactory
                     )
                 );
 
-            $header = new JWEJOSEHeader($spec->getAlg(), $spec->getEnc());
+            $header = new JWEJOSEHeader
+            (
+                $spec->getAlg(),
+                $spec->getEnc(),
+                $spec->getRecipientKey()->getId()
+            );
 
             //set zip alg
             $zip    = $spec->getZip();

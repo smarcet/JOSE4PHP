@@ -203,19 +203,20 @@ abstract class RegisteredJOSEHeaderNames {
     const Critical = 'crit';
 
 
-    public static $registered_basic_headers_set = array (
-                            self::Algorithm,
-                            self::Type,
-                            self::ContentType,
-                            self::KeyID
+    public static $registered_basic_headers_set = array
+    (
+        self::Algorithm,
+        self::Type,
+        self::KeyID,
+        self::ContentType,
     );
 
-    public static $registered_basic_headers_set_types = array (
+    public static $registered_basic_headers_set_types = array
+    (
         self::Algorithm   => JsonTypes::StringOrURI ,
         self::Type        => JsonTypes::StringOrURI,
         self::ContentType => JsonTypes::StringOrURI,
         self::KeyID       => JsonTypes::JsonValue
     );
-
 
 }

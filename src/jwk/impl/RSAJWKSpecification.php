@@ -23,7 +23,8 @@ use jwk\RSAKeysParameters;
  * Class RSAJWKSpecification
  * @package jwk\impl
  */
-class RSAJWKSpecification extends JWKSpecification {
+class RSAJWKSpecification extends JWKSpecification
+{
 
     /**
      * @param string $alg
@@ -31,13 +32,16 @@ class RSAJWKSpecification extends JWKSpecification {
      * @param string $kid
      * @throws InvalidJWKAlgorithm
      */
-    public function __construct(
+    public function __construct
+    (
         $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256,
         $use = JSONWebKeyPublicKeyUseValues::Signature,
-        $kid = null)
+        $kid = null
+    )
     {
         if(!empty($alg) && !in_array($alg, RSAKeysParameters::$valid_algorithms_values))
             throw new InvalidJWKAlgorithm(sprintf('alg %s', $alg));
+
         parent::__construct($alg, $use, $kid);
     }
 }

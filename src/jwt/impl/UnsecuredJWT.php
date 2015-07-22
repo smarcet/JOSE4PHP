@@ -26,16 +26,27 @@ use utils\json_types\StringOrURI;
  *
  *
  */
-final class UnsecuredJWT extends JWT implements IJWTSnapshot {
+final class UnsecuredJWT extends JWT implements IJWTSnapshot
+{
 
     const EmptySignature = '';
 
     /**
      * @param IJWTClaimSet $claim_set
      */
-    protected function __construct(IJWTClaimSet $claim_set){
+    protected function __construct(IJWTClaimSet $claim_set)
+    {
 
-        parent::__construct( new JOSEHeader( new StringOrURI('none'), new StringOrURI('JWT')), $claim_set);
+        parent::__construct
+        (
+            new JOSEHeader
+            (
+                new StringOrURI('none'),
+                new StringOrURI('JWT')
+            ),
+            $claim_set
+        );
+
         $this->signature = self::EmptySignature;
     }
 

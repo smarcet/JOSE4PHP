@@ -33,7 +33,8 @@ class JOSEHeaderFactory {
      * @param array $raw_headers
      * @return IJOSEHeader
      */
-    public static function build(array $raw_headers){
+    public static function build(array $raw_headers)
+    {
 
         $args = array();
 

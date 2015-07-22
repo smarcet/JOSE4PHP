@@ -25,20 +25,29 @@ use utils\json_types\StringOrURI;
  * Class JWEJOSEHeader
  * @package jwe\impl
  */
-final class JWEJOSEHeader
-    extends JOSEHeader implements
-    IJWEJOSEHeader {
+final class JWEJOSEHeader extends JOSEHeader implements IJWEJOSEHeader
+{
 
     /**
      * @param StringOrURI $alg
      * @param StringOrURI $enc
-     * @param StringOrURI $type
-     * @param StringOrURI $cty
-     * @param JsonValue $kid
-     * @param JsonValue $zip
+     * @param JsonValue|null $kid
+     * @param JsonValue|null $zip
+     * @param StringOrURI|null $type
+     * @param StringOrURI|null $cty
      */
-    public function __construct(StringOrURI $alg, StringOrURI $enc, StringOrURI $type = null, StringOrURI $cty = null, JsonValue  $kid = null, JsonValue $zip = null){
-        parent::__construct($alg,$type,$cty, $kid);
+    public function __construct
+    (
+        StringOrURI $alg,
+        StringOrURI $enc,
+        JsonValue   $kid  = null,
+        JsonValue   $zip  = null,
+        StringOrURI $type = null,
+        StringOrURI $cty  = null
+    )
+    {
+        parent::__construct($alg, $type,$kid, $cty);
+
         $this->set[RegisteredJWEJOSEHeaderNames::EncryptionAlgorithm] = $enc;
 
         if(!is_null($zip) && CompressionAlgorithms_Registry::getInstance()->get($zip->getValue()))

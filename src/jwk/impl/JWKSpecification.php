@@ -22,8 +22,8 @@ use jwk\JSONWebKeyPublicKeyUseValues;
  * Class JWKSpecification
  * @package jwk\impl
  */
-class JWKSpecification
-    implements IJWKSpecification {
+class JWKSpecification implements IJWKSpecification
+{
 
     /**
      * @var string
@@ -46,7 +46,13 @@ class JWKSpecification
      * @param string $use
      * @param null|string $kid
      */
-    public function __construct($alg = JSONWebSignatureAndEncryptionAlgorithms::RS256, $use = JSONWebKeyPublicKeyUseValues::Signature, $kid = null){
+    public function __construct
+    (
+        $alg = JSONWebSignatureAndEncryptionAlgorithms::RS256,
+        $use = JSONWebKeyPublicKeyUseValues::Signature,
+        $kid = null
+    )
+    {
         $this->alg  = $alg;
         $this->use  = $use;
         $this->kid  = $kid;
