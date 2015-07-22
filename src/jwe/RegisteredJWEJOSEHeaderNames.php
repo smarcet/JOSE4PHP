@@ -67,10 +67,10 @@ abstract class RegisteredJWEJOSEHeaderNames extends RegisteredJOSEHeaderNames {
     public static $registered_basic_headers_set = array (
         self::Algorithm,
         self::EncryptionAlgorithm,
-        self::Type,
-        self::ContentType,
         self::KeyID,
         self::CompressionAlgorithm,
+        self::Type,
+        self::ContentType,
     );
 
     public static $registered_basic_headers_set_types = array (

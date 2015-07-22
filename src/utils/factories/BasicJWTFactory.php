@@ -42,7 +42,8 @@ final class BasicJWTFactory
         $segments = explode(IBasicJWT::SegmentSeparator, $compact_serialization);
         // JWSs have three segments separated by two period ('.') characters.
         // JWEs have five segments separated by four period ('.') characters.
-        switch(count($segments)){
+        switch(count($segments))
+        {
             case 3:
                 // JWS or unsecured one
                 $header = JOSEHeaderSerializer::deserialize($segments[0]);
