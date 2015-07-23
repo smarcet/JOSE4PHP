@@ -48,9 +48,8 @@ use utils\json_types\StringOrURI;
  * @package jws\impl
  * @access private
  */
-final class JWS
-    extends JWT
-    implements IJWS {
+final class JWS extends JWT implements IJWS
+{
 
     /**
      * @var IJWK
@@ -68,7 +67,8 @@ final class JWS
      * @param string $signature
      * @throws JWSNotSupportedAlgorithm
      */
-    protected function __construct(IJOSEHeader $header, IJWSPayloadSpec $payload = null, $signature = ''){
+    protected function __construct(IJOSEHeader $header, IJWSPayloadSpec $payload = null, $signature = '')
+    {
 
         $claim_set = null;
 
@@ -102,15 +102,25 @@ final class JWS
     {
         if(!is_null($this->jwk->getId()))
             $this->header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::KeyID, $this->jwk->getId()));
-        if($this->jwk instanceof IAsymmetricJWK) {
+
+        if($this->jwk instanceof IAsymmetricJWK)
+        {
             // we should add the public key on the header
             $public_key = clone $this->jwk;
 
-            $this->header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::JSONWebKey,
-                    new JsonValue( $public_key->setVisibility(JSONWebKeyVisibility::PublicOnly) )
+            $this->header->addHeader
+            (
+                new JOSEHeaderParam
+                (
+                    RegisteredJOSEHeaderNames::JSONWebKey,
+                    new JsonValue
+                    (
+                        $public_key->setVisibility(JSONWebKeyVisibility::PublicOnly)
+                    )
                 )
             );
         }
+
         $this->sign();
         return parent::toCompactSerialization();
     }
@@ -130,21 +140,25 @@ final class JWS
         if($this->jwk->getKeyUse()->getString() !== JSONWebKeyPublicKeyUseValues::Signature)
             throw new JWSInvalidJWKException(sprintf('use %s not supported.', $this->jwk->getKeyUse()->getString()));
 
-        $alg    = DigitalSignatures_MACs_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
+        $alg = DigitalSignatures_MACs_Registry::getInstance()->get($this->header->getAlgorithm()->getString());
 
-        if(is_null($alg)) throw new JWSNotSupportedAlgorithm(sprintf('alg %s.',$this->header->getAlgorithm()->getString()));
+        if(is_null($alg))
+            throw new JWSNotSupportedAlgorithm(sprintf('alg %s.',$this->header->getAlgorithm()->getString()));
 
         $secured_input_bytes = JOSEHeaderSerializer::serialize($this->header) . IBasicJWT::SegmentSeparator .$this->getEncodedPayload();
 
         $key  = $this->jwk->getKey(JSONWebKeyKeyOperationsValues::ComputeDigitalSignatureOrMAC);
 
-        if($alg instanceof DigitalSignatureAlgorithm) {
+        if($alg instanceof DigitalSignatureAlgorithm)
+        {
             $this->signature = $alg->sign($key, $secured_input_bytes);
         }
-        else if($alg instanceof MAC_Algorithm ) {
+        else if($alg instanceof MAC_Algorithm )
+        {
             $this->signature = $alg->digest($key, $secured_input_bytes);
         }
-        else{
+        else
+        {
             throw new JWSNotSupportedAlgorithm(sprintf('alg %s.',$this->header->getAlgorithm()->getString()));
         }
 
@@ -155,14 +169,18 @@ final class JWS
      * @return string
      * @throws JWSInvalidPayloadException
      */
-    public function getEncodedPayload(){
+    public function getEncodedPayload()
+    {
         if(is_null($this->payload))
             throw new JWSInvalidPayloadException('payload is not set!');
+
         $enc_payload = '';
-        if($this->payload->isClaimSet() && $this->payload instanceof IJWSPayloadClaimSetSpec){
+        if($this->payload->isClaimSet() && $this->payload instanceof IJWSPayloadClaimSetSpec)
+        {
             $enc_payload = JWTClaimSetSerializer::serialize($this->payload->getClaimSet());
         }
-        else{
+        else
+        {
             $enc_payload = JWTRawSerializer::serialize($this->payload->getRaw());
         }
         return $enc_payload;
@@ -232,7 +250,15 @@ final class JWS
             throw new InvalidJWKAlgorithm('algorithm intended for use with the key is not set! ');
 
         if(!is_null($this->jwk->getId()) && !is_null($this->header->getKeyID()) && $this->header->getKeyID()->getValue() != $this->jwk->getId()->getValue())
-            throw new JWSInvalidJWKException(sprintf('original kid %s - current kid %s', $this->header->getKeyID()->getValue() , $this->jwk->getId()->getValue()));
+            throw new JWSInvalidJWKException
+            (
+                sprintf
+                (
+                    'original kid %s - current kid %s',
+                    $this->header->getKeyID()->getValue(),
+                    $this->jwk->getId()->getValue()
+                )
+            );
 
         $alg = DigitalSignatures_MACs_Registry::getInstance()->get($original_alg);
 
@@ -284,7 +310,8 @@ final class JWS
      * @param string $signature
      * @return IJWS
      */
-    static public function fromHeaderClaimsAndSignature(IJOSEHeader $header, IJWSPayloadSpec $payload = null , $signature = ''){
+    static public function fromHeaderClaimsAndSignature(IJOSEHeader $header, IJWSPayloadSpec $payload = null , $signature = '')
+    {
         return new JWS($header, $payload, $signature );
     }
 
@@ -294,7 +321,9 @@ final class JWS
     public function take()
     {
         $payload = $this->payload->isClaimSet() ?  $this->claim_set : $this->payload->getRaw();
-        return array(
+        
+        return array
+        (
             $this->header,
             $payload,
             $this->signature

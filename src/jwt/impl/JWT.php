@@ -23,8 +23,8 @@ use jwt\IJWTClaimSet;
  * Class JWT
  * @package jwt\impl
  */
-abstract class JWT
-    implements IJWT, IJWTSnapshot {
+abstract class JWT implements IJWT, IJWTSnapshot
+{
 
     /**
      * @var IJOSEHeader
@@ -47,7 +47,8 @@ abstract class JWT
      * @param IJOSEHeader $header
      * @param IJWTClaimSet|null $claim_set
      */
-    protected function __construct(IJOSEHeader $header, IJWTClaimSet $claim_set = null){
+    protected function __construct(IJOSEHeader $header, IJWTClaimSet $claim_set = null)
+    {
 
         $this->header    = $header;
         $this->claim_set = $claim_set;
@@ -91,11 +92,12 @@ abstract class JWT
     public function take()
     {
         $payload = ($this->header->getType()->getString() === 'JWT') ?  $this->claim_set : '';
-        return array(
+        return array
+        (
             $this->header,
             $payload,
             $this->signature
-          );
+        );
     }
 
     /**
@@ -110,6 +112,6 @@ abstract class JWT
         $iat = $this->getClaimSet()->getIssuedAt()->getDateTime();
         if($iat > $now) return true;
         $diff = $now->getTimestamp() - $iat->getTimestamp();
-        return $diff < $tolerance;
+        return $diff > $tolerance;
     }
 }
