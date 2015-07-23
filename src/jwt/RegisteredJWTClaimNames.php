@@ -29,7 +29,8 @@ use utils\json_types\JsonTypes;
  * the names are short because a core goal of JWTs is for the
  * representation to be compact.
  */
-final class RegisteredJWTClaimNames {
+final class RegisteredJWTClaimNames
+{
     /**
      * The "iss" (issuer) claim identifies the principal that issued the
      * JWT.  The processing of this claim is generally application specific.
@@ -102,13 +103,24 @@ final class RegisteredJWTClaimNames {
 
     /**
      * @var array
+     * @see jwt/impl/JWTClaimSet.php constructor
      */
-    public static $registered_claim_set = array( self::Issuer , self::Audience, self::Subject, self::IssuedAt, self::ExpirationTime, self::JWTID, self::NotBefore);
+    public static $registered_claim_set = array
+    (
+        self::Issuer ,
+        self::Subject,
+        self::Audience,
+        self::IssuedAt,
+        self::ExpirationTime,
+        self::JWTID,
+        self::NotBefore
+    );
 
     /**
      * @var array
      */
-    public static $registered_claim_set_types = array(
+    public static $registered_claim_set_types = array
+    (
         self::Issuer         => JsonTypes::StringOrURI,
         self::Audience       => JsonTypes::StringOrURI,
         self::Subject        => JsonTypes::StringOrURI,

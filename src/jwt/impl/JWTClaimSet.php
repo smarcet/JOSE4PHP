@@ -28,9 +28,7 @@ use utils\json_types\StringOrURI;
  * Class JWTClaimSet
  * @package jwt\impl
  */
-final class JWTClaimSet
-    extends JsonObject
-    implements IJWTClaimSet
+final class JWTClaimSet extends JsonObject implements IJWTClaimSet
 {
 
     /**
@@ -42,13 +40,16 @@ final class JWTClaimSet
      * @param JsonValue $id
      * @param NumericDate $nbf
      */
-    public function __construct(StringOrURI $issuer = null,
-                                StringOrURI $subject = null,
-                                StringOrURI $audience = null,
-                                NumericDate $issued_at = null,
-                                NumericDate $expiration_time = null,
-                                JsonValue $id = null,
-                                NumericDate $nbf = null)
+    public function __construct
+    (
+        StringOrURI $issuer          = null,
+        StringOrURI $subject         = null,
+        StringOrURI $audience        = null,
+        NumericDate $issued_at       = null,
+        NumericDate $expiration_time = null,
+        JsonValue   $id              = null,
+        NumericDate $nbf             = null
+    )
     {
 
         $this->set[RegisteredJWTClaimNames::Issuer] = $issuer;
@@ -134,7 +135,8 @@ final class JWTClaimSet
     public function getClaims()
     {
        $claims = array();
-       foreach($this->set as $k => $v){
+       foreach($this->set as $k => $v)
+       {
            array_push($claims, new JWTClaim($k, $v));
        }
        return $claims;
@@ -218,7 +220,8 @@ final class JWTClaimSet
      * @param NumericDate $expiration_time
      * @return void
      */
-    public function setExpirationTime(NumericDate $expiration_time){
+    public function setExpirationTime(NumericDate $expiration_time)
+    {
 
         $this->set[RegisteredJWTClaimNames::ExpirationTime] = $expiration_time;
     }
@@ -227,7 +230,8 @@ final class JWTClaimSet
      * @param NumericDate $not_before
      * @return void
      */
-    public function setNotBefore(NumericDate $not_before){
+    public function setNotBefore(NumericDate $not_before)
+    {
         $this->set[RegisteredJWTClaimNames::NotBefore] = $not_before;
     }
 
