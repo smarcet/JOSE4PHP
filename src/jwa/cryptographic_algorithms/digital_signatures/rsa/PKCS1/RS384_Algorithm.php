@@ -37,4 +37,13 @@ final class RS384_Algorithm extends RSASSA_PKCS1_v1_5_Algorithm {
     {
         return JSONWebSignatureAndEncryptionAlgorithms::RS384;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+       return 384;
+    }
 }

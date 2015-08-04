@@ -16,6 +16,7 @@ namespace jwk\impl;
 
 use jwa\cryptographic_algorithms\ContentEncryptionAlgorithms_Registry;
 use jwa\cryptographic_algorithms\DigitalSignatures_MACs_Registry;
+use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
 use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\exceptions\JWKInvalidSpecException;
 use jwk\IJWKSpecification;
@@ -49,6 +50,12 @@ final class OctetSequenceJWKFactory
 
         if(is_null($algorithm))
             $algorithm = ContentEncryptionAlgorithms_Registry::getInstance()->get
+            (
+                $spec->getAlg()
+            );
+
+        if(is_null($algorithm))
+            $algorithm = KeyManagementAlgorithms_Registry::getInstance()->get
             (
                 $spec->getAlg()
             );

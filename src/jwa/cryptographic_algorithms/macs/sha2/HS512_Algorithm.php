@@ -43,4 +43,13 @@ final class HS512_Algorithm extends HSMAC_Algorithm {
     {
         return JSONWebSignatureAndEncryptionAlgorithms::HS512;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+        return $this->getMinKeyLen();
+    }
 }

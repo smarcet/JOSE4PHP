@@ -81,4 +81,13 @@ final class DirAlgorithm implements EncryptionAlgorithm, DirectEncryption
     {
         return 256;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+        return $this->getMinKeyLen();
+    }
 }

@@ -41,8 +41,6 @@ final class ContentEncryptionAlgorithms_Registry
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256] = new A128CBCHS256_Algorithm;
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384] = new A192CBCHS384_Algorithm;
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::A256CBC_HS512] = new A256CBCHS512_Algorithm;
-        // dummy one
-        $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::Dir]           = new DirAlgorithm;
     }
 
     private function __clone(){}

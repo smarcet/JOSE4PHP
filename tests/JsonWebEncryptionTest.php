@@ -219,7 +219,12 @@ class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase
         $compact_serialization = $jwe->toCompactSerialization();
 
         $this->assertTrue(!empty($compact_serialization));
+
+        $segments = explode('.',$compact_serialization);
+        // key should be empty
+        $this->assertTrue(empty($segments[1]));
     }
+
 
     public function testDecryptDir()
     {

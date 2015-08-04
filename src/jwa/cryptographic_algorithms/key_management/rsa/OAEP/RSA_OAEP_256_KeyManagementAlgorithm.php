@@ -54,4 +54,13 @@ final class RSA_OAEP_256_KeyManagementAlgorithm extends RSA_KeyManagementAlgorit
     {
         return $this->getHashingAlgorithm();
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+        return 256;
+    }
 }

@@ -43,4 +43,13 @@ final class HS256_Algorithm extends HSMAC_Algorithm {
     {
         return JSONWebSignatureAndEncryptionAlgorithms::HS256;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+        return $this->getMinKeyLen();
+    }
 }

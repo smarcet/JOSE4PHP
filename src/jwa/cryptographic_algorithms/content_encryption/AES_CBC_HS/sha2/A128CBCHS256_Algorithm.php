@@ -42,4 +42,13 @@ final class A128CBCHS256_Algorithm extends AES_CBC_HMAC_SHA2_Algorithm {
     {
         return 256;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+       return $this->getMinKeyLen();
+    }
 }

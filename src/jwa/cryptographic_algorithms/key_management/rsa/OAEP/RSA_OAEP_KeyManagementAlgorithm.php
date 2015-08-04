@@ -54,4 +54,13 @@ final class RSA_OAEP_KeyManagementAlgorithm extends RSA_KeyManagementAlgorithm {
     {
         return $this->getHashingAlgorithm();
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+        return 1;
+    }
 }

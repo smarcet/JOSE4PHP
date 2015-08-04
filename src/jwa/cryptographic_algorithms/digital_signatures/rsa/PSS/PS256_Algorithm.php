@@ -36,4 +36,13 @@ final class PS256_Algorithm extends RSASSA_PSS_Algorithm {
     {
         return JSONWebSignatureAndEncryptionAlgorithms::PS256;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+        return 256;
+    }
 }

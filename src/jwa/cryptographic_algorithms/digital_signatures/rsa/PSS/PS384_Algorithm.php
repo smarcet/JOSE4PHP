@@ -37,4 +37,13 @@ final class PS384_Algorithm extends RSASSA_PSS_Algorithm {
     {
         return JSONWebSignatureAndEncryptionAlgorithms::PS384;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+        return 384;
+    }
 }

@@ -46,4 +46,13 @@ final class A192CBCHS384_Algorithm extends AES_CBC_HMAC_SHA2_Algorithm {
     {
         return 384;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+        return $this->getMinKeyLen();
+    }
 }

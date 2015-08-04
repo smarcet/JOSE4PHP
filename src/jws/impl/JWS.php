@@ -321,7 +321,7 @@ final class JWS extends JWT implements IJWS
     public function take()
     {
         $payload = $this->payload->isClaimSet() ?  $this->claim_set : $this->payload->getRaw();
-        
+
         return array
         (
             $this->header,

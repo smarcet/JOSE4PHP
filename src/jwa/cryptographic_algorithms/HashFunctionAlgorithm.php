@@ -24,4 +24,10 @@ interface HashFunctionAlgorithm extends ICryptoAlgorithm {
      * @return string
      */
     public function getHashingAlgorithm();
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen();
 }

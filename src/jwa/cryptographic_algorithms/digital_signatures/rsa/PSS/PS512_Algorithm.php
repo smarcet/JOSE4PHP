@@ -37,4 +37,13 @@ final class PS512_Algorithm extends RSASSA_PSS_Algorithm {
     {
         return JSONWebSignatureAndEncryptionAlgorithms::PS512;
     }
+
+    /**
+     * hash key size in bits
+     * @return int
+     */
+    public function getHashKeyLen()
+    {
+       return 512;
+    }
 }
