@@ -65,4 +65,10 @@ interface IReadOnlyJWTClaimSet extends IJsonObject, \ArrayAccess {
      * @return JWTClaim[]
      */
     public function getClaims();
+
+    /**
+     * @param string $claim_name
+     * @return JWTClaim|null
+     */
+    public function getClaimByName($claim_name);
 }

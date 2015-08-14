@@ -252,4 +252,15 @@ final class JWTClaimSet extends JsonObject implements IJWTClaimSet
     {
         $this->set[RegisteredJWTClaimNames::JWTID] = $jwt_id;
     }
+
+    /**
+     * @param string $claim_name
+     * @return JWTClaim|null
+     */
+    public function getClaimByName($claim_name)
+    {
+       return isset($this->set[RegisteredJWTClaimNames::$claim_name]) ?
+           $this->set[RegisteredJWTClaimNames::$claim_name] :
+           null;
+    }
 }
