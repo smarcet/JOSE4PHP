@@ -26,7 +26,7 @@ abstract class Abstract_RSA_Algorithm implements ICryptoAlgorithm {
      */
     protected $rsa_impl;
 
-    public function __construct(){
+    public function __construct() {
         $this->rsa_impl = new \Crypt_RSA();
     }
 
