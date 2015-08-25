@@ -43,13 +43,13 @@ final class ContentEncryptionAlgorithms_Registry
         $this->algorithms[JSONWebSignatureAndEncryptionAlgorithms::A256CBC_HS512] = new A256CBCHS512_Algorithm;
     }
 
-    private function __clone(){}
+    private function __clone() {}
 
     /**
      * @return ContentEncryptionAlgorithms_Registry
      */
-    public static function getInstance(){
-        if(!is_object(self::$instance)){
+    public static function getInstance() {
+        if (!is_object(self::$instance)) {
             self::$instance = new ContentEncryptionAlgorithms_Registry();
         }
         return self::$instance;
@@ -59,7 +59,7 @@ final class ContentEncryptionAlgorithms_Registry
      * @param string $alg
      * @return bool
      */
-    public function isSupported($alg){
+    public function isSupported($alg) {
         return array_key_exists($alg, $this->algorithms);
     }
 
@@ -67,8 +67,8 @@ final class ContentEncryptionAlgorithms_Registry
      * @param $alg
      * @return null|ContentEncryptionAlgorithm
      */
-    public function get($alg){
-        if(!$this->isSupported($alg)) return null;
+    public function get($alg) {
+        if (!$this->isSupported($alg)) return null;
         return $this->algorithms[$alg];
     }
 }
