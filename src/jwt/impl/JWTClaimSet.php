@@ -259,8 +259,8 @@ final class JWTClaimSet extends JsonObject implements IJWTClaimSet
      */
     public function getClaimByName($claim_name)
     {
-       return isset($this->set[RegisteredJWTClaimNames::$claim_name]) ?
-           $this->set[RegisteredJWTClaimNames::$claim_name] :
+       return isset($this->set[$claim_name]) ?
+           $this->set[$claim_name] :
            null;
     }
 }
