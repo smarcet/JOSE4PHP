@@ -172,10 +172,9 @@ final class JWE implements IJWE, IJWESnapshot
     /***
      * @param EncryptionAlgorithm $alg
      * @param Key $recipient_public_key
-     * @param Key $cek
      * @return string
      */
-     private function getJWEEncryptedKey(EncryptionAlgorithm $alg, Key $recipient_public_key, Key $cek)
+     private function getJWEEncryptedKey(EncryptionAlgorithm $alg, Key $recipient_public_key)
      {
         /**
          * When Key Wrapping, Key Encryption, or Key Agreement with Key
@@ -190,14 +189,12 @@ final class JWE implements IJWE, IJWESnapshot
              {
                  return $alg->encrypt($recipient_public_key, $this->cek->getEncoded());
              }
-             break;
              /**
               * When Direct Key Agreement or Direct Encryption are employed, let
               * the JWE Encrypted Key be the empty octet sequence.
               */
              default:
-                 return '';
-             break;
+             return '';
          }
      }
 
@@ -291,7 +288,7 @@ final class JWE implements IJWE, IJWESnapshot
             $content_encryption_algorithm
         );
 
-        $this->enc_cek = $this->getJWEEncryptedKey($key_management_algorithm, $recipient_public_key, $this->cek);
+        $this->enc_cek = $this->getJWEEncryptedKey($key_management_algorithm, $recipient_public_key);
 
         /**
          * Generate a random JWE Initialization Vector of the correct size
@@ -378,7 +375,6 @@ final class JWE implements IJWE, IJWESnapshot
 
                 return ContentEncryptionKeyFactory::fromRaw($alg->decrypt($recipient_private_key, $this->enc_cek), $alg);
             }
-            break;
             /**
              * When Direct Key Agreement or Direct Encryption are employed,
              * verify that the JWE Encrypted Key value is an empty octetsequence.
@@ -386,15 +382,17 @@ final class JWE implements IJWE, IJWESnapshot
              * symmetric key.
              */
             case KeyManagementModeValues::DirectEncryption:
-                if(!empty($this->enc_cek))
+            {
+                if (!empty($this->enc_cek))
                     throw new JWEInvalidCompactFormatException('JWE Encrypted Key value is not an empty octetsequence.');
                 return $recipient_private_key;
-            break;
+            }
             case KeyManagementModeValues::DirectKeyAgreement:
-                if(!empty($this->enc_cek))
+            {
+                if (!empty($this->enc_cek))
                     throw new JWEInvalidCompactFormatException('JWE Encrypted Key value is not an empty octetsequence.');
                 throw new \Exception('unsupported Key Management Mode!');
-            break;
+            }
         }
         return null;
     }
