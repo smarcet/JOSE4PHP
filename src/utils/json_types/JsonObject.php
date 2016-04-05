@@ -49,7 +49,6 @@ class JsonObject implements \ArrayAccess, IJsonObject {
         throw new \LogicException;
     }
 
-
     /**
      * @return string
      * @throws exceptions\JsonParseException
@@ -67,7 +66,6 @@ class JsonObject implements \ArrayAccess, IJsonObject {
         }
         return $json;
     }
-
 
     /**
      * @param int $errno

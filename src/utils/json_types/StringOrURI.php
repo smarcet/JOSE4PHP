@@ -56,4 +56,11 @@ class StringOrURI extends JsonValue {
     public function isUri(){
         return !(strstr($this->value, ':') === false);
     }
+
+    /**
+     * @return string
+     */
+    public function getValue(){
+        return $this->isUri() ? $this->getUri() : $this->getString();
+    }
 }
