@@ -28,6 +28,7 @@ use jws\exceptions\JWSInvalidPayloadException;
 use jws\exceptions\JWSNotSupportedAlgorithm;
 use jws\IJWS;
 use jws\IJWSPayloadClaimSetSpec;
+use jws\IJWSPayloadRawSpec;
 use jws\IJWSPayloadSpec;
 use jws\payloads\JWSPayloadFactory;
 use jwt\IBasicJWT;
@@ -39,7 +40,6 @@ use jwt\RegisteredJOSEHeaderNames;
 use jwt\utils\JOSEHeaderSerializer;
 use jwt\utils\JWTClaimSetSerializer;
 use jwt\utils\JWTRawSerializer;
-use utils\json_types\JsonArray;
 use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
 
@@ -175,11 +175,12 @@ final class JWS extends JWT implements IJWS
             throw new JWSInvalidPayloadException('payload is not set!');
 
         $enc_payload = '';
-        if($this->payload->isClaimSet() && $this->payload instanceof IJWSPayloadClaimSetSpec)
+
+        if($this->payload instanceof IJWSPayloadClaimSetSpec)
         {
             $enc_payload = JWTClaimSetSerializer::serialize($this->payload->getClaimSet());
         }
-        else
+        else if($this->payload instanceof IJWSPayloadRawSpec)
         {
             $enc_payload = JWTRawSerializer::serialize($this->payload->getRaw());
         }
@@ -320,8 +321,7 @@ final class JWS extends JWT implements IJWS
      */
     public function take()
     {
-        $payload = $this->payload->isClaimSet() ?  $this->claim_set : $this->payload->getRaw();
-
+        $payload = ($this->payload instanceof IJWSPayloadRawSpec) ?  $this->payload->getRaw() : $this->claim_set;
         return array
         (
             $this->header,
