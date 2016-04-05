@@ -16,7 +16,6 @@ namespace jwe\impl;
 
 use jwa\cryptographic_algorithms\ContentEncryptionAlgorithms_Registry;
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
-use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyTypeAlgorithmException;
 use jwa\cryptographic_algorithms\key_management\modes\DirectEncryption;
 use jwa\cryptographic_algorithms\key_management\modes\DirectKeyAgreement;
@@ -24,17 +23,18 @@ use jwa\cryptographic_algorithms\key_management\modes\KeyAgreementWithKeyWrappin
 use jwa\cryptographic_algorithms\key_management\modes\KeyEncryption;
 use jwa\cryptographic_algorithms\key_management\modes\KeyWrapping;
 use jwa\cryptographic_algorithms\KeyManagementAlgorithms_Registry;
-use jwe\compression_algorithms\CompressionAlgorithms_Registry;
 use jwe\exceptions\JWEInvalidCompactFormatException;
 use jwe\exceptions\JWEInvalidRecipientKeyException;
 use jwe\exceptions\JWEUnsupportedContentEncryptionAlgorithmException;
 use jwe\exceptions\JWEUnsupportedKeyManagementAlgorithmException;
+use jwe\compression_algorithms\CompressionAlgorithms_Registry;
 use jwe\IJWEJOSEHeader;
 use jwe\IJWE;
 use jwe\KeyManagementModeValues;
 use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\IJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
+use jws\IJWSPayloadRawSpec;
 use jws\IJWSPayloadSpec;
 use jws\payloads\JWSPayloadFactory;
 use jwt\utils\JOSEHeaderSerializer;
@@ -45,8 +45,7 @@ use security\Key;
  * @package jwe\impl
  * @access private
  */
-final class JWE
-    implements IJWE, IJWESnapshot
+final class JWE implements IJWE, IJWESnapshot
 {
 
     /**
@@ -158,7 +157,7 @@ final class JWE
         if (is_null($this->payload))
             $this->payload = JWSPayloadFactory::build('');
 
-        return $this->payload->getRaw();
+        return ($this->payload instanceof IJWSPayloadRawSpec) ? $this->payload->getRaw():'';
     }
 
     /**
@@ -309,7 +308,7 @@ final class JWE
         // We encrypt the payload and get the tag
         $jwt_shared_protected_header = JOSEHeaderSerializer::serialize($this->header);
 
-        $payload = $this->payload->getRaw();
+        $payload = ($this->payload instanceof IJWSPayloadRawSpec) ? $this->payload->getRaw():'';
         $zip     = $this->header->getCompressionAlgorithm();
         /**
          * If a "zip" parameter was included, compress the plaintext using
