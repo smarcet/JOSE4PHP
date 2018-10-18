@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\macs\sha2;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,13 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms\macs\sha2;
-
-
 use jwa\cryptographic_algorithms\macs\HSMAC_Algorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
-
 /**
  * Class HS384_Algorithm
  * @package jwa\cryptographic_algorithms\macs\sha2

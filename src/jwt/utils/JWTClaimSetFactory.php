@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwt\utils;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,15 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwt\utils;
-
 use jwt\IJWTClaimSet;
 use jwt\JWTClaim;
 use jwt\RegisteredJWTClaimNames;
 use utils\json_types\JsonValue;
 use \ReflectionClass;
-
 /**
  * Class JWTClaimSetFactory
  * @package jwt\utils

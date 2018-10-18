@@ -1,4 +1,4 @@
-<?php
+<?php namespace security\rsa;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,11 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace security\rsa;
-
 use security\PublicKey;
-
+use phpseclib\Math\BigInteger;
 /**
  * Interface RSAPublicKey
  * @package security\rsa
@@ -23,7 +20,7 @@ use security\PublicKey;
 interface RSAPublicKey extends RSAKey, PublicKey {
     /**
      * The "e" (exponent)
-     * @return \Math_BigInteger
+     * @return BigInteger
      */
     public function getPublicExponent();
 }

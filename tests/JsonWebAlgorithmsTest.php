@@ -11,13 +11,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 **/
-
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A128CBCHS256_Algorithm;
 use utils\ByteUtil;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyLengthAlgorithmException;
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A192CBCHS384_Algorithm;
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A256CBCHS512_Algorithm;
-
 /**
  * Class JsonWebAlgorithmsTest
  *

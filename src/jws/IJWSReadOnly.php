@@ -1,4 +1,4 @@
-<?php
+<?php namespace jws;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,13 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jws;
-
-
 use jwt\IJWT;
 use utils\json_types\StringOrURI;
-
 /**
  * Interface IJWSReadOnly
  * @package jws

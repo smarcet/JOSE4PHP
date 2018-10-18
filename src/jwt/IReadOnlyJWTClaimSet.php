@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwt;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,12 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-namespace jwt;
-
 use utils\json_types\IJsonObject;
 use utils\json_types\NumericDate;
 use utils\json_types\StringOrURI;
-
 /**
  * Interface IReadOnlyJWTClaimSet
  * @package jwt
@@ -47,20 +44,17 @@ interface IReadOnlyJWTClaimSet extends IJsonObject, \ArrayAccess {
      * @return NumericDate
      */
     public function getNotBefore();
-
-
+    
     /**
      * @return NumericDate
      */
     public function getIssuedAt();
 
-
     /**
      * @return string
      */
     public function getJWTID();
-
-
+    
     /**
      * @return JWTClaim[]
      */

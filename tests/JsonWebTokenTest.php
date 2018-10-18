@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
 use \jwt\impl\JWTClaimSet;
 use \jwt\JWTClaim;
 use \utils\json_types\StringOrURI;
@@ -23,11 +22,10 @@ use \jwt\utils\JWTClaimSetFactory;
 use \jwt\RegisteredJWTClaimNames;
 use utils\factories\BasicJWTFactory;
 use jwe\IJWE;
-
 /**
  * Class JsonWebTokenTest
  */
-class JsonWebTokenTest extends PHPUnit_Framework_TestCase {
+final class JsonWebTokenTest extends PHPUnit_Framework_TestCase {
 
     static $epoch ;
 

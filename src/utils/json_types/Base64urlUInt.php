@@ -1,4 +1,4 @@
-<?php
+<?php namespace utils\json_types;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,12 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace utils\json_types;
-
-
 use utils\Base64UrlRepresentation;
-
+use phpseclib\Math\BigInteger;
 /**
  * Class Base64urlUInt
  * @package utils\json_types
@@ -24,19 +20,19 @@ use utils\Base64UrlRepresentation;
 class Base64urlUInt extends JsonValue {
 
     /**
-     * @return \Math_BigInteger
+     * @return BigInteger
      */
     public function toBigInt(){
         $b64 = new Base64UrlRepresentation();
         $hex = bin2hex($b64->decode($this->value));
-        return new \Math_BigInteger('0x'.$hex, 16);
+        return new BigInteger('0x'.$hex, 16);
     }
 
     /**
-     * @param \Math_BigInteger $big_int
+     * @param BigInteger $big_int
      * @return Base64urlUInt
      */
-    public static function fromBigInt(\Math_BigInteger $big_int){
+    public static function fromBigInt(BigInteger $big_int){
         $b64 = new Base64UrlRepresentation();
         $input = $big_int->toBytes();
         return new Base64urlUInt($b64->encode($input));

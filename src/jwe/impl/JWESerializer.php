@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwe\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,14 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwe\impl;
-
 use jwe\exceptions\JWEInvalidCompactFormatException;
 use jwt\IBasicJWT;
 use jwt\utils\JWTRawSerializer;
 use jwt\utils\JOSEHeaderSerializer;
-
 /**
  * Class JWESerializer
  * @package jwe\impl
@@ -45,6 +41,11 @@ final class JWESerializer
         return sprintf('%s.%s.%s.%s.%s', $header, $enc_cek, $iv, $cipher_text, $tag);
     }
 
+    /**
+     * @param $input
+     * @return array
+     * @throws JWEInvalidCompactFormatException
+     */
     static public function deserialize($input){
         $parts = explode(IBasicJWT::SegmentSeparator, $input);
         if (count($parts) !== 5) throw new JWEInvalidCompactFormatException;

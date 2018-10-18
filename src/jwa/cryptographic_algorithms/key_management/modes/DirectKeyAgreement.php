@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\key_management\modes;
 /**
 * Copyright 2015 OpenStack Foundation
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@
 * limitations under the License.
 **/
 
-namespace jwa\cryptographic_algorithms\key_management\modes;
+
 
 /**
  * Interface DirectKeyAgreement

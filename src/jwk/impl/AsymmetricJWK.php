@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwk\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwk\impl;
-
 use jwk\exceptions\InvalidJWKVisibilityException;
 use jwk\IAsymmetricJWK;
 use jwk\JSONWebKeyVisibility;
@@ -25,7 +22,6 @@ use security\x509\X509Certificate;
 use security\x509\X509CertificateFactory;
 use utils\json_types\JsonArray;
 use utils\json_types\StringOrURI;
-
 /**
  * Class AsymmetricJWK
  * @package jwk\impl

@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,14 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS;
-
 use jwa\cryptographic_algorithms\content_encryption\ContentEncryptionAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyLengthAlgorithmException;
 use utils\ByteUtil;
-
+use phpseclib\Crypt\AES;
 /**
  * Class AES_CBC_HMAC_SHA2_Algorithm
  * @package jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS
@@ -29,14 +26,13 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
 {
 
     /**
-     * @var \Crypt_AES()
+     * @var AES
      */
     protected $aes;
 
     public function __construct()
     {
-        $this->aes = new \Crypt_AES();
-        $this->aes->Crypt_Base(CRYPT_AES_MODE_CBC);
+        $this->aes = new AES(AES::MODE_CBC);
     }
 
     /**

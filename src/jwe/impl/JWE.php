@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwe\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwe\impl;
-
 use jwa\cryptographic_algorithms\ContentEncryptionAlgorithms_Registry;
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyTypeAlgorithmException;
@@ -39,7 +36,6 @@ use jws\IJWSPayloadSpec;
 use jws\payloads\JWSPayloadFactory;
 use jwt\utils\JOSEHeaderSerializer;
 use security\Key;
-
 /**
  * Class JWE
  * @package jwe\impl
@@ -527,9 +523,8 @@ final class JWE implements IJWE, IJWESnapshot
      */
     public static function fromCompactSerialization($compact_serialization)
     {
-
         list($header, $enc_cek, $iv, $cipher_text, $tag) = JWESerializer::deserialize($compact_serialization);
-        $jwe     = new JWE($header);
+        $jwe = new JWE($header);
         $jwe->iv = $iv;
         $jwe->tag = $tag;
         $jwe->enc_cek = $enc_cek;

@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 
 use jwt\utils\JWTClaimSetFactory;
@@ -35,11 +34,10 @@ use utils\json_types\JsonValue;
 
 use jwk\impl\OctetSequenceJWKSpecification;
 use jwk\impl\OctetSequenceJWKFactory;
-
 /**
  * Class JsonWebEncryptionTest
  */
-class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase
+final class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase
 {
 
     public function testCreate()

@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwk;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@
  * limitations under the License.
  **/
 
-namespace jwk;
+
 
 /**
  * Class JSONWebKeyTypes
@@ -40,14 +40,14 @@ abstract class JSONWebKeyTypes {
     const  OctetSequence = 'OCT';
 
 
-    public static $valid_keys_set = array(
+    public static $valid_keys_set = [
         self::OctetSequence,
         self::RSA,
         self::EllipticCurve
-    );
+    ];
 
-    public static $supported_keys = array(
+    public static $supported_keys = [
         self::RSA,
-    );
+    ];
 
 }

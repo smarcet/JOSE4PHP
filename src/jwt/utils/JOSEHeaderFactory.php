@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwt\utils;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,14 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwt\utils;
-
 use jwt\IJOSEHeader;
 use jwt\JOSEHeaderParam;
 use jwt\RegisteredJOSEHeaderNames;
 use utils\json_types\JsonValue;
-
 /**
  * Class JOSEHeaderFactory
  * @package jwt\utils
@@ -31,12 +27,13 @@ class JOSEHeaderFactory {
 
     /**
      * @param array $raw_headers
-     * @return IJOSEHeader
+     * @return object
+     * @throws \ReflectionException
      */
     public static function build(array $raw_headers)
     {
 
-        $args = array();
+        $args = [];
 
         foreach(RegisteredJOSEHeaderNames::$registered_basic_headers_set as $header_name){
             $value = isset($raw_headers[$header_name]) ? $raw_headers[$header_name] : null;

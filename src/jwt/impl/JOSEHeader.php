@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwt\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,16 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwt\impl;
-
 use jwt\IJOSEHeader;
 use jwt\JOSEHeaderParam;
 use jwt\RegisteredJOSEHeaderNames;
 use utils\JsonObject;
 use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
-
 /**
  * Class JOSEHeader
  * @package jwt\impl

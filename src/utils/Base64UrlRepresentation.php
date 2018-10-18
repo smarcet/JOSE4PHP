@@ -1,4 +1,4 @@
-<?php
+<?php namespace utils;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,6 @@
  * limitations under the License.
  **/
 
-namespace utils;
 
 /**
  * Class Base64UrlRepresentation

@@ -1,4 +1,4 @@
-<?php
+<?php namespace jws\payloads;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,14 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jws\payloads;
-
 use jws\IJWSPayloadClaimSetSpec;
 use jws\IJWSPayloadRawSpec;
 use jws\IJWSPayloadSpec;
 use jwt\IJWTClaimSet;
-
 /**
  * Class JWSPayloadFactory
  * @package jws\payloads

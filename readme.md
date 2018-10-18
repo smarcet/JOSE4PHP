@@ -19,7 +19,7 @@ Implementation
 ## Prerequisites
 
     * LAMP/LEMP environment
-    * PHP >= 5.3.0
+    * PHP >= 7.2
     * composer (https://getcomposer.org/)
 
 ## Install

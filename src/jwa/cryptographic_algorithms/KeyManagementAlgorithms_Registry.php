@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,15 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms;
-
 use jwa\cryptographic_algorithms\key_management\DirAlgorithm;
 use jwa\cryptographic_algorithms\key_management\rsa\OAEP\RSA_OAEP_256_KeyManagementAlgorithm;
 use jwa\cryptographic_algorithms\key_management\rsa\OAEP\RSA_OAEP_KeyManagementAlgorithm;
 use jwa\cryptographic_algorithms\key_management\rsa\PKCS1\RSA1_5_KeyManagementAlgorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
-
 /**
  * Class KeyManagementAlgorithms_Registry
  * @package jwa\cryptographic_algorithms
@@ -32,7 +28,7 @@ final class KeyManagementAlgorithms_Registry
      */
     private static $instance;
 
-    private $algorithms = array();
+    private $algorithms = [];
 
     private function __construct()
     {

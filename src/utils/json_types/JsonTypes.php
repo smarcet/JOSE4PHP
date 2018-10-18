@@ -1,4 +1,4 @@
-<?php
+<?php namespace utils\json_types;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,6 @@
  * limitations under the License.
  **/
 
-namespace utils\json_types;
 
 /**
  * Class JsonTypes
@@ -24,5 +23,4 @@ final class JsonTypes {
     const JsonValue   = 'utils\json_types\JsonValue';
     const NumericDate = 'utils\json_types\NumericDate';
     const StringOrURI = 'utils\json_types\StringOrURI';
-
 }

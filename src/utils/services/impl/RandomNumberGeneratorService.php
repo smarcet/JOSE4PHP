@@ -1,4 +1,4 @@
-<?php
+<?php namespace utils\services\impl;
 /**
 * Copyright 2015 OpenStack Foundation
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,12 +11,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 **/
-
-namespace utils\services\impl;
-
 use utils\ByteUtil;
 use utils\services\IService;
-
 /**
  * Class RandomNumberGeneratorService
  * @package utils\services\impl
