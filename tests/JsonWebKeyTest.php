@@ -11,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
 use jwk\impl\RSAJWKFactory;
 use security\rsa\RSAFacade;
 use jwk\impl\RSAJWKSpecification;
@@ -22,11 +21,10 @@ use jwk\impl\RSAJWKParamsPublicKeySpecification;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use security\x509\X509CertificateFactory;
 use utils\json_types\Base64urlUInt;
-
 /**
  * Class JsonWebKeyTest
  */
-class JsonWebKeyTest extends PHPUnit_Framework_TestCase {
+final class JsonWebKeyTest extends PHPUnit_Framework_TestCase {
 
     public function testCreate(){
         $jwk = RSAJWKFactory::build(new RSAJWKSpecification(JSONWebSignatureAndEncryptionAlgorithms::RS512));

@@ -1,4 +1,4 @@
-<?php
+<?php namespace utils\factories;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace utils\factories;
-
 use jwe\impl\JWEFactory;
 use jwe\impl\specs\JWE_CompactFormatSpecification;
 use jws\impl\specs\JWS_CompactFormatSpecification;
@@ -23,7 +20,6 @@ use jwk\exceptions\InvalidJWKType;
 use jwt\impl\UnsecuredJWT;
 use jwt\utils\JOSEHeaderSerializer;
 use utils\exceptions\InvalidCompactSerializationException;
-
 /**
  * Class BasicJWTFactory
  * @package utils\factories

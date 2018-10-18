@@ -1,4 +1,4 @@
-<?php
+<?php namespace utils\services;
 /**
 * Copyright 2015 OpenStack Foundation
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,18 +11,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 **/
-
-namespace utils\services;
-
 use utils\services\impl\RandomNumberGeneratorService;
-
 /**
  * Class Utils_Registry
  * @package utils\services
  */
 final class Utils_Registry {
-
-
+    
     const RandomNumberGeneratorService = 'RandomNumberGeneratorService';
 
     /**

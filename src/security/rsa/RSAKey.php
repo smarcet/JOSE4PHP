@@ -1,4 +1,4 @@
-<?php
+<?php namespace security\rsa;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace security\rsa;
-
+use phpseclib\Math\BigInteger;
 /**
  * Interface RSAKey
  * @package security\rsa
@@ -22,7 +20,7 @@ interface RSAKey {
 
     /**
      * Returns The "n" (modulus)
-     * @return \Math_BigInteger
+     * @return BigInteger
      */
     public function getModulus();
 }

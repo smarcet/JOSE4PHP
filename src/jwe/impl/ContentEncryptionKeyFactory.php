@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwe\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,15 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwe\impl;
-
 use jwa\cryptographic_algorithms\content_encryption\ContentEncryptionAlgorithm;
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
 use jwe\KeyManagementModeValues;
 use security\Key;
 use utils\services\Utils_Registry;
-
 /**
  * Class ContentEncryptionKeyFactory
  *

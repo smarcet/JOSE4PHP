@@ -1,4 +1,4 @@
-<?php
+<?php namespace security\x509;
 /**
 * Copyright 2015 OpenStack Foundation
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,12 +11,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 **/
-
-namespace security\x509;
-
 use security\exceptions\InvalidX509CertificateException;
-use security\Key;
-
+use phpseclib\File\X509;
 /**
  * Class _X509Certificate
  * @package security\x509
@@ -27,10 +23,10 @@ final class _X509Certificate implements X509Certificate {
     /**
      * @var array
      */
-    private $info  = array();
+    private $info  = [];
 
     /**
-     * @var \File_X509|null
+     * @var X509|null
      */
     private $file = null;
 
@@ -41,7 +37,7 @@ final class _X509Certificate implements X509Certificate {
 
     public function __construct($pem){
 
-        $this->file = new \File_X509();
+        $this->file = new X509();
         $this->info = $this->file->loadX509($pem);
         if($this->info === false) throw new InvalidX509CertificateException($pem);
         $this->original_pem = $pem;

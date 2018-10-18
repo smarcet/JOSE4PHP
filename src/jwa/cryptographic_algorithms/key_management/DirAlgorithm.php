@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\key_management;
 /**
 * Copyright 2015 OpenStack Foundation
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,16 +11,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 **/
-
-namespace jwa\cryptographic_algorithms\key_management;
-
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyTypeAlgorithmException;
 use jwa\cryptographic_algorithms\key_management\modes\DirectEncryption;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwk\JSONWebKeyTypes;
 use security\Key;
-
 /**
  * Class DirAlgorithm
  * @package jwa\cryptographic_algorithms\key_management

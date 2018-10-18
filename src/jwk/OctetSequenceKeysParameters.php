@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwk;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,11 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwk;
-
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
-
 /**
  * Class OctetSequenceKeysParameters
  * @package jwk
@@ -32,8 +28,7 @@ abstract class OctetSequenceKeysParameters
      */
     const Key = 'k';
 
-    public static $valid_algorithms_values = array
-    (
+    public static $valid_algorithms_values = [
         JSONWebSignatureAndEncryptionAlgorithms::HS256,
         JSONWebSignatureAndEncryptionAlgorithms::HS384,
         JSONWebSignatureAndEncryptionAlgorithms::HS512,
@@ -41,5 +36,5 @@ abstract class OctetSequenceKeysParameters
         JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256,
         JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384,
         JSONWebSignatureAndEncryptionAlgorithms::A256CBC_HS512,
-    );
+    ];
 }

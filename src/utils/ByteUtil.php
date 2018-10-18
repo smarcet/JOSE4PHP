@@ -1,4 +1,4 @@
-<?php
+<?php namespace utils;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace utils;
-
+use phpseclib\Crypt\Random;
 /**
  * Class ByteUtil
  * @package utils
@@ -33,7 +31,7 @@ final class ByteUtil {
      * @return String
      */
     static public function randomBytes($byte_len){
-        return crypt_random_string($byte_len);
+        return Random::string($byte_len);
     }
 
     /**

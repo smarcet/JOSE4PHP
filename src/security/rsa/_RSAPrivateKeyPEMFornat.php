@@ -1,4 +1,4 @@
-<?php
+<?php namespace security\rsa;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,10 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace security\rsa;
 use security\rsa\exceptions\RSABadPEMFormat;
-
+use phpseclib\Math\BigInteger;
+use phpseclib\Crypt\RSA;
 /**
  * Class _RSAPrivateKeyPEMFornat
  * @package security\rsa
@@ -24,7 +23,7 @@ final class _RSAPrivateKeyPEMFornat
     implements RSAPrivateKey {
 
     /**
-     * @var \Math_BigInteger
+     * @var BigInteger
      */
     private $d;
 
@@ -44,7 +43,7 @@ final class _RSAPrivateKeyPEMFornat
     /**
      * The "d" (private exponent)
      *
-     * @return \Math_BigInteger
+     * @return BigInteger
      */
     public function getPrivateExponent()
     {
@@ -56,7 +55,7 @@ final class _RSAPrivateKeyPEMFornat
      */
     public function getEncoded()
     {
-        $pem = $this->rsa_imp->getPrivateKey(CRYPT_RSA_PUBLIC_FORMAT_PKCS1);
+        $pem = $this->rsa_imp->getPrivateKey(RSA::PUBLIC_FORMAT_PKCS1);
         $pem = preg_replace('/\-+BEGIN RSA PRIVATE KEY\-+/','',$pem);
         $pem = preg_replace('/\-+END RSA PRIVATE KEY\-+/','',$pem);
         $pem = str_replace( array("\n","\r","\t"), '', trim($pem));

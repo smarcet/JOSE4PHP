@@ -1,4 +1,4 @@
-<?php
+<?php namespace security\rsa;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,11 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace security\rsa;
-
 use security\rsa\exceptions\RSABadPEMFormat;
-
+use phpseclib\Crypt\RSA;
+use phpseclib\Math\BigInteger;
 /**
  * Class _AbstractRSAKeyPEMFornat
  * @package security\rsa
@@ -28,15 +26,14 @@ abstract class _AbstractRSAKeyPEMFornat {
     protected $pem_format;
 
     /**
-     * @var \Crypt_RSA
+     * @var RSA
      */
     protected $rsa_imp;
 
     /**
-     * @var \Math_BigInteger
+     * @var BigInteger
      */
     protected $n;
-
 
     /**
      * @param string $pem_format
@@ -46,12 +43,12 @@ abstract class _AbstractRSAKeyPEMFornat {
     public function __construct($pem_format, $password = null){
 
         $this->pem_format = $pem_format;
-        $this->rsa_imp    = new \Crypt_RSA();
+        $this->rsa_imp    = new RSA();
 
         if(!empty($password))
             $this->rsa_imp->setPassword($password);
 
-        $res = $this->rsa_imp->loadKey($this->pem_format, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+        $res = $this->rsa_imp->loadKey($this->pem_format, RSA::PRIVATE_FORMAT_PKCS1);
 
         if(!$res) throw new RSABadPEMFormat(sprintf('pem %s',$pem_format ));
 
@@ -60,7 +57,7 @@ abstract class _AbstractRSAKeyPEMFornat {
 
     /**
      * Returns The "n" (modulus)
-     * @return \Math_BigInteger
+     * @return BigInteger
      */
     public function getModulus()
     {

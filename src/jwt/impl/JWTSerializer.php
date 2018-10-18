@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwt\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,15 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwt\impl;
-
 use jwt\exceptions\InvalidJWTException;
 use jwt\IBasicJWT;
 use jwt\utils\JOSEHeaderSerializer;
 use jwt\utils\JWTClaimSetSerializer;
 use jwt\utils\JWTRawSerializer;
-
 /**
  * Class JWTSerializer
  * @package jwt\impl

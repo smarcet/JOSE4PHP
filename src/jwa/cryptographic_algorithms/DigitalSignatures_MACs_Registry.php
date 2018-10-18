@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms;
-
 use jwa\cryptographic_algorithms\digital_signatures\DigitalSignatureAlgorithm;
 use jwa\cryptographic_algorithms\macs\MAC_Algorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
@@ -26,7 +23,6 @@ use jwa\cryptographic_algorithms\digital_signatures\rsa\PKCS1\RS512_Algorithm;
 use jwa\cryptographic_algorithms\digital_signatures\rsa\PSS\PS256_Algorithm;
 use jwa\cryptographic_algorithms\digital_signatures\rsa\PSS\PS384_Algorithm;
 use jwa\cryptographic_algorithms\digital_signatures\rsa\PSS\PS512_Algorithm;
-
 /**
  * Class DigitalSignatures_MACs_Registry
  * @package jwa\cryptographic_algorithms
@@ -38,7 +34,7 @@ final class DigitalSignatures_MACs_Registry {
      */
     private static $instance;
 
-    private $algorithms = array();
+    private $algorithms = [];
 
     private function __construct(){
 

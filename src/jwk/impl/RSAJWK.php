@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwk\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwk\impl;
-
 use jwk\exceptions\InvalidJWKType;
 use jwk\exceptions\InvalidJWKUseException;
 use jwk\exceptions\RSAJWKMissingPrivateKeyParamException;
@@ -33,7 +30,6 @@ use security\rsa\RSAPrivateKey;
 use security\rsa\RSAPublicKey;
 use utils\json_types\Base64urlUInt;
 use utils\json_types\StringOrURI;
-
 /**
  * Class RSAJWK
  * @package jwk\impl

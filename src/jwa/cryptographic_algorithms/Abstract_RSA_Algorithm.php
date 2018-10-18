@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,10 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms;
 use jwk\JSONWebKeyTypes;
-
+use phpseclib\Crypt\RSA;
 /**
  * Class Abstract_RSA_Algorithm
  * @package jwa\cryptographic_algorithms
@@ -22,12 +20,12 @@ use jwk\JSONWebKeyTypes;
 abstract class Abstract_RSA_Algorithm implements ICryptoAlgorithm {
 
     /**
-     * @var \Crypt_RSA
+     * @var RSA
      */
     protected $rsa_impl;
 
     public function __construct() {
-        $this->rsa_impl = new \Crypt_RSA();
+        $this->rsa_impl = new RSA();
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwt\exceptions;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +12,11 @@
  * limitations under the License.
  **/
 
-namespace jwt\exceptions;
 
-
+/**
+ * Class InvalidJWTException
+ * @package jwt\exceptions
+ */
 class InvalidJWTException extends \Exception {
 
 }

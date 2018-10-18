@@ -11,8 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 
 use jwt\RegisteredJWTClaimNames;
@@ -32,7 +30,6 @@ use jws\impl\specs\JWS_CompactFormatSpecification;
 use jws\JWSFactory;
 
 use utils\json_types\StringOrURI;
-
 /**
  * Class JsonWebSignatureTest
  */

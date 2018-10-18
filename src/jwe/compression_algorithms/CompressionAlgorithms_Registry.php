@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwe\compression_algorithms;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,13 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwe\compression_algorithms;
-
 use jwe\compression_algorithms\impl\Deflate;
 use jwe\compression_algorithms\impl\ZLib;
 use jwe\compression_algorithms\impl\GZip;
-
 /**
  * Class CompressionAlgorithms_Registry
  * @package jwe\compression_algorithms
@@ -29,7 +25,7 @@ final class CompressionAlgorithms_Registry {
      */
     private static $instance;
 
-    private $algorithms = array();
+    private $algorithms = [];
 
     private function __construct(){
 

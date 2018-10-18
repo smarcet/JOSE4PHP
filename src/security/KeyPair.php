@@ -1,4 +1,4 @@
-<?php
+<?php namespace security;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,6 @@
  * limitations under the License.
  **/
 
-namespace security;
 
 /**
  * Class KeyPair
@@ -36,7 +35,7 @@ final class KeyPair {
     public function __construct(PublicKey $public_key, PrivateKey $private_key){
 
         $this->private_key = $private_key;
-        $this->public_key   = $public_key;
+        $this->public_key  = $public_key;
     }
 
     /**

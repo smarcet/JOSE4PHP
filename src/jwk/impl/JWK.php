@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwk\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwk\impl;
-
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\exceptions\InvalidJWKType;
@@ -25,7 +22,6 @@ use jwk\JSONWebKeyTypes;
 use utils\json_types\JsonValue;
 use utils\json_types\StringOrURI;
 use utils\JsonObject;
-
 /**
  * Class JWK
  * @package jwk\impl
@@ -40,7 +36,7 @@ abstract class JWK
      * @throws InvalidJWKType
      * @throws InvalidJWKUseException
      */
-    protected function __construct(array $headers = array()){
+    protected function __construct(array $headers = []){
 
         if(count($headers) === 0 ) return;
 

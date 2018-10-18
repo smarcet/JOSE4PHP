@@ -1,4 +1,4 @@
-<?php
+<?php namespace jws\impl\specs;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jws\impl\specs;
-
 use jwk\exceptions\InvalidJWKType;
 use jwk\IJWK;
 use jws\exceptions\JWSInvalidPayloadException;
@@ -21,7 +18,6 @@ use jws\IJWS_ParamsSpecification;
 use jws\IJWSPayloadSpec;
 use jws\payloads\JWSPayloadFactory;
 use utils\json_types\StringOrURI;
-
 /**
  * Class JWS_ParamsSpecification
  * @package jws\impl\specs

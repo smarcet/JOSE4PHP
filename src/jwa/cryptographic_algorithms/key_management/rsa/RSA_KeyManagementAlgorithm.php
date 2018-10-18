@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\key_management\rsa;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms\key_management\rsa;
-
 use jwa\cryptographic_algorithms\Abstract_RSA_Algorithm;
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyTypeAlgorithmException;
@@ -21,7 +18,6 @@ use jwa\cryptographic_algorithms\key_management\modes\KeyEncryption;
 use security\Key;
 use security\rsa\RSAPrivateKey;
 use security\rsa\RSAPublicKey;
-
 /**
  * Class RSA_KeyManagementAlgorithm
  * @package jwa\cryptographic_algorithms\key_management\rsa
@@ -74,7 +70,6 @@ abstract class RSA_KeyManagementAlgorithm
 
         if(!($key instanceof RSAPrivateKey))
             throw new InvalidKeyTypeAlgorithmException('key is not private');
-
 
         if($key->getFormat() !== 'PKCS1')
             throw new InvalidKeyTypeAlgorithmException('keys is not on PKCS1 format');

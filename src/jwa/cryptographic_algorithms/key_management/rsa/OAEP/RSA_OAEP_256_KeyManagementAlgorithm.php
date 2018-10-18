@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\key_management\rsa\OAEP;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,12 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms\key_management\rsa\OAEP;
-
 use jwa\cryptographic_algorithms\key_management\rsa\RSA_KeyManagementAlgorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
-
+use phpseclib\Crypt\RSA;
 /**
  * Class RSA_OAEP_256_KeyManagementAlgorithm
  * @package jwa\cryptographic_algorithms\key_management\rsa\OAEP
@@ -44,7 +41,7 @@ final class RSA_OAEP_256_KeyManagementAlgorithm extends RSA_KeyManagementAlgorit
      */
     public function getEncryptionMode()
     {
-        return CRYPT_RSA_ENCRYPTION_OAEP;
+        return RSA::ENCRYPTION_OAEP;
     }
 
     /**

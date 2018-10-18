@@ -1,4 +1,4 @@
-<?php
+<?php namespace security\rsa;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,12 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace security\rsa;
-
 use security\KeyPair;
 use security\rsa\exceptions\RSABadPEMFormat;
-
+use phpseclib\Crypt\RSA;
+use phpseclib\Math\BigInteger;
 /**
  * Class RSAFacade
  * @package security\rsa
@@ -29,12 +27,12 @@ final class RSAFacade {
     private static $instance;
 
     /**
-     * @var \Crypt_RSA
+     * @var RSA
      */
     private $rsa_imp;
 
     private function __construct(){
-        $this->rsa_imp = new \Crypt_RSA();
+        $this->rsa_imp = new RSA();
     }
 
     private function __clone(){}
@@ -54,19 +52,19 @@ final class RSAFacade {
      * @return KeyPair
      */
     public function buildKeyPair($bits){
-        $this->rsa_imp->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
-        $this->rsa_imp->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_PKCS1);
+        $this->rsa_imp->setPrivateKeyFormat(RSA::PRIVATE_FORMAT_PKCS1);
+        $this->rsa_imp->setPublicKeyFormat(RSA::PUBLIC_FORMAT_PKCS1);
 
         $list = $this->rsa_imp->createKey($bits);
         return new KeyPair( new _RSAPublicKeyPEMFornat($list['publickey']), new _RSAPrivateKeyPEMFornat($list['privatekey']));
     }
 
     /**
-     * @param \Math_BigInteger $n
-     * @param \Math_BigInteger $e
+     * @param BigInteger $n
+     * @param BigInteger $e
      * @return RSAPublicKey
      */
-    public function buildPublicKey(\Math_BigInteger $n, \Math_BigInteger $e){
+    public function buildPublicKey(BigInteger $n, BigInteger $e){
         $public_key_pem = $this->rsa_imp->_convertPublicKey($n, $e);
         return new _RSAPublicKeyPEMFornat($public_key_pem);
     }
@@ -84,24 +82,24 @@ final class RSAFacade {
     }
 
     /**
-     * @param \Math_BigInteger $n
-     * @param \Math_BigInteger $e
-     * @param \Math_BigInteger $d
-     * @param \Math_BigInteger $p
-     * @param \Math_BigInteger $q
-     * @param \Math_BigInteger $dp
-     * @param \Math_BigInteger $dq
-     * @param \Math_BigInteger $qi
+     * @param BigInteger $n
+     * @param BigInteger $e
+     * @param BigInteger $d
+     * @param BigInteger $p
+     * @param BigInteger $q
+     * @param BigInteger $dp
+     * @param BigInteger $dq
+     * @param BigInteger $qi
      * @return RSAPrivateKey
      */
-    public function buildPrivateKey(\Math_BigInteger $n,
-                                    \Math_BigInteger $e,
-                                    \Math_BigInteger $d,
-                                    \Math_BigInteger $p,
-                                    \Math_BigInteger $q,
-                                    \Math_BigInteger $dp,
-                                    \Math_BigInteger $dq,
-                                    \Math_BigInteger $qi){
+    public function buildPrivateKey(BigInteger $n,
+                                    BigInteger $e,
+                                    BigInteger $d,
+                                    BigInteger $p,
+                                    BigInteger $q,
+                                    BigInteger $dp,
+                                    BigInteger $dq,
+                                    BigInteger $qi){
 
         $private_key_pem = $this->rsa_imp->_convertPrivateKey(
             $n,

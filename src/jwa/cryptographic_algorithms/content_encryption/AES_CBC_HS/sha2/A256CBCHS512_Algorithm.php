@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,12 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2;
-
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\AES_CBC_HMAC_SHA2_Algorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
-
 /**
  * Class A256CBCHS512_Algorithm
  * @package jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2

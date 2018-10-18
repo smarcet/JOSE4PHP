@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,8 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa;
 
 /**
  * Class JSONWebSignatureAndEncryptionAlgorithms
@@ -216,8 +214,8 @@ abstract class JSONWebSignatureAndEncryptionAlgorithms {
      */
     const A256GCM = 'A256GCM';
 
-    public static $header_location_alg = array
-    (
+    public static $header_location_alg = [
+
         self::HS256,
         self::HS384,
         self::HS512,
@@ -249,16 +247,15 @@ abstract class JSONWebSignatureAndEncryptionAlgorithms {
         self::PBES2_HS256_A128KW ,
         self::PBES2_HS384_A192KW,
         self::PBES2_HS512_A256KW,
-    );
+    ];
 
-    public static $header_location_enc = array
-    (
+    public static $header_location_enc = [
         self::A128CBC_HS256,
         self::A192CBC_HS384,
         self::A256CBC_HS512,
         self::A128GCM,
         self::A192GCM,
         self::A256GCM,
-    );
+    ];
 
 }

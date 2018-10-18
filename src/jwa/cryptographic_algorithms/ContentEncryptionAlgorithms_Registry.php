@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,16 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms;
-
-use jwa\cryptographic_algorithms\content_encryption\DirAlgorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A128CBCHS256_Algorithm;
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A192CBCHS384_Algorithm;
 use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A256CBCHS512_Algorithm;
 use jwa\cryptographic_algorithms\content_encryption\ContentEncryptionAlgorithm;
-
 /**
  * Class ContentEncryptionAlgorithms_Registry
  * @package jwa\cryptographic_algorithms

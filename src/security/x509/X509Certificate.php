@@ -1,4 +1,4 @@
-<?php
+<?php namespace security\x509;
 /**
 * Copyright 2015 OpenStack Foundation
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,10 +11,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 **/
-
-namespace security\x509;
-
-use security\Key;
 
 /**
  * Interface X509Certificate

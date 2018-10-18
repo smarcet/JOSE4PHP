@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\digital_signatures\rsa\PKCS1;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,10 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms\digital_signatures\rsa\PKCS1;
 use jwa\cryptographic_algorithms\digital_signatures\rsa\RSA_Algorithm;
-
+use phpseclib\Crypt\RSA;
 /**
  * Class RSASSA_PKCS1_v1_5_Algorithm
  * @package jwa\cryptographic_algorithms\digital_signatures\rsa\PKCS1
@@ -26,6 +24,6 @@ abstract class RSASSA_PKCS1_v1_5_Algorithm extends RSA_Algorithm {
      */
     public function getPaddingMode()
     {
-        return CRYPT_RSA_SIGNATURE_PKCS1;
+        return RSA::SIGNATURE_PKCS1 ;
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwk\impl;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,21 +11,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwk\impl;
-
 use jwk\exceptions\InvalidOctetSequenceJWKException;
 use jwk\IJWK;
 use jwk\JSONWebKeyKeyOperationsValues;
 use jwk\JSONWebKeyParameters;
 use jwk\JSONWebKeyPublicKeyUseValues;
 use jwk\JSONWebKeyTypes;
-use jwk\JSONWebKeyVisibility;
 use jwk\OctetSequenceKeysParameters;
 use security\Key;
 use utils\Base64UrlRepresentation;
 use utils\json_types\StringOrURI;
-
 /**
  * Class OctetSequenceJWK
  * @package jwk\impl

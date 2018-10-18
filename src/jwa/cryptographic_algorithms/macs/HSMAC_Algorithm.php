@@ -1,4 +1,4 @@
-<?php
+<?php namespace jwa\cryptographic_algorithms\macs;
 /**
  * Copyright 2015 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,16 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
-namespace jwa\cryptographic_algorithms\macs;
-
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyLengthAlgorithmException;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyTypeAlgorithmException;
 use jwa\cryptographic_algorithms\HashFunctionAlgorithm;
 use jwk\JSONWebKeyTypes;
 use security\SharedKey;
 use security\Key;
-
 /**
  * Class HSMAC_Algorithm
  * @package jwa\cryptographic_algorithms\macs
