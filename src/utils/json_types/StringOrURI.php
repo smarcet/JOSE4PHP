@@ -54,7 +54,7 @@ class StringOrURI extends JsonValue {
      * @return bool
      */
     public function isUri(){
-        return !(strstr($this->value, ':') === false);
+        return filter_var($this->value, FILTER_VALIDATE_URL) !== false;
     }
 
     /**
