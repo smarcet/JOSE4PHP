@@ -68,4 +68,12 @@ final class SymmetricSharedKey
     {
        return $this->secret;
     }
+
+    /**
+     * @return string
+     */
+    public function getStrippedEncoded(): string
+    {
+        return $this->getEncoded();
+    }
 }

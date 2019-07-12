@@ -18,8 +18,8 @@ use phpseclib\Crypt\RSA;
  * Class _RSAPublicKeyPEMFornat
  * @package security\rsa
  */
-class _RSAPublicKeyPEMFornat
-    extends _AbstractRSAKeyPEMFornat
+class _RSAPublicKeyPEMFormat
+    extends _AbstractRSAKeyPEMFormat
     implements RSAPublicKey {
 
     /**
@@ -59,11 +59,7 @@ class _RSAPublicKeyPEMFornat
      */
     public function getEncoded()
     {
-        $pem = $this->rsa_imp->getPublicKey(RSA::PUBLIC_FORMAT_PKCS8);
-        $pem = preg_replace('/\-+BEGIN PUBLIC KEY\-+/','',$pem);
-        $pem = preg_replace('/\-+END PUBLIC KEY\-+/','',$pem);
-        $pem = str_replace( array("\n","\r","\t"), '', trim($pem));
-        return $pem;
+        return $this->rsa_imp->getPublicKey(RSA::PUBLIC_FORMAT_PKCS8);
     }
 
     /**
@@ -80,5 +76,16 @@ class _RSAPublicKeyPEMFornat
     public function getBitLength()
     {
         return $this->rsa_imp->getSize();
+    }
+
+    /**
+     * @return string
+     */
+    public function getStrippedEncoded(): string
+    {
+        $pem = preg_replace('/\-+BEGIN PUBLIC KEY\-+/','', $this->getEncoded());
+        $pem = preg_replace('/\-+END PUBLIC KEY\-+/','',$pem);
+        $pem = str_replace( array("\n","\r","\t"), '', trim($pem));
+        return $pem;
     }
 }

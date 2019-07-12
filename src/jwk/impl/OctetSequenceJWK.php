@@ -48,7 +48,7 @@ final class OctetSequenceJWK extends JWK {
 
         $this->key = $secret;
 
-        $this->set[OctetSequenceKeysParameters::Key] = new StringOrURI($b64->encode($secret->getEncoded()));
+        $this->set[OctetSequenceKeysParameters::Key] = new StringOrURI($b64->encode($secret->getStrippedEncoded()));
 
     }
 

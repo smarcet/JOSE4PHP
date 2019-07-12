@@ -49,7 +49,7 @@ abstract class AsymmetricJWK
     /**
      * @var X509Certificate[]
      */
-    protected $x509_certificates_chain = array();
+    protected $x509_certificates_chain = [];
 
     /**
      * @param array $headers
@@ -66,8 +66,7 @@ abstract class AsymmetricJWK
 
             // json array
             foreach($headers[PublicJSONWebKeyParameters::X_509CertificateChain] as $x509_pem){
-                array_push($this->x509_certificates_chain, X509CertificateFactory::buildFromPEM($x509_pem));
-
+                $this->x509_certificates_chain[] =  X509CertificateFactory::buildFromPEM($x509_pem);
             }
 
             if($this->checkX509CertMismatch()){
@@ -188,7 +187,7 @@ abstract class AsymmetricJWK
      */
     protected function checkX509CertMismatch(){
         $x509 = $this->getX509LeafCertificate();
-        return !is_null($x509) && $x509->getPublicKey() !== $this->public_key->getEncoded();
+        return !is_null($x509) && $x509->getPublicKey() !== $this->public_key->getStrippedEncoded();
     }
 
     /**

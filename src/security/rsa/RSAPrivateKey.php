@@ -11,13 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+use security\KeyWithPassword;
 use security\PrivateKey;
 use phpseclib\Math\BigInteger;
 /**
  * Interface RSAPrivateKey
  * @package security\rsa
  */
-interface RSAPrivateKey extends RSAPublicKey, PrivateKey {
+interface RSAPrivateKey extends RSAPublicKey, PrivateKey, KeyWithPassword {
 
     /**
      * The "d" (private exponent)

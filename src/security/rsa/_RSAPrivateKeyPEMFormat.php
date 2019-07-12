@@ -18,8 +18,8 @@ use phpseclib\Crypt\RSA;
  * Class _RSAPrivateKeyPEMFornat
  * @package security\rsa
  */
-final class _RSAPrivateKeyPEMFornat
-    extends _RSAPublicKeyPEMFornat
+final class _RSAPrivateKeyPEMFormat
+    extends _RSAPublicKeyPEMFormat
     implements RSAPrivateKey {
 
     /**
@@ -55,11 +55,7 @@ final class _RSAPrivateKeyPEMFornat
      */
     public function getEncoded()
     {
-        $pem = $this->rsa_imp->getPrivateKey(RSA::PUBLIC_FORMAT_PKCS1);
-        $pem = preg_replace('/\-+BEGIN RSA PRIVATE KEY\-+/','',$pem);
-        $pem = preg_replace('/\-+END RSA PRIVATE KEY\-+/','',$pem);
-        $pem = str_replace( array("\n","\r","\t"), '', trim($pem));
-        return $pem;
+        return $this->rsa_imp->getPrivateKey(RSA::PRIVATE_FORMAT_PKCS1);
     }
 
     /**
@@ -68,6 +64,17 @@ final class _RSAPrivateKeyPEMFornat
     public function getFormat()
     {
         return 'PKCS1';
+    }
+
+    /**
+     * @return string
+     */
+    public function getStrippedEncoded(): string
+    {
+        $pem = preg_replace('/\-+BEGIN RSA PRIVATE KEY\-+/','',$this->getEncoded());
+        $pem = preg_replace('/\-+END RSA PRIVATE KEY\-+/','',$pem);
+        $pem = str_replace( array("\n","\r","\t"), '', trim($pem));
+        return $pem;
     }
 
 }

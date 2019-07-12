@@ -229,4 +229,83 @@ final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($jws_1->getClaimSet()->getIssuer()->getString() === 'セバスチャン');
     }
+
+    /**
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     * @throws \jws\exceptions\JWSInvalidJWKException
+     * @throws \jws\exceptions\JWSInvalidPayloadException
+     * @throws \jws\exceptions\JWSNotSupportedAlgorithm
+     */
+    public function testSignAndVerificationRS256WithPass(){
+
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'セバスチャン',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
+
+        //load server private key rs256 with password
+        $key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPrivateKeySpecification
+            (
+                TestKeys::$private_key_with_pass_rs256,
+               "1qaz2wsx",
+                JSONWebSignatureAndEncryptionAlgorithms::RS256
+            )
+        );
+
+        $key->setId('server_key');
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::RS256);
+        $jws = JWSFactory::build( new JWS_ParamsSpecification($key,$alg, $claim_set) );
+        // and sign with server private key
+        $compact_serialization = $jws->toCompactSerialization();
+
+        $this->assertTrue(!is_null($jws));
+        $this->assertTrue(!empty($compact_serialization));
+
+        // then on client side, load the JWS from compact format
+        $jws_1 = JWSFactory::build
+        (
+            new JWS_CompactFormatSpecification
+            (
+                $compact_serialization
+            )
+        );
+
+        $this->assertTrue(!is_null($jws_1));
+
+        // get the server public key from jose header ..
+
+        $public_key =  $jws_1->getJOSEHeader()->getHeaderByName(RegisteredJOSEHeaderNames::JSONWebKey);
+
+        $this->assertTrue(!is_null($public_key));
+
+        $public_key = $public_key->getRawValue();
+        // and re built it from params
+        $public_key = RSAJWKFactory::build
+        (
+            new RSAJWKParamsPublicKeySpecification
+            (
+                $public_key[RSAKeysParameters::Modulus],
+                $public_key[RSAKeysParameters::Exponent],
+                $public_key[JSONWebKeyParameters::Algorithm],
+                $public_key[JSONWebKeyParameters::PublicKeyUse]
+            )
+        );
+
+        //set the server public key and then proceed to verify signature
+
+        $res = $jws_1->setKey($public_key)->verify($alg->getString());
+
+        $this->assertTrue($res);
+
+        $this->assertTrue($jws_1->getClaimSet()->getIssuer()->getString() === 'セバスチャン');
+    }
 }

@@ -44,9 +44,14 @@ abstract class RSA_Algorithm
         if($this->getMinKeyLen() > $private_key->getBitLength())
             throw new InvalidKeyLengthAlgorithmException(sprintf('min len %s - cur len %s.',$this->getMinKeyLen(), $private_key->getBitLength()));
 
+        if($private_key->hasPassword()){
+            $this->rsa_impl->setPassword($private_key->getPassword());
+        }
+
         $res = $this->rsa_impl->loadKey($private_key->getEncoded());
 
-        if(!$res) throw new InvalidKeyTypeAlgorithmException;
+        if(!$res)
+            throw new InvalidKeyTypeAlgorithmException;
 
         $this->rsa_impl->setHash($this->getHashingAlgorithm());
         $this->rsa_impl->setMGFHash($this->getHashingAlgorithm());

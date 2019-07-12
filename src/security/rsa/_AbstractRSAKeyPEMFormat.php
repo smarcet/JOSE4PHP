@@ -15,10 +15,10 @@ use security\rsa\exceptions\RSABadPEMFormat;
 use phpseclib\Crypt\RSA;
 use phpseclib\Math\BigInteger;
 /**
- * Class _AbstractRSAKeyPEMFornat
+ * Class _AbstractRSAKeyPEMFormat
  * @package security\rsa
  */
-abstract class _AbstractRSAKeyPEMFornat {
+abstract class _AbstractRSAKeyPEMFormat {
 
     /**
      * @var string
@@ -36,6 +36,25 @@ abstract class _AbstractRSAKeyPEMFornat {
     protected $n;
 
     /**
+     * @var string
+     */
+    protected $password;
+
+    /**
+     * @return null|string
+     */
+    public function getPassword():?string{
+        return $this->password;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPassword():bool{
+        return !empty($this->password);
+    }
+
+    /**
      * @param string $pem_format
      * @param string $password
      * @throws RSABadPEMFormat
@@ -45,8 +64,10 @@ abstract class _AbstractRSAKeyPEMFornat {
         $this->pem_format = $pem_format;
         $this->rsa_imp    = new RSA();
 
-        if(!empty($password))
-            $this->rsa_imp->setPassword($password);
+        if(!empty($password)) {
+            $this->password = trim($password);
+            $this->rsa_imp->setPassword($this->password);
+        }
 
         $res = $this->rsa_imp->loadKey($this->pem_format, RSA::PRIVATE_FORMAT_PKCS1);
 

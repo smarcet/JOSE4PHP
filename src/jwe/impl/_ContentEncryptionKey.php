@@ -77,4 +77,12 @@ final class _ContentEncryptionKey implements Key {
     {
        return ByteUtil::bitLength(strlen($this->value));
     }
+
+    /**
+     * @return string
+     */
+    public function getStrippedEncoded(): string
+    {
+       return $this->getEncoded();
+    }
 }

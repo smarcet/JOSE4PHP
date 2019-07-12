@@ -13,7 +13,6 @@
  **/
 
 
-
 /**
  * Interface Key
  * @package security
@@ -33,10 +32,16 @@ interface Key {
     /**
      * @return string
      */
+    public function getStrippedEncoded():string;
+
+    /**
+     * @return string
+     */
     public function getFormat();
 
     /**
      * @return int
      */
     public function getBitLength();
+
 }

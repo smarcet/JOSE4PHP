@@ -1,6 +1,6 @@
 <?php namespace security;
 /**
- * Copyright 2015 OpenStack Foundation
+ * Copyright 2019 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,18 @@
  **/
 
 /**
- * Interface PrivateKeyPrivateKey
+ * Interface KeyWithPassword
  * @package security
  */
-interface PrivateKey extends Key {
+interface KeyWithPassword extends Key
+{
+    /**
+     * @return null|string
+     */
+    public function getPassword():?string;
 
+    /**
+     * @return bool
+     */
+    public function hasPassword():bool;
 }

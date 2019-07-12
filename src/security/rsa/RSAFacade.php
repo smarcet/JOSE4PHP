@@ -56,7 +56,7 @@ final class RSAFacade {
         $this->rsa_imp->setPublicKeyFormat(RSA::PUBLIC_FORMAT_PKCS1);
 
         $list = $this->rsa_imp->createKey($bits);
-        return new KeyPair( new _RSAPublicKeyPEMFornat($list['publickey']), new _RSAPrivateKeyPEMFornat($list['privatekey']));
+        return new KeyPair( new _RSAPublicKeyPEMFormat($list['publickey']), new _RSAPrivateKeyPEMFormat($list['privatekey']));
     }
 
     /**
@@ -66,7 +66,7 @@ final class RSAFacade {
      */
     public function buildPublicKey(BigInteger $n, BigInteger $e){
         $public_key_pem = $this->rsa_imp->_convertPublicKey($n, $e);
-        return new _RSAPublicKeyPEMFornat($public_key_pem);
+        return new _RSAPublicKeyPEMFormat($public_key_pem);
     }
 
     /**
@@ -78,7 +78,7 @@ final class RSAFacade {
         $this->rsa_imp->modulus = $n;
         $this->rsa_imp->exponent = $d;
         $private_key_pem = $this->rsa_imp->_getPrivatePublicKey();
-        return new _RSAPrivateKeyPEMFornat($private_key_pem);
+        return new _RSAPrivateKeyPEMFormat($private_key_pem);
     }
 
     /**
@@ -109,7 +109,7 @@ final class RSAFacade {
             array($dp, $dq),
             array($qi, $qi)
         );
-        return new _RSAPrivateKeyPEMFornat($private_key_pem);
+        return new _RSAPrivateKeyPEMFormat($private_key_pem);
     }
 
     /**
@@ -119,7 +119,7 @@ final class RSAFacade {
      * @throws RSABadPEMFormat
      */
     public function buildPrivateKeyFromPEM($private_key_pem, $password = null){
-       return new _RSAPrivateKeyPEMFornat($private_key_pem, $password);
+       return new _RSAPrivateKeyPEMFormat($private_key_pem, $password);
     }
 
     /**
@@ -128,7 +128,7 @@ final class RSAFacade {
      * @throws RSABadPEMFormat
      */
     public function buildPublicKeyFromPEM($public_key_pem){
-        return new _RSAPublicKeyPEMFornat($public_key_pem);
+        return new _RSAPublicKeyPEMFormat($public_key_pem);
     }
 
 }
