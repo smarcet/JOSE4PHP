@@ -37,7 +37,7 @@ use jwk\impl\OctetSequenceJWKFactory;
 /**
  * Class JsonWebEncryptionTest
  */
-final class JsonWebEncryptionTest extends PHPUnit_Framework_TestCase
+final class JsonWebEncryptionTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testCreate()

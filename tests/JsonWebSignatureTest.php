@@ -33,7 +33,7 @@ use utils\json_types\StringOrURI;
 /**
  * Class JsonWebSignatureTest
  */
-final class JsonWebSignatureTest extends PHPUnit_Framework_TestCase {
+final class JsonWebSignatureTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @throws \jwk\exceptions\InvalidJWKAlgorithm
