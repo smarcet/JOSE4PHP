@@ -22,7 +22,7 @@ use jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS\sha2\A256CBCHS512
  * Test Cases for AES_CBC_HMAC_SHA2 Algorithms
  *
  */
-final class JsonWebAlgorithmsTest extends PHPUnit_Framework_TestCase {
+final class JsonWebAlgorithmsTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * https://tools.ietf.org/html/rfc7518#appendix-B.1

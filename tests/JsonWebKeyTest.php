@@ -11,6 +11,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+
+use jwk\exceptions\InvalidJWKAlgorithm;
 use jwk\impl\RSAJWKFactory;
 use security\rsa\RSAFacade;
 use jwk\impl\RSAJWKSpecification;
@@ -24,7 +26,7 @@ use utils\json_types\Base64urlUInt;
 /**
  * Class JsonWebKeyTest
  */
-final class JsonWebKeyTest extends PHPUnit_Framework_TestCase {
+final class JsonWebKeyTest extends \PHPUnit\Framework\TestCase {
 
     public function testCreate(){
         $jwk = RSAJWKFactory::build(new RSAJWKSpecification(JSONWebSignatureAndEncryptionAlgorithms::RS512));
@@ -82,6 +84,7 @@ final class JsonWebKeyTest extends PHPUnit_Framework_TestCase {
      *
      */
     public function testInvalidRSAAlg(){
+        $this->expectException(InvalidJWKAlgorithm::class);
         RSAJWKFactory::build(new RSAJWKSpecification('test'));
     }
 

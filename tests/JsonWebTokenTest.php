@@ -25,11 +25,11 @@ use jwe\IJWE;
 /**
  * Class JsonWebTokenTest
  */
-final class JsonWebTokenTest extends PHPUnit_Framework_TestCase {
+final class JsonWebTokenTest extends \PHPUnit\Framework\TestCase {
 
     static $epoch ;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass():void
     {
         self::$epoch = time();
     }
