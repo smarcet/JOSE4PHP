@@ -12,7 +12,7 @@
  * limitations under the License.
  **/
 use security\PublicKey;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 /**
  * Interface RSAPublicKey
  * @package security\rsa

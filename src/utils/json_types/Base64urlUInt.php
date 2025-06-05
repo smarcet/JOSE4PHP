@@ -12,7 +12,7 @@
  * limitations under the License.
  **/
 use utils\Base64UrlRepresentation;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 /**
  * Class Base64urlUInt
  * @package utils\json_types

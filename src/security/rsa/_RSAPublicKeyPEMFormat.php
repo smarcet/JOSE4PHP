@@ -12,7 +12,7 @@
  * limitations under the License.
  **/
 use security\rsa\exceptions\RSABadPEMFormat;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 use phpseclib\Crypt\RSA;
 /**
  * Class _RSAPublicKeyPEMFornat
@@ -34,7 +34,7 @@ class _RSAPublicKeyPEMFormat
      */
     public function __construct($pem_format, $password = null){
         parent::__construct($pem_format, $password);
-        $this->e = $this->rsa_imp->publicExponent;
+        $this->e = $this->key->getPublicExponent();
     }
 
     /**

@@ -13,7 +13,7 @@
  **/
 use security\KeyWithPassword;
 use security\PrivateKey;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 /**
  * Interface RSAPrivateKey
  * @package security\rsa
