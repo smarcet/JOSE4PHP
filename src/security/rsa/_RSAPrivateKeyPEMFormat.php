@@ -35,7 +35,7 @@ final class _RSAPrivateKeyPEMFormat
     public function __construct($pem_format, $password = null){
 
         parent::__construct($pem_format, $password);
-        $this->d = $this->key->getPrivateExponent();
+        $this->d = $this->key['d'];
         if($this->d->toString() === $this->e->toString())
             throw new RSABadPEMFormat(sprintf('pem %s is a public key!', $pem_format));
     }
@@ -47,7 +47,7 @@ final class _RSAPrivateKeyPEMFormat
      */
     public function getPrivateExponent()
     {
-       return $this->key->getPrivateExponent();
+       return $this->d;
     }
 
     /**

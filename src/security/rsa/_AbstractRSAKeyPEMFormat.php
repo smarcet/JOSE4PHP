@@ -38,11 +38,14 @@ abstract class _AbstractRSAKeyPEMFormat {
     protected $n;
 
     /**
+     * @var array
+     */
+    protected $key;
+
+    /**
      * @var string
      */
     protected $password;
-
-    protected $key;
 
     /**
      * @return null|string
@@ -75,7 +78,10 @@ abstract class _AbstractRSAKeyPEMFormat {
 
         $res = $this->rsa_imp->loadKey($this->pem_format, RSA::PRIVATE_FORMAT_PKCS1);
         if(!$res) throw new RSABadPEMFormat(sprintf('pem %s',$pem_format ));
-        $this->key = new CustomAsymmetricKey(PublicKeyLoader::load($this->pem_format, $this->password));
+
+        $this->key = PublicKeyLoader::load($this->pem_format, $this->password)->toString('raw');
+
+        $this->n = $this->key['n'];
     }
 
     /**
@@ -84,7 +90,7 @@ abstract class _AbstractRSAKeyPEMFormat {
      */
     public function getModulus()
     {
-        return  $this->key->getModulus();
+        return  $this->n;
     }
 
 }

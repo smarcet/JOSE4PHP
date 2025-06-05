@@ -34,7 +34,7 @@ class _RSAPublicKeyPEMFormat
      */
     public function __construct($pem_format, $password = null){
         parent::__construct($pem_format, $password);
-        $this->e = $this->key->getPublicExponent();
+        $this->e = $this->key['e'];
     }
 
     /**
