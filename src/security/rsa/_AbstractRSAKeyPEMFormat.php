@@ -11,9 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+
+use phpseclib3\Crypt\PublicKeyLoader;
 use security\rsa\exceptions\RSABadPEMFormat;
 use phpseclib\Crypt\RSA;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
 /**
  * Class _AbstractRSAKeyPEMFormat
  * @package security\rsa
@@ -39,6 +41,8 @@ abstract class _AbstractRSAKeyPEMFormat {
      * @var string
      */
     protected $password;
+
+    protected $key;
 
     /**
      * @return null|string
@@ -70,10 +74,8 @@ abstract class _AbstractRSAKeyPEMFormat {
         }
 
         $res = $this->rsa_imp->loadKey($this->pem_format, RSA::PRIVATE_FORMAT_PKCS1);
-
         if(!$res) throw new RSABadPEMFormat(sprintf('pem %s',$pem_format ));
-
-        $this->n = $this->rsa_imp->modulus;
+        $this->key = new CustomAsymmetricKey(PublicKeyLoader::load($this->pem_format, $this->password));
     }
 
     /**
@@ -82,7 +84,7 @@ abstract class _AbstractRSAKeyPEMFormat {
      */
     public function getModulus()
     {
-        return  $this->n;
+        return  $this->key->getModulus();
     }
 
 }

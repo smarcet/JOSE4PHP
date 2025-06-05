@@ -11,10 +11,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+
+use phpseclib3\Crypt\PublicKeyLoader;
 use security\KeyPair;
 use security\rsa\exceptions\RSABadPEMFormat;
 use phpseclib\Crypt\RSA;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Math\BigInteger;
+
 /**
  * Class RSAFacade
  * @package security\rsa
@@ -65,8 +68,15 @@ final class RSAFacade {
      * @return RSAPublicKey
      */
     public function buildPublicKey(BigInteger $n, BigInteger $e){
-        $public_key_pem = $this->rsa_imp->_convertPublicKey($n, $e);
-        return new _RSAPublicKeyPEMFormat($public_key_pem);
+
+
+        $key = PublicKeyLoader::load([
+            'n' => $n,
+            'e' => $e
+        ]);
+
+        $pem = $key->toString('pkcs1');
+        return new _RSAPublicKeyPEMFormat($pem);
     }
 
     /**

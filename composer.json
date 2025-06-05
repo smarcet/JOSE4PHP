@@ -15,8 +15,9 @@
     }
   ],
   "require": {
-    "php": "^8.2",
-    "phpseclib/phpseclib": "2.0.47"
+    "php": "^8.3",
+    "phpseclib/phpseclib": "3.0.43",
+    "phpseclib/phpseclib2_compat": "1.0.6"
   },
   "suggest":{
     "lib-openssl": "Required to use AES algorithms (except AES GCM)",

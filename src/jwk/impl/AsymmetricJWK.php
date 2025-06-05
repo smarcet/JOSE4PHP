@@ -187,7 +187,10 @@ abstract class AsymmetricJWK
      */
     protected function checkX509CertMismatch(){
         $x509 = $this->getX509LeafCertificate();
-        return !is_null($x509) && $x509->getPublicKey() !== $this->public_key->getStrippedEncoded();
+        if(is_null($x509)) return false;
+        $ppk1 = $x509->getPublicKey();
+        $ppk2 = $this->public_key->getStrippedEncoded();
+        return $ppk1 !== $ppk2 ;
     }
 
     /**
