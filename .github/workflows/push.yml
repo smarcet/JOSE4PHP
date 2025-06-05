@@ -1,0 +1,40 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Unit Tests On Push
+
+# Controls when the workflow will run
+on: push
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "unit-tests"
+  unit-tests:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: testing
+      APP_DEBUG: true
+      APP_KEY: base64:4vh0op/S1dAsXKQ2bbdCfWRyCI9r8NNIdPXyZWt9PX4=
+      DEV_EMAIL_TO: smarcet@gmail.com
+      APP_URL: http://localhost
+      PHP_VERSION: 8.3
+    steps:
+      # Downloads a copy of the code in your repository before running CI tests
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Install PHP
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version:  ${{env.PHP_VERSION}}
+          extensions: mbstring, exif, pcntl, bcmath, sockets, gettext, crypto, gmp, bcmath, zlib, json
+      - name: Install dependencies
+        uses: "ramsey/composer-install@v3"
+      - name: 'Run Tests'
+        run: |
+          vendor/bin/phpunit
+      - name: 'Upload Unit Test Output'
+        uses: actions/upload-artifact@v4
+        with:
+          name: output
+          path: results.xml
+          retention-days: 5
