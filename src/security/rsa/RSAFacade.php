@@ -112,11 +112,14 @@ final class RSAFacade {
                                     BigInteger $qi){
 
         $key = PublicKeyLoader::load([
-            'n' => $n,
-            'e' => $e,
-            'd' => $d,
-            'p' => $p,
-            'q' => $q
+            'n'  => $n,
+            'e'  => $e,
+            'd'  => $d,
+            'p'  => $p,
+            'q'  => $q,
+            'dp' => $dp,
+            'dq' => $dq,
+            'inverseq' => $qi
         ]);
         $private_key_pem = $key->toString('PKCS1');
         return new _RSAPrivateKeyPEMFormat($private_key_pem);

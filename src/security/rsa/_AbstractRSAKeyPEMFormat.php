@@ -69,7 +69,7 @@ abstract class _AbstractRSAKeyPEMFormat {
             $loaded_key = PublicKeyLoader::load($this->pem_format, $this->password ?? false);
             $this->key = new CustomAsymmetricKey($loaded_key);
         } catch (\Exception $e) {
-            throw new RSABadPEMFormat(sprintf('pem %s', $pem_format));
+            throw new RSABadPEMFormat('Invalid PEM format', 0, $e);
         }
     }
 

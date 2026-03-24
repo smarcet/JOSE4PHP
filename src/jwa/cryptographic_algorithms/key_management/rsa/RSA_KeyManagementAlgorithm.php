@@ -42,12 +42,12 @@ abstract class RSA_KeyManagementAlgorithm
             throw new InvalidKeyTypeAlgorithmException('key is not public');
 
         if($key->getFormat() !== 'PKCS8')
-            throw new InvalidKeyTypeAlgorithmException('keys is not on PKCS1 format');
+            throw new InvalidKeyTypeAlgorithmException('key is not in PKCS8 format');
 
         try {
             $raw_key = PublicKeyLoader::load($key->getEncoded());
             $loaded_key = new CustomAsymmetricKey($raw_key);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new InvalidKeyTypeAlgorithmException('could not parse the key', 0, $e);
         }
 
@@ -73,12 +73,14 @@ abstract class RSA_KeyManagementAlgorithm
             throw new InvalidKeyTypeAlgorithmException('key is not private');
 
         if($key->getFormat() !== 'PKCS1')
-            throw new InvalidKeyTypeAlgorithmException('keys is not on PKCS1 format');
+            throw new InvalidKeyTypeAlgorithmException('key is not in PKCS1 format');
+
+        $password = $key->hasPassword() ? $key->getPassword() : false;
 
         try {
-            $raw_key = PublicKeyLoader::load($key->getEncoded());
+            $raw_key = PublicKeyLoader::load($key->getEncoded(), $password);
             $loaded_key = new CustomAsymmetricKey($raw_key);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new InvalidKeyTypeAlgorithmException('could not parse the key', 0, $e);
         }
 

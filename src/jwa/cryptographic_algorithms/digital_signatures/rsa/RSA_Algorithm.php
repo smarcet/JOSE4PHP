@@ -49,7 +49,7 @@ abstract class RSA_Algorithm
 
         try {
             $key = PublicKeyLoader::load($private_key->getEncoded(), $password);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new InvalidKeyTypeAlgorithmException('could not load private key', 0, $e);
         }
 
@@ -77,7 +77,7 @@ abstract class RSA_Algorithm
 
         try {
             $loaded_key = PublicKeyLoader::load($key->getEncoded());
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw new InvalidKeyTypeAlgorithmException('could not load public key', 0, $e);
         }
 
