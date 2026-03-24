@@ -13,7 +13,6 @@
  **/
 use security\rsa\exceptions\RSABadPEMFormat;
 use phpseclib3\Math\BigInteger;
-use phpseclib\Crypt\RSA;
 /**
  * Class _RSAPublicKeyPEMFornat
  * @package security\rsa
@@ -59,7 +58,7 @@ class _RSAPublicKeyPEMFormat
      */
     public function getEncoded()
     {
-        return $this->rsa_imp->getPublicKey(RSA::PUBLIC_FORMAT_PKCS8);
+        return $this->key->toString('PKCS8');
     }
 
     /**
@@ -75,7 +74,7 @@ class _RSAPublicKeyPEMFormat
      */
     public function getBitLength()
     {
-        return $this->rsa_imp->getSize();
+        return $this->key->getModulus()->getLength();
     }
 
     /**

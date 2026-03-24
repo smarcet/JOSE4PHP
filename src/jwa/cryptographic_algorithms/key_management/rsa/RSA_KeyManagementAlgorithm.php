@@ -15,7 +15,9 @@ use jwa\cryptographic_algorithms\Abstract_RSA_Algorithm;
 use jwa\cryptographic_algorithms\EncryptionAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyTypeAlgorithmException;
 use jwa\cryptographic_algorithms\key_management\modes\KeyEncryption;
+use phpseclib3\Crypt\PublicKeyLoader;
 use security\Key;
+use security\rsa\CustomAsymmetricKey;
 use security\rsa\RSAPrivateKey;
 use security\rsa\RSAPublicKey;
 /**
@@ -26,14 +28,7 @@ abstract class RSA_KeyManagementAlgorithm
     extends Abstract_RSA_Algorithm
     implements EncryptionAlgorithm, KeyEncryption {
 
-    public function __construct(){
-
-        parent::__construct();
-        //configuration ...
-        $this->rsa_impl->setEncryptionMode($this->getEncryptionMode());
-        $this->rsa_impl->setHash($this->getHashingAlgorithm());
-        $this->rsa_impl->setMGFHash($this->getMGFHash());
-    }
+    // Constructor removed - encryption configuration now done per-operation in encrypt()/decrypt()
 
     /**
      * @param Key $key
@@ -49,15 +44,21 @@ abstract class RSA_KeyManagementAlgorithm
         if($key->getFormat() !== 'PKCS8')
             throw new InvalidKeyTypeAlgorithmException('keys is not on PKCS1 format');
 
-        $res = $this->rsa_impl->loadKey($key->getEncoded());
+        try {
+            $raw_key = PublicKeyLoader::load($key->getEncoded());
+            $loaded_key = new CustomAsymmetricKey($raw_key);
+        } catch (\Exception $e) {
+            throw new InvalidKeyTypeAlgorithmException('could not parse the key', 0, $e);
+        }
 
-        if(!$res)
-            throw new InvalidKeyTypeAlgorithmException('could not parse the key');
-
-        if($this->rsa_impl->getSize() < $this->getMinKeyLen())
+        if($loaded_key->getModulus()->getLength() < $this->getMinKeyLen())
             throw new InvalidKeyTypeAlgorithmException('len is invalid');
 
-        return $this->rsa_impl->encrypt($message);
+        $configured_key = $raw_key->withPadding($this->getEncryptionMode())
+                                   ->withHash($this->getHashingAlgorithm())
+                                   ->withMGFHash($this->getMGFHash());
+
+        return $configured_key->encrypt($message);
     }
 
     /**
@@ -74,15 +75,21 @@ abstract class RSA_KeyManagementAlgorithm
         if($key->getFormat() !== 'PKCS1')
             throw new InvalidKeyTypeAlgorithmException('keys is not on PKCS1 format');
 
-        $res = $this->rsa_impl->loadKey($key->getEncoded());
+        try {
+            $raw_key = PublicKeyLoader::load($key->getEncoded());
+            $loaded_key = new CustomAsymmetricKey($raw_key);
+        } catch (\Exception $e) {
+            throw new InvalidKeyTypeAlgorithmException('could not parse the key', 0, $e);
+        }
 
-        if(!$res)
-            throw new InvalidKeyTypeAlgorithmException('could not parse the key');
-
-        if($this->rsa_impl->getSize() < $this->getMinKeyLen())
+        if($loaded_key->getModulus()->getLength() < $this->getMinKeyLen())
             throw new InvalidKeyTypeAlgorithmException('len is invalid');
 
-        return $this->rsa_impl->decrypt($enc_message);
+        $configured_key = $raw_key->withPadding($this->getEncryptionMode())
+                                   ->withHash($this->getHashingAlgorithm())
+                                   ->withMGFHash($this->getMGFHash());
+
+        return $configured_key->decrypt($enc_message);
     }
 
     /**

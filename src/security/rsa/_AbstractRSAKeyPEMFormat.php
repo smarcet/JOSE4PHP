@@ -14,7 +14,6 @@
 
 use phpseclib3\Crypt\PublicKeyLoader;
 use security\rsa\exceptions\RSABadPEMFormat;
-use phpseclib\Crypt\RSA;
 use phpseclib3\Math\BigInteger;
 /**
  * Class _AbstractRSAKeyPEMFormat
@@ -26,11 +25,6 @@ abstract class _AbstractRSAKeyPEMFormat {
      * @var string
      */
     protected $pem_format;
-
-    /**
-     * @var RSA
-     */
-    protected $rsa_imp;
 
     /**
      * @var BigInteger
@@ -66,16 +60,17 @@ abstract class _AbstractRSAKeyPEMFormat {
     public function __construct($pem_format, $password = null){
 
         $this->pem_format = $pem_format;
-        $this->rsa_imp    = new RSA();
 
         if(!empty($password)) {
             $this->password = trim($password);
-            $this->rsa_imp->setPassword($this->password);
         }
 
-        $res = $this->rsa_imp->loadKey($this->pem_format, RSA::PRIVATE_FORMAT_PKCS1);
-        if(!$res) throw new RSABadPEMFormat(sprintf('pem %s',$pem_format ));
-        $this->key = new CustomAsymmetricKey(PublicKeyLoader::load($this->pem_format, $this->password));
+        try {
+            $loaded_key = PublicKeyLoader::load($this->pem_format, $this->password ?? false);
+            $this->key = new CustomAsymmetricKey($loaded_key);
+        } catch (\Exception $e) {
+            throw new RSABadPEMFormat(sprintf('pem %s', $pem_format));
+        }
     }
 
     /**

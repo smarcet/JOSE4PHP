@@ -87,6 +87,7 @@ final class RSAJWK extends AsymmetricJWK
             } else {
                 $this->private_key = RSAFacade::getInstance()->buildMinimalPrivateKey(
                     $this[RSAKeysParameters::Modulus]->toBigInt(),
+                    $this[RSAKeysParameters::Exponent]->toBigInt(),
                     $this[RSAKeysParameters::PrivateExponent]->toBigInt()
                 );
             }

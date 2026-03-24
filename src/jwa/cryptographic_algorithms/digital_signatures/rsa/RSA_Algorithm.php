@@ -16,6 +16,7 @@ use jwa\cryptographic_algorithms\digital_signatures\DigitalSignatureAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyLengthAlgorithmException;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyTypeAlgorithmException;
 use jwa\cryptographic_algorithms\HashFunctionAlgorithm;
+use phpseclib3\Crypt\PublicKeyLoader;
 use security\Key;
 use security\PrivateKey;
 use security\rsa\RSAPrivateKey;
@@ -44,19 +45,19 @@ abstract class RSA_Algorithm
         if($this->getMinKeyLen() > $private_key->getBitLength())
             throw new InvalidKeyLengthAlgorithmException(sprintf('min len %s - cur len %s.',$this->getMinKeyLen(), $private_key->getBitLength()));
 
-        if($private_key->hasPassword()){
-            $this->rsa_impl->setPassword($private_key->getPassword());
+        $password = $private_key->hasPassword() ? $private_key->getPassword() : false;
+
+        try {
+            $key = PublicKeyLoader::load($private_key->getEncoded(), $password);
+        } catch (\Exception $e) {
+            throw new InvalidKeyTypeAlgorithmException('could not load private key', 0, $e);
         }
 
-        $res = $this->rsa_impl->loadKey($private_key->getEncoded());
+        $key = $key->withHash($this->getHashingAlgorithm())
+                   ->withMGFHash($this->getHashingAlgorithm())
+                   ->withPadding($this->getPaddingMode());
 
-        if(!$res)
-            throw new InvalidKeyTypeAlgorithmException;
-
-        $this->rsa_impl->setHash($this->getHashingAlgorithm());
-        $this->rsa_impl->setMGFHash($this->getHashingAlgorithm());
-        $this->rsa_impl->setSignatureMode($this->getPaddingMode());
-        return $this->rsa_impl->sign($message);
+        return $key->sign($message);
     }
 
     /**
@@ -74,15 +75,17 @@ abstract class RSA_Algorithm
         if($this->getMinKeyLen() > $key->getBitLength())
             throw new InvalidKeyLengthAlgorithmException(sprintf('min len %s - cur len %s.',$this->getMinKeyLen(), $key->getBitLength()));
 
-        $res = $this->rsa_impl->loadKey($key->getEncoded());
+        try {
+            $loaded_key = PublicKeyLoader::load($key->getEncoded());
+        } catch (\Exception $e) {
+            throw new InvalidKeyTypeAlgorithmException('could not load public key', 0, $e);
+        }
 
-        if(!$res) throw new InvalidKeyTypeAlgorithmException;
+        $loaded_key = $loaded_key->withHash($this->getHashingAlgorithm())
+                                 ->withMGFHash($this->getHashingAlgorithm())
+                                 ->withPadding($this->getPaddingMode());
 
-        $this->rsa_impl->setHash($this->getHashingAlgorithm());
-        $this->rsa_impl->setMGFHash($this->getHashingAlgorithm());
-        $this->rsa_impl->setSignatureMode($this->getPaddingMode());
-
-        return $this->rsa_impl->verify($message, $signature);
+        return $loaded_key->verify($message, $signature);
     }
 
     /**

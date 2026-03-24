@@ -29,6 +29,8 @@ use jws\impl\specs\JWS_ParamsSpecification;
 use jws\impl\specs\JWS_CompactFormatSpecification;
 use jws\JWSFactory;
 
+use jwk\impl\RSAJWKPEMPublicKeySpecification;
+
 use utils\json_types\StringOrURI;
 /**
  * Class JsonWebSignatureTest
@@ -307,5 +309,354 @@ final class JsonWebSignatureTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($res);
 
         $this->assertTrue($jws_1->getClaimSet()->getIssuer()->getString() === 'セバスチャン');
+    }
+
+    public function testSignAndVerificationHS256()
+    {
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
+
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $key->setId('sym_key');
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256);
+
+        $jws = JWSFactory::build
+        (
+            new JWS_ParamsSpecification
+            (
+                $key,
+                $alg,
+                $claim_set
+            )
+        );
+
+        $compact_serialization = $jws->toCompactSerialization();
+
+        $this->assertTrue(!is_null($jws));
+        $this->assertTrue(!empty($compact_serialization));
+
+        $jws_1 = JWSFactory::build( new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertTrue(!is_null($jws_1));
+
+        $res = $jws_1->setKey($key)->verify($alg->getString());
+
+        $this->assertTrue($res);
+    }
+
+    public function testSignAndVerificationHS384()
+    {
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
+
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS384
+            )
+        );
+
+        $key->setId('sym_key');
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS384);
+
+        $jws = JWSFactory::build
+        (
+            new JWS_ParamsSpecification
+            (
+                $key,
+                $alg,
+                $claim_set
+            )
+        );
+
+        $compact_serialization = $jws->toCompactSerialization();
+
+        $this->assertTrue(!is_null($jws));
+        $this->assertTrue(!empty($compact_serialization));
+
+        $jws_1 = JWSFactory::build( new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertTrue(!is_null($jws_1));
+
+        $res = $jws_1->setKey($key)->verify($alg->getString());
+
+        $this->assertTrue($res);
+    }
+
+    public function testSignAndVerificationRS384()
+    {
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
+
+        $key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPrivateKeySpecification
+            (
+                TestKeys::$private_key_pem,
+                RSAJWKPEMPrivateKeySpecification::WithoutPassword,
+                JSONWebSignatureAndEncryptionAlgorithms::RS384
+            )
+        );
+
+        $key->setId('server_key');
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::RS384);
+        $jws = JWSFactory::build( new JWS_ParamsSpecification($key, $alg, $claim_set) );
+        $compact_serialization = $jws->toCompactSerialization();
+
+        $this->assertTrue(!is_null($jws));
+        $this->assertTrue(!empty($compact_serialization));
+
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertTrue(!is_null($jws_1));
+
+        $public_key = $jws_1->getJOSEHeader()->getHeaderByName(RegisteredJOSEHeaderNames::JSONWebKey);
+        $this->assertTrue(!is_null($public_key));
+
+        $public_key = $public_key->getRawValue();
+        $public_key = RSAJWKFactory::build(new RSAJWKParamsPublicKeySpecification($public_key[RSAKeysParameters::Modulus],
+                                                                                  $public_key[RSAKeysParameters::Exponent],
+                                                                                  $public_key[JSONWebKeyParameters::Algorithm],
+                                                                                  $public_key[JSONWebKeyParameters::PublicKeyUse]));
+
+        $res = $jws_1->setKey($public_key)->verify($alg->getString());
+
+        $this->assertTrue($res);
+    }
+
+    public function testSignAndVerificationRS512()
+    {
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
+
+        $key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPrivateKeySpecification
+            (
+                TestKeys::$private_key_pem,
+                RSAJWKPEMPrivateKeySpecification::WithoutPassword,
+                JSONWebSignatureAndEncryptionAlgorithms::RS512
+            )
+        );
+
+        $key->setId('server_key');
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::RS512);
+        $jws = JWSFactory::build( new JWS_ParamsSpecification($key, $alg, $claim_set) );
+        $compact_serialization = $jws->toCompactSerialization();
+
+        $this->assertTrue(!is_null($jws));
+        $this->assertTrue(!empty($compact_serialization));
+
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertTrue(!is_null($jws_1));
+
+        $public_key = $jws_1->getJOSEHeader()->getHeaderByName(RegisteredJOSEHeaderNames::JSONWebKey);
+        $this->assertTrue(!is_null($public_key));
+
+        $public_key = $public_key->getRawValue();
+        $public_key = RSAJWKFactory::build(new RSAJWKParamsPublicKeySpecification($public_key[RSAKeysParameters::Modulus],
+                                                                                  $public_key[RSAKeysParameters::Exponent],
+                                                                                  $public_key[JSONWebKeyParameters::Algorithm],
+                                                                                  $public_key[JSONWebKeyParameters::PublicKeyUse]));
+
+        $res = $jws_1->setKey($public_key)->verify($alg->getString());
+
+        $this->assertTrue($res);
+    }
+
+    public function testSignAndVerificationPS256()
+    {
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
+
+        $key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPrivateKeySpecification
+            (
+                TestKeys::$private_key_pem,
+                RSAJWKPEMPrivateKeySpecification::WithoutPassword,
+                JSONWebSignatureAndEncryptionAlgorithms::PS256
+            )
+        );
+
+        $key->setId('server_key');
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::PS256);
+        $jws = JWSFactory::build( new JWS_ParamsSpecification($key, $alg, $claim_set) );
+        $compact_serialization = $jws->toCompactSerialization();
+
+        $this->assertTrue(!is_null($jws));
+        $this->assertTrue(!empty($compact_serialization));
+
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertTrue(!is_null($jws_1));
+
+        $public_key = $jws_1->getJOSEHeader()->getHeaderByName(RegisteredJOSEHeaderNames::JSONWebKey);
+        $this->assertTrue(!is_null($public_key));
+
+        $public_key = $public_key->getRawValue();
+        $public_key = RSAJWKFactory::build(new RSAJWKParamsPublicKeySpecification($public_key[RSAKeysParameters::Modulus],
+                                                                                  $public_key[RSAKeysParameters::Exponent],
+                                                                                  $public_key[JSONWebKeyParameters::Algorithm],
+                                                                                  $public_key[JSONWebKeyParameters::PublicKeyUse]));
+
+        $res = $jws_1->setKey($public_key)->verify($alg->getString());
+
+        $this->assertTrue($res);
+    }
+
+    public function testSignAndVerificationPS384()
+    {
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+                'groups'                                => array('admin', 'sudo', 'devs')
+            )
+        );
+
+        $key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPrivateKeySpecification
+            (
+                TestKeys::$private_key_pem,
+                RSAJWKPEMPrivateKeySpecification::WithoutPassword,
+                JSONWebSignatureAndEncryptionAlgorithms::PS384
+            )
+        );
+
+        $key->setId('server_key');
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::PS384);
+        $jws = JWSFactory::build( new JWS_ParamsSpecification($key, $alg, $claim_set) );
+        $compact_serialization = $jws->toCompactSerialization();
+
+        $this->assertTrue(!is_null($jws));
+        $this->assertTrue(!empty($compact_serialization));
+
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertTrue(!is_null($jws_1));
+
+        $public_key = $jws_1->getJOSEHeader()->getHeaderByName(RegisteredJOSEHeaderNames::JSONWebKey);
+        $this->assertTrue(!is_null($public_key));
+
+        $public_key = $public_key->getRawValue();
+        $public_key = RSAJWKFactory::build(new RSAJWKParamsPublicKeySpecification($public_key[RSAKeysParameters::Modulus],
+                                                                                  $public_key[RSAKeysParameters::Exponent],
+                                                                                  $public_key[JSONWebKeyParameters::Algorithm],
+                                                                                  $public_key[JSONWebKeyParameters::PublicKeyUse]));
+
+        $res = $jws_1->setKey($public_key)->verify($alg->getString());
+
+        $this->assertTrue($res);
+    }
+
+    public function testVerifyWithWrongKeyFails()
+    {
+        $claim_set = JWTClaimSetFactory::build
+        (
+            array
+            (
+                RegisteredJWTClaimNames::Issuer         => 'joe',
+                RegisteredJWTClaimNames::ExpirationTime => 1300819380,
+                "http://example.com/is_root"            => true,
+            )
+        );
+
+        // Sign with key1
+        $key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPrivateKeySpecification
+            (
+                TestKeys::$private_key_pem,
+                RSAJWKPEMPrivateKeySpecification::WithoutPassword,
+                JSONWebSignatureAndEncryptionAlgorithms::PS512
+            )
+        );
+
+        $key->setId('server_key');
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::PS512);
+        $jws = JWSFactory::build( new JWS_ParamsSpecification($key, $alg, $claim_set) );
+        $compact_serialization = $jws->toCompactSerialization();
+
+        // Parse and try to verify with key2's public key (wrong key)
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $wrong_key = RSAJWKFactory::build
+        (
+            new RSAJWKPEMPublicKeySpecification
+            (
+                TestKeys::$public_key2_pem,
+                JSONWebSignatureAndEncryptionAlgorithms::PS512
+            )
+        );
+
+        // Use same kid to bypass kid-mismatch guard
+        $wrong_key->setId('server_key');
+
+        $res = $jws_1->setKey($wrong_key)->verify($alg->getString());
+
+        $this->assertFalse($res);
     }
 }

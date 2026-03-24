@@ -13,9 +13,9 @@
  **/
 
 use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA;
 use security\KeyPair;
 use security\rsa\exceptions\RSABadPEMFormat;
-use phpseclib\Crypt\RSA;
 use phpseclib3\Math\BigInteger;
 
 /**
@@ -29,13 +29,7 @@ final class RSAFacade {
      */
     private static $instance;
 
-    /**
-     * @var RSA
-     */
-    private $rsa_imp;
-
     private function __construct(){
-        $this->rsa_imp = new RSA();
     }
 
     private function __clone(){}
@@ -55,11 +49,13 @@ final class RSAFacade {
      * @return KeyPair
      */
     public function buildKeyPair($bits){
-        $this->rsa_imp->setPrivateKeyFormat(RSA::PRIVATE_FORMAT_PKCS1);
-        $this->rsa_imp->setPublicKeyFormat(RSA::PUBLIC_FORMAT_PKCS1);
+        $private = RSA::createKey($bits);
+        $public = $private->getPublicKey();
 
-        $list = $this->rsa_imp->createKey($bits);
-        return new KeyPair( new _RSAPublicKeyPEMFormat($list['publickey']), new _RSAPrivateKeyPEMFormat($list['privatekey']));
+        $private_pem = $private->toString('PKCS1');
+        $public_pem = $public->toString('PKCS1');
+
+        return new KeyPair( new _RSAPublicKeyPEMFormat($public_pem), new _RSAPrivateKeyPEMFormat($private_pem));
     }
 
     /**
@@ -80,14 +76,18 @@ final class RSAFacade {
     }
 
     /**
-     * @param \Math_BigInteger $n
-     * @param \Math_BigInteger $d
+     * @param BigInteger $n
+     * @param BigInteger $e
+     * @param BigInteger $d
      * @return RSAPrivateKey
      */
-    public function buildMinimalPrivateKey(\Math_BigInteger $n, \Math_BigInteger $d){
-        $this->rsa_imp->modulus = $n;
-        $this->rsa_imp->exponent = $d;
-        $private_key_pem = $this->rsa_imp->_getPrivatePublicKey();
+    public function buildMinimalPrivateKey(BigInteger $n, BigInteger $e, BigInteger $d){
+        $key = PublicKeyLoader::load([
+            'n' => $n,
+            'e' => $e,
+            'd' => $d
+        ]);
+        $private_key_pem = $key->toString('PKCS1');
         return new _RSAPrivateKeyPEMFormat($private_key_pem);
     }
 
@@ -111,14 +111,14 @@ final class RSAFacade {
                                     BigInteger $dq,
                                     BigInteger $qi){
 
-        $private_key_pem = $this->rsa_imp->_convertPrivateKey(
-            $n,
-            $e,
-            $d,
-            array($p, $q),
-            array($dp, $dq),
-            array($qi, $qi)
-        );
+        $key = PublicKeyLoader::load([
+            'n' => $n,
+            'e' => $e,
+            'd' => $d,
+            'p' => $p,
+            'q' => $q
+        ]);
+        $private_key_pem = $key->toString('PKCS1');
         return new _RSAPrivateKeyPEMFormat($private_key_pem);
     }
 
