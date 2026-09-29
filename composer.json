@@ -16,8 +16,7 @@
   ],
   "require": {
     "php": "^8.3",
-    "phpseclib/phpseclib": "3.0.43",
-    "phpseclib/phpseclib2_compat": "1.0.6"
+    "phpseclib/phpseclib": "^3.0.57"
   },
   "suggest":{
     "lib-openssl": "Required to use AES algorithms (except AES GCM)",
@@ -29,7 +28,7 @@
     "phpseclib/phpseclib":"Required to use RSA based algorithms"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.0|^10.0|^11.0",
+    "phpunit/phpunit": "^10.0|^11.0",
     "mockery/mockery": "^1.6"
   },
   "autoload": {
@@ -38,5 +37,6 @@
       "tests/"
     ]
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

@@ -12,7 +12,7 @@
 * limitations under the License.
 **/
 use security\exceptions\InvalidX509CertificateException;
-use phpseclib\File\X509;
+use phpseclib3\File\X509;
 /**
  * Class _X509Certificate
  * @package security\x509

@@ -50,7 +50,7 @@ abstract class HSMAC_Algorithm implements MAC_Algorithm, HashFunctionAlgorithm {
     public function verify(Key $key, $message, $digest){
         if(!($key instanceof SharedKey)) throw new InvalidKeyTypeAlgorithmException;
 
-        return $digest === $this->digest($key, $message);
+        return hash_equals($this->digest($key, $message), $digest);
     }
 
     /**

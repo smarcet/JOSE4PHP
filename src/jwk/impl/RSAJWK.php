@@ -85,10 +85,9 @@ final class RSAJWK extends AsymmetricJWK
                     $this[RSAKeysParameters::FirstCRTCoefficient]->toBigInt()
                 );
             } else {
-                $this->private_key = RSAFacade::getInstance()->buildMinimalPrivateKey(
-                    $this[RSAKeysParameters::Modulus]->toBigInt(),
-                    $this[RSAKeysParameters::PrivateExponent]->toBigInt()
-                );
+                // phpseclib 3 loads n/e/d without the CRT params as a public key, so a
+                // private key needs p, q, dp, dq and qi (RFC 7518 §6.3.2)
+                throw new RSAJWKMissingPrivateKeyParamException();
             }
 
         }

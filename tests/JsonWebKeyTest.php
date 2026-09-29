@@ -13,6 +13,7 @@
  **/
 
 use jwk\exceptions\InvalidJWKAlgorithm;
+use jwk\exceptions\JWKInvalidIdentifierException;
 use jwk\impl\RSAJWKFactory;
 use security\rsa\RSAFacade;
 use jwk\impl\RSAJWKSpecification;
@@ -178,7 +179,25 @@ JWK_SET;
         $jwk = $jwk_set->getKeyById("2011-04-29");
 
         $this->assertTrue(!is_null($jwk));
+    }
 
+    public function testDuplicateKeyIdInJWKSet()
+    {
+        $this->expectException(JWKInvalidIdentifierException::class);
 
+        $jwk  = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
+        $jwk2 = RSAJWKFactory::build(new RSAJWKSpecification);
+        $jwk->setId('same_id');
+        $jwk2->setId('same_id');
+        new JWKSet(array($jwk, $jwk2));
+    }
+
+    public function testEmptyKeyIdInJWKSet()
+    {
+        $this->expectException(JWKInvalidIdentifierException::class);
+
+        $jwk  = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
+        // Don't set an id — kid will be empty
+        new JWKSet(array($jwk));
     }
 }

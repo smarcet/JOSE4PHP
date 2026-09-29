@@ -12,8 +12,7 @@
  * limitations under the License.
  **/
 use security\rsa\exceptions\RSABadPEMFormat;
-use phpseclib\Math\BigInteger;
-use phpseclib\Crypt\RSA;
+use phpseclib3\Math\BigInteger;
 /**
  * Class _RSAPrivateKeyPEMFornat
  * @package security\rsa
@@ -55,7 +54,7 @@ final class _RSAPrivateKeyPEMFormat
      */
     public function getEncoded()
     {
-        return $this->rsa_imp->getPrivateKey(RSA::PRIVATE_FORMAT_PKCS1);
+        return $this->key->toString('PKCS1');
     }
 
     /**

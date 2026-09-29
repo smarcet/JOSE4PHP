@@ -15,7 +15,7 @@ use jwa\cryptographic_algorithms\content_encryption\ContentEncryptionAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyLengthAlgorithmException;
 use utils\ByteUtil;
-use phpseclib\Crypt\AES;
+use phpseclib3\Crypt\AES;
 /**
  * Class AES_CBC_HMAC_SHA2_Algorithm
  * @package jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS
@@ -25,15 +25,7 @@ use phpseclib\Crypt\AES;
 abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
 {
 
-    /**
-     * @var AES
-     */
-    protected $aes;
-
-    public function __construct()
-    {
-        $this->aes = new AES(AES::MODE_CBC);
-    }
+    // No instance variable needed - AES cipher is created per-operation in phpseclib3
 
     /**
      * @return string
@@ -63,10 +55,11 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
         // ENC_KEY = final ENC_KEY_LEN octets of K
         $enc_key     = substr($key, $enc_key_len);
 
-        $this->aes->setKey($enc_key);
-        $this->aes->setIV($iv);
+        $cipher = new AES('cbc');
+        $cipher->setKey($enc_key);
+        $cipher->setIV($iv);
 
-        $cypher_text = $this->aes->encrypt($plain_text);
+        $cypher_text = $cipher->encrypt($plain_text);
         $tag         = $this->calculateAuthenticationTag($cypher_text, $key, $iv, $aad);
 
         return array($cypher_text, $tag);
@@ -113,7 +106,7 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
      */
     protected function checkAuthenticationTag($cypher_text, $key, $iv, $aad, $tag)
     {
-        return $tag === $this->calculateAuthenticationTag($cypher_text, $key, $iv, $aad);
+        return hash_equals($this->calculateAuthenticationTag($cypher_text, $key, $iv, $aad), $tag);
     }
 
     /**
@@ -136,10 +129,11 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
         // ENC_KEY = final ENC_KEY_LEN octets of K
         $enc_key = substr($key, $enc_key_len);
 
-        $this->aes->setKey($enc_key);
-        $this->aes->setIV($iv);
+        $cipher = new AES('cbc');
+        $cipher->setKey($enc_key);
+        $cipher->setIV($iv);
 
-        return $this->aes->decrypt($cypher_text);
+        return $cipher->decrypt($cypher_text);
     }
 
     /**
@@ -147,7 +141,9 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
      */
     public function getIVSize()
     {
-       return $this->getMinKeyLen();
+       // AES-CBC always uses 128-bit (16-byte) IV regardless of key size
+       // Returns size in bits (IVFactory converts to bytes by dividing by 8)
+       return 128;
     }
 
     /**

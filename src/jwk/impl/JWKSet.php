@@ -70,7 +70,7 @@ final class JWKSet
             throw new JWKInvalidIdentifierException('key id is empty!');
 
         if(array_key_exists($id->getValue(), $this->keys_ids))
-            throw new JWKInvalidIdentifierException(sprintf('id %s already exists!'), $key->getId()->getValue());
+            throw new JWKInvalidIdentifierException(sprintf('id %s already exists!', $key->getId()->getValue()));
 
         if(!isset($this->set[JWKSetParameters::Keys]))
             $this->set[JWKSetParameters::Keys] = new JsonArray(array());

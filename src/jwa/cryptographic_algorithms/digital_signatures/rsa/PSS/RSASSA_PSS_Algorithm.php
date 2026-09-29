@@ -12,7 +12,7 @@
  * limitations under the License.
  **/
 use jwa\cryptographic_algorithms\digital_signatures\rsa\RSA_Algorithm;
-use phpseclib\Crypt\RSA;
+use phpseclib3\Crypt\RSA;
 /**
  * Class RSASSA_PSS_Algorithm
  * @package jwa\cryptographic_algorithms\digital_signatures\rsa\PSS
