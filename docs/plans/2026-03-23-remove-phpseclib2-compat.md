@@ -11,7 +11,7 @@ Type: Feature
 
 **Goal:** Remove the `phpseclib/phpseclib2_compat` dependency by migrating all `phpseclib\*` (2.x compat) imports to native `phpseclib3\*` APIs.
 **Architecture:** phpseclib 3.x uses immutable key objects with fluent configuration (`withHash()`, `withPadding()`) instead of the 2.x mutable RSA object pattern. The migration replaces the mutable `$rsa_impl` pattern in algorithm classes with per-operation key loading and configuration.
-**Tech Stack:** PHP 8.3, phpseclib 3.0.43
+**Tech Stack:** PHP 8.3, phpseclib ^3.0.57
 
 ## Scope
 

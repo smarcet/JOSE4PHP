@@ -79,22 +79,6 @@ final class RSAFacade {
      * @param BigInteger $n
      * @param BigInteger $e
      * @param BigInteger $d
-     * @return RSAPrivateKey
-     */
-    public function buildMinimalPrivateKey(BigInteger $n, BigInteger $e, BigInteger $d){
-        $key = PublicKeyLoader::load([
-            'n' => $n,
-            'e' => $e,
-            'd' => $d
-        ]);
-        $private_key_pem = $key->toString('PKCS1');
-        return new _RSAPrivateKeyPEMFormat($private_key_pem);
-    }
-
-    /**
-     * @param BigInteger $n
-     * @param BigInteger $e
-     * @param BigInteger $d
      * @param BigInteger $p
      * @param BigInteger $q
      * @param BigInteger $dp

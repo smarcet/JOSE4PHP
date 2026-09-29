@@ -25,18 +25,22 @@ Migrate all code from the phpseclib 2.x compat API (`phpseclib\*`) to the native
 | `phpseclib\Crypt\Random::string($len)` | `phpseclib3\Crypt\Random::string($len)` |
 | `new X509()` / `loadX509()` | `new X509()` / `loadX509()` (namespace change only) |
 
-### `buildMinimalPrivateKey` Signature Change
+### `buildMinimalPrivateKey` Removed
 
-The `RSAFacade::buildMinimalPrivateKey(\Math_BigInteger $n, \Math_BigInteger $d)` method uses internal phpseclib 2.x methods (`_getPrivatePublicKey`) that don't exist in 3.x. phpseclib 3.x's `PublicKeyLoader::load()` requires at minimum `n`, `e`, and `d`.
+The `RSAFacade::buildMinimalPrivateKey(\Math_BigInteger $n, \Math_BigInteger $d)` method uses internal phpseclib 2.x methods (`_getPrivatePublicKey`) that don't exist in 3.x. phpseclib 3.x has no equivalent: `PublicKeyLoader::load(['n' => …, 'e' => …, 'd' => …])` returns a **public** key (`d` is dropped), so the exported PEM is `RSA PUBLIC KEY` and `_RSAPrivateKeyPEMFormat` rejects it.
 
-**Change:** The method signature becomes `buildMinimalPrivateKey(BigInteger $n, BigInteger $e, BigInteger $d)`.
+**Change:** `buildMinimalPrivateKey()` is removed. The `RSAJWK` constructor builds a private key only from the full CRT parameter set (`p`, `q`, `dp`, `dq`, `qi`, RFC 7518 §6.3.2) and throws `RSAJWKMissingPrivateKeyParamException` when only `d` is present.
 
 **Impact assessment:**
-- **openstackid** — never calls `buildMinimalPrivateKey` directly. All key creation goes through PEM-based factories. **No impact.**
+- **openstackid** — never calls `buildMinimalPrivateKey` directly. All key creation goes through PEM-based factories. **No impact from this change.** openstackid is affected by the compat removal itself, see below.
 - **summit-api** — does not depend on JOSE4PHP. **No impact.**
-- **Internal caller (RSAJWK constructor)** — already has `e` available at the call site (parsed from JWK public params). Only needs to pass the additional argument.
+- **Internal caller (RSAJWK constructor)** — the minimal branch was not reachable in practice (the private-key branch is gated by `in_array()` over the header values, and `JWKSet::fromJson()` only builds public keys).
 
-This is technically a signature change on a public method, but has zero practical impact on known consumers.
+This removes a public method, which is part of this major release.
+
+### Downstream: openstackid relies on the compat layer
+
+openstackid does not require `phpseclib/phpseclib2_compat` itself; it gets it transitively through JOSE4PHP 2.x, and uses the 2.x API directly (`phpseclib\Crypt\RSA`, `phpseclib\Crypt\Random`). Before openstackid moves to this release it must migrate those call sites to `phpseclib3\*` (or require `phpseclib/phpseclib2_compat` itself). The list is in the pull request's deployment note.
 
 ## Consequences
 
@@ -48,7 +52,8 @@ This is technically a signature change on a public method, but has zero practica
 - Eliminates risk of compat layer being abandoned upstream
 
 **Negative:**
-- `buildMinimalPrivateKey` gains an additional required parameter (`e`)
+- `RSAFacade::buildMinimalPrivateKey()` is removed; a private RSA JWK needs the CRT parameters
+- Consumers using the 2.x API through the transitive compat package (openstackid) must migrate before upgrading
 - `Abstract_RSA_Algorithm` and subclasses need rework (mutable RSA object → immutable key pattern)
 
 **Neutral:**

@@ -16,7 +16,7 @@
   ],
   "require": {
     "php": "^8.3",
-    "phpseclib/phpseclib": "3.0.50"
+    "phpseclib/phpseclib": "^3.0.57"
   },
   "suggest":{
     "lib-openssl": "Required to use AES algorithms (except AES GCM)",
@@ -37,5 +37,6 @@
       "tests/"
     ]
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

@@ -32,7 +32,7 @@ vendor/bin/phpunit --filter testName  # single test
 
 ## Patterns
 
-- Tests use `@depends` annotations to chain test methods (e.g., build claim set → build JWS → verify JWS)
+- Tests use PHPUnit's `#[Depends]` attribute to chain test methods (e.g., build claim set → build JWS → verify JWS)
 - Shared state via `static` properties and `setUpBeforeClass()`
-- `@return` annotations on test methods to pass objects to dependent tests
+- Test methods return values that are passed as parameters to dependent tests
 - No mocking of internal classes — tests exercise real crypto operations

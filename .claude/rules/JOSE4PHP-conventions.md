@@ -4,7 +4,7 @@
 
 Namespaces are lowercase, matching directory structure under `src/`:
 
-```
+```text
 jwa\                                    → src/jwa/
 jwa\cryptographic_algorithms\           → src/jwa/cryptographic_algorithms/
 jwe\impl\                               → src/jwe/impl/
