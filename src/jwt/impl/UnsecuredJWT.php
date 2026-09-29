@@ -13,6 +13,7 @@
  **/
 use jwt\IJWT;
 use jwt\IJWTClaimSet;
+use jwt\JOSEHeaderTypes;
 use utils\json_types\StringOrURI;
 /**
  * Class UnsecuredJWT
@@ -38,7 +39,7 @@ final class UnsecuredJWT extends JWT implements IJWTSnapshot
             new JOSEHeader
             (
                 new StringOrURI('none'),
-                new StringOrURI('JWT')
+                new StringOrURI(JOSEHeaderTypes::JWT)
             ),
             $claim_set
         );

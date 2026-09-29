@@ -13,8 +13,11 @@
  **/
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 
+use jwt\JOSEHeaderParam;
+use jwt\JOSEHeaderTypes;
 use jwt\RegisteredJWTClaimNames;
 use jwt\RegisteredJOSEHeaderNames;
+use jwt\impl\JOSEHeader;
 use jwt\utils\JWTClaimSetFactory;
 
 use jwk\impl\RSAJWKPEMPrivateKeySpecification;
@@ -28,7 +31,10 @@ use jwk\impl\RSAJWKFactory;
 use jws\impl\specs\JWS_ParamsSpecification;
 use jws\impl\specs\JWS_CompactFormatSpecification;
 use jws\JWSFactory;
+use jws\impl\JWS;
+use jws\payloads\JWSPayloadFactory;
 
+use utils\Base64UrlRepresentation;
 use utils\json_types\StringOrURI;
 /**
  * Class JsonWebSignatureTest
@@ -307,5 +313,133 @@ final class JsonWebSignatureTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($res);
 
         $this->assertTrue($jws_1->getClaimSet()->getIssuer()->getString() === 'セバスチャン');
+    }
+
+    /**
+     * An explicitly typed JWT (RFC 8725 §3.11) keeps its "typ" and its claim set through
+     * sign, serialize, parse and verify.
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testSignAndVerificationTokenWithExplicitType()
+    {
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256);
+
+        foreach (['at+jwt', 'secevent+jwt', 'application/at+jwt', 'jwt'] as $typ) {
+
+            $jws = JWSFactory::build
+            (
+                new JWS_ParamsSpecification
+                (
+                    $key,
+                    $alg,
+                    JWTClaimSetFactory::build([RegisteredJWTClaimNames::Issuer => 'joe'])
+                )
+            );
+
+            $jws->getJOSEHeader()->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::Type, new StringOrURI($typ)));
+
+            $compact_serialization = $jws->toCompactSerialization();
+
+            $this->assertSame($typ, $this->decodeHeader($compact_serialization)[RegisteredJOSEHeaderNames::Type]);
+
+            $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+            $this->assertSame($typ, $jws_1->getJOSEHeader()->getType()->getString());
+            $this->assertSame('joe', $jws_1->getClaimSet()->getIssuer()->getString());
+            $this->assertTrue($jws_1->setKey($key)->verify($alg->getString()));
+        }
+    }
+
+    /**
+     * "typ" is optional (RFC 7519 §5.1): a received JWS without it is read as a claim set and its
+     * header is left untouched, since the header is part of the signing input.
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testParseAndVerificationTokenWithoutType()
+    {
+        $secret = str_repeat('k', 64);
+
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                $secret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $b64       = new Base64UrlRepresentation();
+        $e_header  = $b64->encode(json_encode([RegisteredJOSEHeaderNames::Algorithm => JSONWebSignatureAndEncryptionAlgorithms::HS256]));
+        $e_payload = $b64->encode(json_encode([RegisteredJWTClaimNames::Issuer => 'joe']));
+        $signature = $b64->encode(hash_hmac('sha256', $e_header.'.'.$e_payload, $secret, true));
+
+        $jws = JWSFactory::build(new JWS_CompactFormatSpecification($e_header.'.'.$e_payload.'.'.$signature));
+
+        $this->assertNull($jws->getJOSEHeader()->getType());
+        $this->assertSame('joe', $jws->getClaimSet()->getIssuer()->getString());
+        $this->assertTrue($jws->setKey($key)->verify(JSONWebSignatureAndEncryptionAlgorithms::HS256));
+    }
+
+    /**
+     * A JWS built from a header without "typ" still defaults to "JWT".
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testBuildTokenWithoutTypeDefaultsToJWT()
+    {
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $jws = JWS::fromHeaderClaimsAndSignature
+        (
+            new JOSEHeader(new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256)),
+            JWSPayloadFactory::build(JWTClaimSetFactory::build([RegisteredJWTClaimNames::Issuer => 'joe']))
+        );
+
+        $compact_serialization = $jws->setKey($key)->toCompactSerialization();
+
+        $this->assertSame(JOSEHeaderTypes::JWT, $this->decodeHeader($compact_serialization)[RegisteredJOSEHeaderNames::Type]);
+
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertSame('joe', $jws_1->getClaimSet()->getIssuer()->getString());
+        $this->assertTrue($jws_1->setKey($key)->verify(JSONWebSignatureAndEncryptionAlgorithms::HS256));
+    }
+
+    public function testIsJWTType()
+    {
+        $this->assertTrue(JOSEHeaderTypes::isJWT(null));
+
+        foreach (['JWT', 'jwt', 'application/jwt', 'Application/JWT', 'at+jwt', 'application/at+jwt', 'secevent+JWT'] as $typ)
+            $this->assertTrue(JOSEHeaderTypes::isJWT(new StringOrURI($typ)), $typ);
+
+        foreach (['JOSE', 'JOSE+JSON', 'application/json', 'jwt+json', 'notjwt'] as $typ)
+            $this->assertFalse(JOSEHeaderTypes::isJWT(new StringOrURI($typ)), $typ);
+    }
+
+    /**
+     * @param string $compact_serialization
+     * @return array
+     */
+    private function decodeHeader($compact_serialization)
+    {
+        return json_decode((new Base64UrlRepresentation())->decode(explode('.', $compact_serialization)[0]), true);
     }
 }

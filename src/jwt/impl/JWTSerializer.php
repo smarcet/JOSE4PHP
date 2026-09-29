@@ -13,6 +13,7 @@
  **/
 use jwt\exceptions\InvalidJWTException;
 use jwt\IBasicJWT;
+use jwt\JOSEHeaderTypes;
 use jwt\utils\JOSEHeaderSerializer;
 use jwt\utils\JWTClaimSetSerializer;
 use jwt\utils\JWTRawSerializer;
@@ -31,7 +32,7 @@ final class JWTSerializer {
         list($header, $payload, $signature) = $jwt_snapshot->take();
 
         $e_header    = JOSEHeaderSerializer::serialize($header);
-        $e_payload   = ($header->getType()->getString() === 'JWT') ?  JWTClaimSetSerializer::serialize($payload) : JWTRawSerializer::serialize($payload);
+        $e_payload   = JOSEHeaderTypes::isJWT($header->getType()) ? JWTClaimSetSerializer::serialize($payload) : JWTRawSerializer::serialize($payload);
         $e_signature = JWTRawSerializer::serialize($signature);
 
         return sprintf('%s.%s.%s', $e_header, $e_payload, $e_signature);
@@ -52,7 +53,7 @@ final class JWTSerializer {
         $e_payload   = $e_parts[1];
         $e_signature = count($e_parts)>2 ? $e_parts[2] : '';
         $header    = JOSEHeaderSerializer::deserialize($e_header);
-        $payload   = ($header->getType()->getString() === 'JWT') ? JWTClaimSetSerializer::deserialize($e_payload) : JWTRawSerializer::deserialize($e_payload);
+        $payload   = JOSEHeaderTypes::isJWT($header->getType()) ? JWTClaimSetSerializer::deserialize($e_payload) : JWTRawSerializer::deserialize($e_payload);
         $signature = !empty($e_signature) ? JWTRawSerializer::deserialize($e_signature): '';
         return array($header, $payload, $signature);
     }
