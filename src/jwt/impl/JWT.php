@@ -14,7 +14,6 @@
 use jwt\IJOSEHeader;
 use jwt\IJWT;
 use jwt\IJWTClaimSet;
-use jwt\JOSEHeaderTypes;
 /**
  * Class JWT
  * @package jwt\impl
@@ -87,11 +86,10 @@ abstract class JWT implements IJWT, IJWTSnapshot
      */
     public function take()
     {
-        $payload = JOSEHeaderTypes::isJWT($this->header->getType()) ? $this->claim_set : '';
         return array
         (
             $this->header,
-            $payload,
+            $this->claim_set,
             $this->signature
         );
     }

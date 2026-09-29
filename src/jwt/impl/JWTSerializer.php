@@ -13,6 +13,8 @@
  **/
 use jwt\exceptions\InvalidJWTException;
 use jwt\IBasicJWT;
+use jwt\IJOSEHeader;
+use jwt\IJWTClaimSet;
 use jwt\JOSEHeaderTypes;
 use jwt\utils\JOSEHeaderSerializer;
 use jwt\utils\JWTClaimSetSerializer;
@@ -32,7 +34,8 @@ final class JWTSerializer {
         list($header, $payload, $signature) = $jwt_snapshot->take();
 
         $e_header    = JOSEHeaderSerializer::serialize($header);
-        $e_payload   = JOSEHeaderTypes::isJWT($header->getType()) ? JWTClaimSetSerializer::serialize($payload) : JWTRawSerializer::serialize($payload);
+        // pick the serializer from the payload itself, as JWS::getEncodedPayload() does for the signing input
+        $e_payload   = $payload instanceof IJWTClaimSet ? JWTClaimSetSerializer::serialize($payload) : JWTRawSerializer::serialize($payload);
         $e_signature = JWTRawSerializer::serialize($signature);
 
         return sprintf('%s.%s.%s', $e_header, $e_payload, $e_signature);
@@ -53,8 +56,21 @@ final class JWTSerializer {
         $e_payload   = $e_parts[1];
         $e_signature = count($e_parts)>2 ? $e_parts[2] : '';
         $header    = JOSEHeaderSerializer::deserialize($e_header);
-        $payload   = JOSEHeaderTypes::isJWT($header->getType()) ? JWTClaimSetSerializer::deserialize($e_payload) : JWTRawSerializer::deserialize($e_payload);
+        $payload   = self::isClaimSetPayload($header, $e_payload) ? JWTClaimSetSerializer::deserialize($e_payload) : JWTRawSerializer::deserialize($e_payload);
         $signature = !empty($e_signature) ? JWTRawSerializer::deserialize($e_signature): '';
         return array($header, $payload, $signature);
+    }
+
+    /**
+     * An explicit "typ" decides; "typ" is OPTIONAL (RFC 7519 §5.1), so without it the payload
+     * is a claim set only when it is a JSON object, and is kept raw otherwise.
+     * @param IJOSEHeader $header
+     * @param string $e_payload
+     * @return bool
+     */
+    static private function isClaimSetPayload(IJOSEHeader $header, $e_payload){
+        $typ = $header->getType();
+        if(!is_null($typ)) return JOSEHeaderTypes::isJWT($typ);
+        return is_object(json_decode(JWTRawSerializer::deserialize($e_payload)));
     }
 }
