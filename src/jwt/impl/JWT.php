@@ -86,11 +86,10 @@ abstract class JWT implements IJWT, IJWTSnapshot
      */
     public function take()
     {
-        $payload = ($this->header->getType()->getString() === 'JWT') ?  $this->claim_set : '';
         return array
         (
             $this->header,
-            $payload,
+            $this->claim_set,
             $this->signature
         );
     }

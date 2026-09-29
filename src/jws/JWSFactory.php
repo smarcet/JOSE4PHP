@@ -16,6 +16,7 @@ use jwk\exceptions\InvalidJWKType;
 use jwk\JSONWebKeyPublicKeyUseValues;
 use jws\impl\JWS;
 use jwt\impl\JOSEHeader;
+use jwt\JOSEHeaderTypes;
 use utils\json_types\StringOrURI;
 /**
  * Class JWSFactory
@@ -59,7 +60,7 @@ final class JWSFactory
             $header = new JOSEHeader
             (
                 $spec->getAlg(),
-                new StringOrURI('JWT'),
+                new StringOrURI(JOSEHeaderTypes::JWT),
                 $spec->getKey()->getId()
             );
 

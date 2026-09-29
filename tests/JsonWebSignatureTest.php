@@ -13,8 +13,11 @@
  **/
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
 
+use jwt\JOSEHeaderParam;
+use jwt\JOSEHeaderTypes;
 use jwt\RegisteredJWTClaimNames;
 use jwt\RegisteredJOSEHeaderNames;
+use jwt\impl\JOSEHeader;
 use jwt\utils\JWTClaimSetFactory;
 
 use jwk\impl\RSAJWKPEMPrivateKeySpecification;
@@ -28,7 +31,10 @@ use jwk\impl\RSAJWKFactory;
 use jws\impl\specs\JWS_ParamsSpecification;
 use jws\impl\specs\JWS_CompactFormatSpecification;
 use jws\JWSFactory;
+use jws\impl\JWS;
+use jws\payloads\JWSPayloadFactory;
 
+use utils\Base64UrlRepresentation;
 use utils\json_types\StringOrURI;
 /**
  * Class JsonWebSignatureTest
@@ -307,5 +313,243 @@ final class JsonWebSignatureTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($res);
 
         $this->assertTrue($jws_1->getClaimSet()->getIssuer()->getString() === 'セバスチャン');
+    }
+
+    /**
+     * An explicitly typed JWT (RFC 8725 §3.11) keeps its "typ" and its claim set through
+     * sign, serialize, parse and verify.
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testSignAndVerificationTokenWithExplicitType()
+    {
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256);
+
+        foreach (['at+jwt', 'secevent+jwt', 'application/at+jwt', 'jwt'] as $typ) {
+
+            $jws = JWSFactory::build
+            (
+                new JWS_ParamsSpecification
+                (
+                    $key,
+                    $alg,
+                    JWTClaimSetFactory::build([RegisteredJWTClaimNames::Issuer => 'joe'])
+                )
+            );
+
+            $jws->getJOSEHeader()->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::Type, new StringOrURI($typ)));
+
+            $compact_serialization = $jws->toCompactSerialization();
+
+            $this->assertSame($typ, $this->decodeHeader($compact_serialization)[RegisteredJOSEHeaderNames::Type]);
+
+            $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+            $this->assertSame($typ, $jws_1->getJOSEHeader()->getType()->getString());
+            $this->assertSame('joe', $jws_1->getClaimSet()->getIssuer()->getString());
+            $this->assertTrue($jws_1->setKey($key)->verify($alg->getString()));
+        }
+    }
+
+    /**
+     * "typ" is optional (RFC 7519 §5.1): a received JWS without it is read as a claim set and its
+     * header is left untouched, since the header is part of the signing input.
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testParseAndVerificationTokenWithoutType()
+    {
+        $secret = str_repeat('k', 64);
+
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                $secret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $b64       = new Base64UrlRepresentation();
+        $e_header  = $b64->encode(json_encode([RegisteredJOSEHeaderNames::Algorithm => JSONWebSignatureAndEncryptionAlgorithms::HS256]));
+        $e_payload = $b64->encode(json_encode([RegisteredJWTClaimNames::Issuer => 'joe']));
+        $signature = $b64->encode(hash_hmac('sha256', $e_header.'.'.$e_payload, $secret, true));
+
+        $jws = JWSFactory::build(new JWS_CompactFormatSpecification($e_header.'.'.$e_payload.'.'.$signature));
+
+        $this->assertNull($jws->getJOSEHeader()->getType());
+        $this->assertSame('joe', $jws->getClaimSet()->getIssuer()->getString());
+        $this->assertTrue($jws->setKey($key)->verify(JSONWebSignatureAndEncryptionAlgorithms::HS256));
+    }
+
+    /**
+     * A JWS built from a header without "typ" still defaults to "JWT".
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testBuildTokenWithoutTypeDefaultsToJWT()
+    {
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $jws = JWS::fromHeaderClaimsAndSignature
+        (
+            new JOSEHeader(new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256)),
+            JWSPayloadFactory::build(JWTClaimSetFactory::build([RegisteredJWTClaimNames::Issuer => 'joe']))
+        );
+
+        $compact_serialization = $jws->setKey($key)->toCompactSerialization();
+
+        $this->assertSame(JOSEHeaderTypes::JWT, $this->decodeHeader($compact_serialization)[RegisteredJOSEHeaderNames::Type]);
+
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertSame('joe', $jws_1->getClaimSet()->getIssuer()->getString());
+        $this->assertTrue($jws_1->setKey($key)->verify(JSONWebSignatureAndEncryptionAlgorithms::HS256));
+    }
+
+    public function testIsJWTType()
+    {
+        $this->assertTrue(JOSEHeaderTypes::isJWT(null));
+
+        foreach (['JWT', 'jwt', 'application/jwt', 'Application/JWT', 'at+jwt', 'application/at+jwt', 'secevent+JWT'] as $typ)
+            $this->assertTrue(JOSEHeaderTypes::isJWT(new StringOrURI($typ)), $typ);
+
+        foreach (['JOSE', 'JOSE+JSON', 'application/json', 'jwt+json', 'notjwt'] as $typ)
+            $this->assertFalse(JOSEHeaderTypes::isJWT(new StringOrURI($typ)), $typ);
+    }
+
+    /**
+     * A JWS with a raw (non JSON) payload and no "typ" keeps the payload raw through
+     * sign, serialize, parse and verify.
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testSignAndVerificationRawPayloadWithoutType()
+    {
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $jws = JWS::fromHeaderClaimsAndSignature
+        (
+            new JOSEHeader(new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256)),
+            JWSPayloadFactory::build('hello')
+        );
+
+        $compact_serialization = $jws->setKey($key)->toCompactSerialization();
+
+        $this->assertArrayNotHasKey(RegisteredJOSEHeaderNames::Type, $this->decodeHeader($compact_serialization));
+        $this->assertSame('hello', (new Base64UrlRepresentation())->decode(explode('.', $compact_serialization)[1]));
+
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertNull($jws_1->getClaimSet());
+        $this->assertTrue($jws_1->getPayload()->isRaw());
+        $this->assertSame('hello', $jws_1->getPayload()->getRaw());
+        $this->assertTrue($jws_1->setKey($key)->verify(JSONWebSignatureAndEncryptionAlgorithms::HS256));
+    }
+
+    /**
+     * A received JWS without "typ" whose payload is not a JSON object is read as a raw payload.
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testParseAndVerificationRawPayloadWithoutType()
+    {
+        $secret = str_repeat('k', 64);
+
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                $secret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $b64 = new Base64UrlRepresentation();
+
+        foreach (['hello', '["a","b"]', '42'] as $raw) {
+            $e_header  = $b64->encode(json_encode([RegisteredJOSEHeaderNames::Algorithm => JSONWebSignatureAndEncryptionAlgorithms::HS256]));
+            $e_payload = $b64->encode($raw);
+            $signature = $b64->encode(hash_hmac('sha256', $e_header.'.'.$e_payload, $secret, true));
+
+            $jws = JWSFactory::build(new JWS_CompactFormatSpecification($e_header.'.'.$e_payload.'.'.$signature));
+
+            $this->assertNull($jws->getClaimSet(), $raw);
+            $this->assertSame($raw, $jws->getPayload()->getRaw());
+            $this->assertTrue($jws->setKey($key)->verify(JSONWebSignatureAndEncryptionAlgorithms::HS256), $raw);
+        }
+    }
+
+    /**
+     * A claim set signed with a "typ" that is not a JWT type (e.g. "JOSE") serializes its claims,
+     * and is read back as a raw payload as its "typ" declares, with a valid signature.
+     * @throws \jwk\exceptions\InvalidJWKAlgorithm
+     * @throws \jwk\exceptions\InvalidJWKType
+     */
+    public function testSignAndVerificationClaimSetWithNonJWTType()
+    {
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                OctetSequenceJWKSpecification::GenerateSecret,
+                JSONWebSignatureAndEncryptionAlgorithms::HS256
+            )
+        );
+
+        $jws = JWSFactory::build
+        (
+            new JWS_ParamsSpecification
+            (
+                $key,
+                new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::HS256),
+                JWTClaimSetFactory::build([RegisteredJWTClaimNames::Issuer => 'joe'])
+            )
+        );
+
+        $jws->getJOSEHeader()->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::Type, new StringOrURI('JOSE')));
+
+        $compact_serialization = $jws->toCompactSerialization();
+
+        $payload = json_decode((new Base64UrlRepresentation())->decode(explode('.', $compact_serialization)[1]), true);
+        $this->assertSame('joe', $payload[RegisteredJWTClaimNames::Issuer]);
+
+        $jws_1 = JWSFactory::build(new JWS_CompactFormatSpecification($compact_serialization));
+
+        $this->assertNull($jws_1->getClaimSet());
+        $this->assertSame('joe', json_decode($jws_1->getPayload()->getRaw(), true)[RegisteredJWTClaimNames::Issuer]);
+        $this->assertTrue($jws_1->setKey($key)->verify(JSONWebSignatureAndEncryptionAlgorithms::HS256));
+    }
+
+    /**
+     * @param string $compact_serialization
+     * @return array
+     */
+    private function decodeHeader($compact_serialization)
+    {
+        return json_decode((new Base64UrlRepresentation())->decode(explode('.', $compact_serialization)[0]), true);
     }
 }

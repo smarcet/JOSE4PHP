@@ -33,6 +33,7 @@ use jwt\IJOSEHeader;
 use jwt\impl\JWT;
 use jwt\impl\JWTSerializer;
 use jwt\JOSEHeaderParam;
+use jwt\JOSEHeaderTypes;
 use jwt\RegisteredJOSEHeaderNames;
 use jwt\utils\JOSEHeaderSerializer;
 use jwt\utils\JWTClaimSetSerializer;
@@ -61,15 +62,17 @@ final class JWS extends JWT implements IJWS
      * @param IJOSEHeader $header
      * @param IJWSPayloadSpec $payload
      * @param string $signature
+     * @param bool $apply_default_type false when parsing: a received header is signed input and must not change
      * @throws JWSNotSupportedAlgorithm
      */
-    protected function __construct(IJOSEHeader $header, IJWSPayloadSpec $payload = null, $signature = '')
+    protected function __construct(IJOSEHeader $header, IJWSPayloadSpec $payload = null, $signature = '', $apply_default_type = true)
     {
 
         $claim_set = null;
 
         if(!is_null($payload) && $payload->isClaimSet() && $payload instanceof IJWSPayloadClaimSetSpec) {
-            $header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::Type, new StringOrURI('JWT')));
+            if ($apply_default_type && is_null($header->getType()))
+                $header->addHeader(new JOSEHeaderParam(RegisteredJOSEHeaderNames::Type, new StringOrURI(JOSEHeaderTypes::JWT)));
             $claim_set = $payload->getClaimSet();
         }
 
@@ -201,7 +204,7 @@ final class JWS extends JWT implements IJWS
     static public function fromCompactSerialization($compact_serialization)
     {
         list($header, $payload, $signature) = JWTSerializer::deserialize($compact_serialization);
-        return new JWS($header, JWSPayloadFactory::build($payload), $signature);
+        return new JWS($header, JWSPayloadFactory::build($payload), $signature, false);
     }
 
     /**

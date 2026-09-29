@@ -16,7 +16,7 @@
   ],
   "require": {
     "php": "^8.3",
-    "phpseclib/phpseclib": "3.0.43",
+    "phpseclib/phpseclib": "^3.0.57",
     "phpseclib/phpseclib2_compat": "1.0.6"
   },
   "suggest":{
@@ -38,5 +38,6 @@
       "tests/"
     ]
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
