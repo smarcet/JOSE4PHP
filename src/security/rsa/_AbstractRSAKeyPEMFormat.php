@@ -13,6 +13,8 @@
  **/
 
 use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA\PrivateKey as RSAPrivateKeyImpl;
+use phpseclib3\Crypt\RSA\PublicKey as RSAPublicKeyImpl;
 use security\rsa\exceptions\RSABadPEMFormat;
 use phpseclib3\Math\BigInteger;
 /**
@@ -67,10 +69,17 @@ abstract class _AbstractRSAKeyPEMFormat {
 
         try {
             $loaded_key = PublicKeyLoader::load($this->pem_format, $this->password ?? false);
-            $this->key = new CustomAsymmetricKey($loaded_key);
         } catch (\Exception $e) {
             throw new RSABadPEMFormat('Invalid PEM format', 0, $e);
         }
+
+        // PublicKeyLoader accepts any key type (EC, DSA, ...); only RSA keys have the
+        // modulus/exponent components this wrapper exposes.
+        if (!($loaded_key instanceof RSAPublicKeyImpl) && !($loaded_key instanceof RSAPrivateKeyImpl)) {
+            throw new RSABadPEMFormat('PEM is not an RSA key');
+        }
+
+        $this->key = new CustomAsymmetricKey($loaded_key);
     }
 
     /**

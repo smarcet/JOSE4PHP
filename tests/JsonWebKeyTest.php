@@ -20,6 +20,7 @@ use jwk\impl\RSAJWKFactory;
 use jwk\JSONWebKeyParameters;
 use jwk\RSAKeysParameters;
 use phpseclib3\Crypt\RSA\Formats\Keys\PKCS1;
+use security\rsa\exceptions\RSABadPEMFormat;
 use security\rsa\RSAPrivateKey;
 use security\rsa\RSAFacade;
 use jwk\impl\RSAJWKSpecification;
@@ -275,6 +276,20 @@ JWK_SET;
         unset($headers[RSAKeysParameters::FirstCRTCoefficient]);
 
         self::buildFromHeaders($headers);
+    }
+
+    public function testECPrivatePEMIsRejected()
+    {
+        $this->expectException(RSABadPEMFormat::class);
+
+        RSAFacade::getInstance()->buildPrivateKeyFromPEM(TestKeys::$ec_private_key_pem);
+    }
+
+    public function testECPublicPEMIsRejected()
+    {
+        $this->expectException(RSABadPEMFormat::class);
+
+        RSAFacade::getInstance()->buildPublicKeyFromPEM(TestKeys::$ec_public_key_pem);
     }
 
     public function testDuplicateKeyIdInJWKSet()
