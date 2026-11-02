@@ -139,11 +139,17 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
     }
 
     /**
-     * RFC 7516 §5.2 step 10: the CEK MUST have the length the content encryption
-     * algorithm requires. A CEK of any other length can only come out of a failed key
-     * unwrap (e.g. RSA1_5 implicit rejection yields a random-length key), and RFC 7516
-     * §11.5 requires that failure to be indistinguishable from a bad tag, so instead of
-     * throwing we substitute a random key of the right size and let the tag check fail.
+     * A CEK shorter than the content encryption algorithm requires, or of odd length,
+     * can only come out of a failed key unwrap (e.g. RSA1_5 implicit rejection yields a
+     * random-length key). RFC 7516 §11.5 requires that failure to be indistinguishable
+     * from a bad tag, so instead of throwing we substitute a random key of the right
+     * size and let the tag check fail.
+     *
+     * A CEK longer than required is deliberately kept: encrypt() accepts it and splits
+     * it in halves (MAC_KEY / ENC_KEY), and decrypt() must keep reading the tokens
+     * encrypt() produces (dir mode with a shared secret longer than the enc key size).
+     * SHORTCUT: RFC 7518 §5.2 requires the exact key size on both sides; tightening it
+     * is a breaking change for dir consumers and belongs to its own release.
      *
      * @param string $key
      * @return string
@@ -151,7 +157,7 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
     private function enforceCEKLength($key)
     {
         $expected_len = (int)($this->getCEKSize() / 8);
-        if (is_string($key) && strlen($key) === $expected_len)
+        if (is_string($key) && strlen($key) >= $expected_len && strlen($key) % 2 === 0)
             return $key;
         return ByteUtil::randomBytes($expected_len);
     }

@@ -1133,10 +1133,30 @@ final class JsonWebEncryptionTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testWrongLengthCEKIsRejectedAsBadTag()
+    public function testDirAcceptsSharedKeyLongerThanEncRequires()
     {
-        // RFC 7516 §5.2 step 10 / §11.5: a CEK that is not exactly the size the enc
-        // algorithm needs (what a failed RSA1_5 unwrap hands back) must end in the same
+        // Compatibility: encrypt() accepts a dir shared secret longer than the enc key
+        // size and splits it in halves, so decrypt() must keep reading those tokens
+        // (openstackid uses 64-byte client secrets with A128CBC-HS256 / A192CBC-HS384).
+        foreach ([JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256, JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384] as $enc_name) {
+            $secret = str_repeat('k', 64);
+            $mk = function () use ($secret) {
+                $key = OctetSequenceJWKFactory::build(new OctetSequenceJWKSpecification($secret, JSONWebSignatureAndEncryptionAlgorithms::Dir));
+                $key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('shared_key');
+                return $key;
+            };
+            $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::Dir);
+            $enc = new StringOrURI($enc_name);
+            $compact = JWEFactory::build(new JWE_ParamsSpecification($mk(), $alg, $enc, 'hello'))->toCompactSerialization();
+
+            $this->assertEquals('hello', self::decrypt($compact, $mk()), $enc_name);
+        }
+    }
+
+    public function testShortOrOddLengthCEKIsRejectedAsBadTag()
+    {
+        // RFC 7516 §11.5: a CEK shorter than the enc algorithm needs, or of odd length
+        // (what a failed RSA1_5 unwrap hands back), must end in the same
         // InvalidAuthenticationTagException as any other bad key, with no PHP notices
         // from splitting an odd-length key into float-sized halves.
         $enc = ContentEncryptionAlgorithms_Registry::getInstance()->get(JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256);
@@ -1146,7 +1166,7 @@ final class JsonWebEncryptionTest extends \PHPUnit\Framework\TestCase
         }, E_ALL);
 
         try {
-            foreach ([31, 33, 64] as $wrong_len) {
+            foreach ([16, 31, 33, 47] as $wrong_len) {
                 try {
                     $enc->decrypt(random_bytes(16), random_bytes($wrong_len), random_bytes(16), 'aad', random_bytes(16));
                     $this->fail(sprintf('a %d-byte CEK must not decrypt A128CBC-HS256', $wrong_len));
