@@ -62,13 +62,13 @@ final class RSAJWK extends AsymmetricJWK
         //calculate public key
         $this->public_key = RSAFacade::getInstance()->buildPublicKey($this[RSAKeysParameters::Modulus]->toBigInt(), $this[RSAKeysParameters::Exponent]->toBigInt());
 
-        if (in_array(RSAKeysParameters::PrivateExponent, $headers)) {
+        if (array_key_exists(RSAKeysParameters::PrivateExponent, $headers)) {
             // its a private key
             $this->visibility = JSONWebKeyVisibility::IncludePrivate;
 
-            $this[RSAKeysParameters::PrivateExponent] = new Base64urlUInt($headers[RSAKeysParameters::PrivateExponent]);
+            $this->set[RSAKeysParameters::PrivateExponent] = new Base64urlUInt($headers[RSAKeysParameters::PrivateExponent]);
             //its has one private param, must have all ...
-            if (in_array(RSAKeysParameters::FirstPrimeFactor, $headers)) {
+            if (array_key_exists(RSAKeysParameters::FirstPrimeFactor, $headers)) {
                 foreach (RSAKeysParameters::$producers_private_key_params as $p) {
                     if (!array_key_exists($p, $headers))
                         throw new RSAJWKMissingPrivateKeyParamException();
