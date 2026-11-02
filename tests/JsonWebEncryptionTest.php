@@ -35,6 +35,10 @@ use utils\json_types\JsonValue;
 use jwk\impl\OctetSequenceJWKSpecification;
 use jwk\impl\OctetSequenceJWKFactory;
 use jwe\exceptions\JWEInvalidCompactFormatException;
+use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
+use jwk\IJWK;
+use utils\Base64UrlRepresentation;
+use utils\ByteUtil;
 /**
  * Class JsonWebEncryptionTest
  */
@@ -963,5 +967,200 @@ final class JsonWebEncryptionTest extends \PHPUnit\Framework\TestCase
         $this->expectException(JWEInvalidCompactFormatException::class);
 
         JWEFactory::build(new JWE_CompactFormatSpecification('a.b.c'));
+    }
+
+    // ---------------------------------------------------------------------
+    // Negative decrypt paths
+    // ---------------------------------------------------------------------
+
+    const DIR_SHARED_SECRET = 'this_is_a_secret_key_long_enough'; // 32 bytes = A128CBC-HS256 key size
+
+    /**
+     * @return IJWK
+     */
+    private static function dirSharedKey(): IJWK
+    {
+        $key = OctetSequenceJWKFactory::build
+        (
+            new OctetSequenceJWKSpecification
+            (
+                self::DIR_SHARED_SECRET,
+                JSONWebSignatureAndEncryptionAlgorithms::Dir
+            )
+        );
+        $key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('shared_key');
+        return $key;
+    }
+
+    /**
+     * dir + A128CBC-HS256 token for $plain_text
+     * @param string $plain_text
+     * @return string compact serialization
+     */
+    private static function encryptWithDir(string $plain_text): string
+    {
+        $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::Dir);
+        $enc = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256);
+        $jwe = JWEFactory::build(new JWE_ParamsSpecification(self::dirSharedKey(), $alg, $enc, $plain_text));
+        return $jwe->toCompactSerialization();
+    }
+
+    /**
+     * @param string $compact
+     * @param IJWK $recipient_key
+     * @return string
+     */
+    private static function decrypt(string $compact, IJWK $recipient_key): string
+    {
+        $jwe = JWEFactory::build(new JWE_CompactFormatSpecification($compact));
+        $jwe->setRecipientKey($recipient_key);
+        return $jwe->getPlainText();
+    }
+
+    /**
+     * Flips one bit in the first byte of the given compact-serialization segment
+     * (0 header, 1 encrypted key, 2 iv, 3 ciphertext, 4 tag).
+     * @param string $compact
+     * @param int $segment
+     * @return string
+     */
+    private static function tamperSegment(string $compact, int $segment): string
+    {
+        $b64   = new Base64UrlRepresentation();
+        $parts = explode('.', $compact);
+        $raw   = $b64->decode($parts[$segment]);
+        $raw[0] = chr(ord($raw[0]) ^ 0x01);
+        $parts[$segment] = $b64->encode($raw);
+        return implode('.', $parts);
+    }
+
+    public function testDirRoundTripBaseline()
+    {
+        // guards the helpers used by the negative tests below
+        $compact = self::encryptWithDir('hello');
+        $this->assertEquals('hello', self::decrypt($compact, self::dirSharedKey()));
+    }
+
+    public function testTamperedTagIsRejected()
+    {
+        $this->expectException(InvalidAuthenticationTagException::class);
+
+        $compact = self::tamperSegment(self::encryptWithDir('hello'), 4);
+        self::decrypt($compact, self::dirSharedKey());
+    }
+
+    public function testTamperedCipherTextIsRejected()
+    {
+        $this->expectException(InvalidAuthenticationTagException::class);
+
+        $compact = self::tamperSegment(self::encryptWithDir('hello'), 3);
+        self::decrypt($compact, self::dirSharedKey());
+    }
+
+    public function testTamperedIVIsRejected()
+    {
+        // the IV is covered by the authentication tag (RFC 7518 §5.2.2.1)
+        $this->expectException(InvalidAuthenticationTagException::class);
+
+        $compact = self::tamperSegment(self::encryptWithDir('hello'), 2);
+        self::decrypt($compact, self::dirSharedKey());
+    }
+
+    /**
+     * @param string $alg
+     * @return string compact serialization encrypted for TestKeys::$public_key2_pem
+     */
+    private static function encryptForKey2(string $alg): string
+    {
+        $recipient_pub_key = RSAJWKFactory::build(new RSAJWKPEMPublicKeySpecification(TestKeys::$public_key2_pem, $alg));
+        $recipient_pub_key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('recipient');
+
+        $jwe = JWEFactory::build(new JWE_ParamsSpecification
+        (
+            $recipient_pub_key,
+            new StringOrURI($alg),
+            new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256),
+            'hello'
+        ));
+        return $jwe->toCompactSerialization();
+    }
+
+    /**
+     * @param string $alg
+     * @return IJWK TestKeys::$private_key_pem, which does NOT match $public_key2_pem
+     */
+    private static function wrongRecipientKey(string $alg): IJWK
+    {
+        $key = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification
+        (
+            TestKeys::$private_key_pem,
+            RSAJWKPEMPrivateKeySpecification::WithoutPassword,
+            $alg
+        ));
+        $key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('recipient');
+        return $key;
+    }
+
+    public function testWrongRecipientKeyRSAOAEPThrows()
+    {
+        // phpseclib 3 surfaces an OAEP decoding failure as RuntimeException (see PR breaking changes)
+        $this->expectException(\RuntimeException::class);
+
+        $alg = JSONWebSignatureAndEncryptionAlgorithms::RSA_OAEP;
+        self::decrypt(self::encryptForKey2($alg), self::wrongRecipientKey($alg));
+    }
+
+    public function testWrongRecipientKeyRSAOAEP256Throws()
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $alg = JSONWebSignatureAndEncryptionAlgorithms::RSA_OAEP_256;
+        self::decrypt(self::encryptForKey2($alg), self::wrongRecipientKey($alg));
+    }
+
+    public function testWrongRecipientKeyRSA1_5Fails()
+    {
+        // RSA1_5 unwrap failure is either an InvalidAuthenticationTagException (OpenSSL >= 3.2
+        // implicit rejection returns a random CEK, so the tag check fails) or phpseclib's own
+        // RuntimeException('Decryption error'); either way no plaintext comes out.
+        $alg = JSONWebSignatureAndEncryptionAlgorithms::RSA1_5;
+        try {
+            self::decrypt(self::encryptForKey2($alg), self::wrongRecipientKey($alg));
+            $this->fail('decryption with the wrong key must not succeed');
+        } catch (InvalidAuthenticationTagException | \RuntimeException $ex) {
+            $this->assertTrue(true);
+        }
+    }
+
+    public function testLegacyLongIVIsRejected()
+    {
+        // 2.x emitted a 32-byte IV for A128CBC-HS256 (IV size = key size). 3.x uses the
+        // 128-bit IV RFC 7518 §5.2 requires and must reject the old tokens, even when
+        // their tag is valid, instead of silently truncating the IV.
+        $this->expectException(\LengthException::class);
+
+        $b64 = new Base64UrlRepresentation();
+
+        // reuse a genuine protected header so the token is otherwise well formed
+        $header_b64 = explode('.', self::encryptWithDir('hello'))[0];
+
+        $cek         = self::DIR_SHARED_SECRET;
+        $mac_key     = substr($cek, 0, 16);
+        $iv          = random_bytes(32);
+        $cipher_text = random_bytes(16);
+        $aad         = $header_b64;
+        $al          = ByteUtil::convert2UnsignedLongBE(strlen($aad) * 8);
+        // T = first 16 octets of HMAC-SHA256(MAC_KEY, A || IV || E || AL)
+        $tag = substr(hash_hmac('sha256', $aad . $iv . $cipher_text . $al, $mac_key, true), 0, 16);
+
+        $compact = implode('.', [
+            $header_b64,
+            '',
+            $b64->encode($iv),
+            $b64->encode($cipher_text),
+            $b64->encode($tag),
+        ]);
+
+        self::decrypt($compact, self::dirSharedKey());
     }
 }
