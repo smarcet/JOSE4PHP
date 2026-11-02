@@ -12,21 +12,11 @@
  * limitations under the License.
  **/
 use jwk\JSONWebKeyTypes;
-use phpseclib\Crypt\RSA;
 /**
  * Class Abstract_RSA_Algorithm
  * @package jwa\cryptographic_algorithms
  */
 abstract class Abstract_RSA_Algorithm implements ICryptoAlgorithm {
-
-    /**
-     * @var RSA
-     */
-    protected $rsa_impl;
-
-    public function __construct() {
-        $this->rsa_impl = new RSA();
-    }
 
     /**
      * @return string

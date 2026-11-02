@@ -81,6 +81,7 @@ abstract class RSAKeysParameters {
         self::SecondPrimeFactor,
         self::FirstFactorCRTExponent,
         self::SecondFactorCRTExponent,
+        self::FirstCRTCoefficient,
     );
 
     public static $valid_algorithms_values = array(

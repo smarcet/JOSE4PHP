@@ -15,7 +15,7 @@ use jwa\cryptographic_algorithms\content_encryption\ContentEncryptionAlgorithm;
 use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
 use jwa\cryptographic_algorithms\exceptions\InvalidKeyLengthAlgorithmException;
 use utils\ByteUtil;
-use phpseclib\Crypt\AES;
+use phpseclib3\Crypt\AES;
 /**
  * Class AES_CBC_HMAC_SHA2_Algorithm
  * @package jwa\cryptographic_algorithms\content_encryption\AES_CBC_HS
@@ -25,15 +25,7 @@ use phpseclib\Crypt\AES;
 abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
 {
 
-    /**
-     * @var AES
-     */
-    protected $aes;
-
-    public function __construct()
-    {
-        $this->aes = new AES(AES::MODE_CBC);
-    }
+    // No instance variable needed - AES cipher is created per-operation in phpseclib3
 
     /**
      * @return string
@@ -59,14 +51,15 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
         if($this->getMinKeyLen() > ByteUtil::bitLength($key_len))
             throw new InvalidKeyLengthAlgorithmException;
 
-        $enc_key_len = $key_len / 2;
+        $enc_key_len = intdiv($key_len, 2);
         // ENC_KEY = final ENC_KEY_LEN octets of K
         $enc_key     = substr($key, $enc_key_len);
 
-        $this->aes->setKey($enc_key);
-        $this->aes->setIV($iv);
+        $cipher = new AES('cbc');
+        $cipher->setKey($enc_key);
+        $cipher->setIV($iv);
 
-        $cypher_text = $this->aes->encrypt($plain_text);
+        $cypher_text = $cipher->encrypt($plain_text);
         $tag         = $this->calculateAuthenticationTag($cypher_text, $key, $iv, $aad);
 
         return array($cypher_text, $tag);
@@ -82,7 +75,7 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
     protected function calculateAuthenticationTag($cypher_text, $key, $iv, $aad)
     {
         // first octets of key
-        $t_len   = $mac_key_len = strlen($key) / 2;
+        $t_len   = $mac_key_len = intdiv(strlen($key), 2);
         // MAC_KEY = initial MAC_KEY_LEN octets of K
         $mac_key = substr($key, 0, $mac_key_len);
             /**
@@ -113,7 +106,7 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
      */
     protected function checkAuthenticationTag($cypher_text, $key, $iv, $aad, $tag)
     {
-        return $tag === $this->calculateAuthenticationTag($cypher_text, $key, $iv, $aad);
+        return hash_equals($this->calculateAuthenticationTag($cypher_text, $key, $iv, $aad), $tag);
     }
 
     /**
@@ -129,17 +122,45 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
      */
     public function decrypt($cypher_text, $key, $iv, $aad, $tag)
     {
+        $key = $this->enforceCEKLength($key);
+
         if(!$this->checkAuthenticationTag($cypher_text, $key, $iv, $aad, $tag))
             throw new InvalidAuthenticationTagException;
 
-        $enc_key_len = strlen($key) / 2;
+        $enc_key_len = intdiv(strlen($key), 2);
         // ENC_KEY = final ENC_KEY_LEN octets of K
         $enc_key = substr($key, $enc_key_len);
 
-        $this->aes->setKey($enc_key);
-        $this->aes->setIV($iv);
+        $cipher = new AES('cbc');
+        $cipher->setKey($enc_key);
+        $cipher->setIV($iv);
 
-        return $this->aes->decrypt($cypher_text);
+        return $cipher->decrypt($cypher_text);
+    }
+
+    /**
+     * A CEK shorter than the content encryption algorithm requires can only come out of
+     * a failed key unwrap (e.g. RSA1_5 implicit rejection yields a random-length key).
+     * RFC 7516 §11.5 requires that failure to be indistinguishable from a bad tag, so
+     * instead of throwing we substitute a random key of the right size and let the tag
+     * check fail. A longer key of any parity goes through the same intdiv() halving as
+     * encrypt() and fails the tag check on its own.
+     *
+     * A CEK longer than required is deliberately kept: encrypt() accepts it and splits
+     * it in halves (MAC_KEY / ENC_KEY), and decrypt() must keep reading the tokens
+     * encrypt() produces (dir mode with a shared secret longer than the enc key size).
+     * SHORTCUT: RFC 7518 §5.2 requires the exact key size on both sides; tightening it
+     * is a breaking change for dir consumers and belongs to its own release.
+     *
+     * @param string $key
+     * @return string
+     */
+    private function enforceCEKLength($key)
+    {
+        $expected_len = (int)($this->getCEKSize() / 8);
+        if (is_string($key) && strlen($key) >= $expected_len)
+            return $key;
+        return ByteUtil::randomBytes($expected_len);
     }
 
     /**
@@ -147,7 +168,9 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
      */
     public function getIVSize()
     {
-       return $this->getMinKeyLen();
+       // AES-CBC always uses 128-bit (16-byte) IV regardless of key size
+       // Returns size in bits (IVFactory converts to bytes by dividing by 8)
+       return 128;
     }
 
     /**

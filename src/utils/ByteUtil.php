@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-use phpseclib\Crypt\Random;
+use phpseclib3\Crypt\Random;
 /**
  * Class ByteUtil
  * @package utils

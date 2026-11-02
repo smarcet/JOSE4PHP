@@ -23,22 +23,22 @@ class JsonArray extends JsonValue implements \ArrayAccess {
         parent::__construct($values);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->value[$offset] = $value;
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return isset($this->value[$offset]) ? $this->value[$offset] : null;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return array_key_exists($offset, $this->value);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         if ($this->offsetExists($offset))
             unset($this->value[$offset]);

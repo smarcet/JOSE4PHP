@@ -21,7 +21,10 @@ use \jwt\impl\UnsecuredJWT;
 use \jwt\utils\JWTClaimSetFactory;
 use \jwt\RegisteredJWTClaimNames;
 use utils\factories\BasicJWTFactory;
+use utils\exceptions\InvalidCompactSerializationException;
+use jwt\exceptions\ClaimAlreadyExistsException;
 use jwe\IJWE;
+use PHPUnit\Framework\Attributes\Depends;
 /**
  * Class JsonWebTokenTest
  */
@@ -34,10 +37,7 @@ final class JsonWebTokenTest extends \PHPUnit\Framework\TestCase {
         self::$epoch = time();
     }
 
-    /**
-     * @return JWTClaimSet
-     */
-    public function testBuildClaimSet(){
+    public function testBuildClaimSet(): JWTClaimSet {
 
         $epoch_now = self::$epoch;
 
@@ -62,11 +62,7 @@ final class JsonWebTokenTest extends \PHPUnit\Framework\TestCase {
         return $claim_set;
     }
 
-    /**
-     * @depends testBuildClaimSet
-     * @param JWTClaimSet $claimSet
-     * @throws \utils\exceptions\JsonParseException
-     */
+    #[Depends('testBuildClaimSet')]
     public function testClaimSetToJson(JWTClaimSet $claimSet){
 
         $epoch_now = self::$epoch;
@@ -132,4 +128,27 @@ final class JsonWebTokenTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($jwt instanceof IJWE);
     }
 
+    public function testDuplicateClaimThrowsException()
+    {
+        $this->expectException(ClaimAlreadyExistsException::class);
+
+        $claim_set = new JWTClaimSet(
+            new StringOrURI('issuer_test'),
+            new StringOrURI('subject_test'),
+            new StringOrURI('audience_test'),
+            new NumericDate(time()),
+            new NumericDate(time() + 3600),
+            new JsonValue('jid')
+        );
+
+        $claim_set->addClaim(new JWTClaim("custom_claim", new JsonValue("value1")));
+        $claim_set->addClaim(new JWTClaim("custom_claim", new JsonValue("value2")));
+    }
+
+    public function testInvalidCompactSerialization()
+    {
+        $this->expectException(InvalidCompactSerializationException::class);
+
+        BasicJWTFactory::build('no-dots');
+    }
 }

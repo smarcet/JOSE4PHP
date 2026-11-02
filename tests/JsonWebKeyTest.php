@@ -13,7 +13,16 @@
  **/
 
 use jwk\exceptions\InvalidJWKAlgorithm;
+use jwk\exceptions\JWKInvalidIdentifierException;
+use jwk\exceptions\RSAJWKMissingPrivateKeyParamException;
+use jwk\impl\RSAJWK;
 use jwk\impl\RSAJWKFactory;
+use jwk\JSONWebKeyParameters;
+use jwk\RSAKeysParameters;
+use phpseclib3\Crypt\EC;
+use phpseclib3\Crypt\RSA\Formats\Keys\PKCS1;
+use security\rsa\exceptions\RSABadPEMFormat;
+use security\rsa\RSAPrivateKey;
 use security\rsa\RSAFacade;
 use jwk\impl\RSAJWKSpecification;
 use security\rsa\RSAPublicKey;
@@ -178,7 +187,139 @@ JWK_SET;
         $jwk = $jwk_set->getKeyById("2011-04-29");
 
         $this->assertTrue(!is_null($jwk));
+    }
 
+    /**
+     * RFC 7518 §6.3 private key representation of TestKeys::$private_key_pem,
+     * as the raw header array the RSAJWK constructor consumes.
+     * @return array
+     */
+    private static function privateKeyHeaders(): array
+    {
+        $c = PKCS1::load(TestKeys::$private_key_pem);
+        $b64 = function ($big_int) { return Base64urlUInt::fromBigInt($big_int)->getValue(); };
+        return [
+            JSONWebKeyParameters::KeyType                => 'RSA',
+            JSONWebKeyParameters::Algorithm              => JSONWebSignatureAndEncryptionAlgorithms::RS256,
+            RSAKeysParameters::Modulus                   => $b64($c['modulus']),
+            RSAKeysParameters::Exponent                  => $b64($c['publicExponent']),
+            RSAKeysParameters::PrivateExponent           => $b64($c['privateExponent']),
+            RSAKeysParameters::FirstPrimeFactor          => $b64($c['primes'][1]),
+            RSAKeysParameters::SecondPrimeFactor         => $b64($c['primes'][2]),
+            RSAKeysParameters::FirstFactorCRTExponent    => $b64($c['exponents'][1]),
+            RSAKeysParameters::SecondFactorCRTExponent   => $b64($c['exponents'][2]),
+            RSAKeysParameters::FirstCRTCoefficient       => $b64($c['coefficients'][2]),
+        ];
+    }
 
+    /**
+     * The headers constructor is protected and has no public entry point yet.
+     * @param array $headers
+     * @return RSAJWK
+     */
+    private static function buildFromHeaders(array $headers): RSAJWK
+    {
+        $class = new \ReflectionClass(RSAJWK::class);
+        $jwk   = $class->newInstanceWithoutConstructor();
+        $class->getConstructor()->invoke($jwk, $headers);
+        return $jwk;
+    }
+
+    public function testCreateFromPrivateParams()
+    {
+        $headers = self::privateKeyHeaders();
+
+        $jwk = self::buildFromHeaders($headers);
+
+        $private_key = $jwk->getPrivateKey();
+        $this->assertInstanceOf(RSAPrivateKey::class, $private_key);
+        $this->assertEquals(
+            $jwk->getPublicKey()->getModulus()->toString(),
+            $private_key->getModulus()->toString()
+        );
+
+        // the private key must match the PEM it was derived from
+        $expected = RSAFacade::getInstance()->buildPrivateKeyFromPEM(TestKeys::$private_key_pem);
+        $this->assertEquals($expected->getPrivateExponent()->toString(), $private_key->getPrivateExponent()->toString());
+
+        // all private params are kept in the JWK representation
+        $res = $jwk->toArray();
+        foreach ([
+            RSAKeysParameters::PrivateExponent,
+            RSAKeysParameters::FirstPrimeFactor,
+            RSAKeysParameters::SecondPrimeFactor,
+            RSAKeysParameters::FirstFactorCRTExponent,
+            RSAKeysParameters::SecondFactorCRTExponent,
+            RSAKeysParameters::FirstCRTCoefficient,
+        ] as $p) {
+            $this->assertArrayHasKey($p, $res);
+            $this->assertEquals($headers[$p], $res[$p]);
+        }
+    }
+
+    public function testPrivateParamsWithoutCRTParamsThrows()
+    {
+        $this->expectException(RSAJWKMissingPrivateKeyParamException::class);
+
+        $headers = self::privateKeyHeaders();
+        foreach (RSAKeysParameters::$producers_private_key_params as $p) {
+            unset($headers[$p]);
+        }
+
+        self::buildFromHeaders($headers);
+    }
+
+    public function testPrivateParamsWithPartialCRTParamsThrows()
+    {
+        $this->expectException(RSAJWKMissingPrivateKeyParamException::class);
+
+        $headers = self::privateKeyHeaders();
+        unset($headers[RSAKeysParameters::FirstCRTCoefficient]);
+
+        self::buildFromHeaders($headers);
+    }
+
+    /**
+     * Generated per test instead of committed: a PEM private key in the repo, even a
+     * throwaway P-256 one, trips secret scanners.
+     * @return EC\PrivateKey
+     */
+    private static function ecKey(): EC\PrivateKey
+    {
+        return EC::createKey('secp256r1');
+    }
+
+    public function testECPrivatePEMIsRejected()
+    {
+        $this->expectException(RSABadPEMFormat::class);
+
+        RSAFacade::getInstance()->buildPrivateKeyFromPEM(self::ecKey()->toString('PKCS8'));
+    }
+
+    public function testECPublicPEMIsRejected()
+    {
+        $this->expectException(RSABadPEMFormat::class);
+
+        RSAFacade::getInstance()->buildPublicKeyFromPEM(self::ecKey()->getPublicKey()->toString('PKCS8'));
+    }
+
+    public function testDuplicateKeyIdInJWKSet()
+    {
+        $this->expectException(JWKInvalidIdentifierException::class);
+
+        $jwk  = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
+        $jwk2 = RSAJWKFactory::build(new RSAJWKSpecification);
+        $jwk->setId('same_id');
+        $jwk2->setId('same_id');
+        new JWKSet(array($jwk, $jwk2));
+    }
+
+    public function testEmptyKeyIdInJWKSet()
+    {
+        $this->expectException(JWKInvalidIdentifierException::class);
+
+        $jwk  = RSAJWKFactory::build(new RSAJWKPEMPrivateKeySpecification(TestKeys::$private_key_pem));
+        // Don't set an id — kid will be empty
+        new JWKSet(array($jwk));
     }
 }

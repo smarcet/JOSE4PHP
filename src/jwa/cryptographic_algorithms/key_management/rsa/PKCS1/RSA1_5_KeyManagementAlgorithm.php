@@ -13,7 +13,7 @@
  **/
 use jwa\cryptographic_algorithms\key_management\rsa\RSA_KeyManagementAlgorithm;
 use jwa\JSONWebSignatureAndEncryptionAlgorithms;
-use phpseclib\Crypt\RSA;
+use phpseclib3\Crypt\RSA;
 /**
  * Class RSA1_5_KeyManagementAlgorithm
  * @package jwa\cryptographic_algorithms\key_management\rsa\PKCS1

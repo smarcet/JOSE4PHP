@@ -13,7 +13,6 @@
  **/
 use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\RSA;
-use phpseclib\Crypt\RSA as RSA_OLD;
 
 /**
  * @class CustomPrivateKey
@@ -39,7 +38,7 @@ class CustomAsymmetricKey extends RSA
         return $this->key->publicExponent;
     }
 
-    public function toString($type = RSA_OLD::PRIVATE_FORMAT_PKCS8, array $options = [])
+    public function toString($type = 'PKCS8', array $options = [])
     {
         return $this->key->toString($type, $options);
     }
