@@ -1138,22 +1138,39 @@ final class JsonWebEncryptionTest extends \PHPUnit\Framework\TestCase
         // Compatibility: encrypt() accepts a dir shared secret longer than the enc key
         // size and splits it in halves, so decrypt() must keep reading those tokens
         // (openstackid uses 64-byte client secrets with A128CBC-HS256 / A192CBC-HS384).
-        foreach ([JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256, JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384] as $enc_name) {
-            $secret = str_repeat('k', 64);
-            $mk = function () use ($secret) {
-                $key = OctetSequenceJWKFactory::build(new OctetSequenceJWKSpecification($secret, JSONWebSignatureAndEncryptionAlgorithms::Dir));
-                $key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('shared_key');
-                return $key;
-            };
-            $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::Dir);
-            $enc = new StringOrURI($enc_name);
-            $compact = JWEFactory::build(new JWE_ParamsSpecification($mk(), $alg, $enc, 'hello'))->toCompactSerialization();
+        // 47 bytes is the odd length whose halves (23 / 24) still give a valid AES key;
+        // it used to round-trip with PHP deprecations and must keep round-tripping without.
+        $cases = [
+            [64, JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256],
+            [47, JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256],
+            [64, JSONWebSignatureAndEncryptionAlgorithms::A192CBC_HS384],
+        ];
 
-            $this->assertEquals('hello', self::decrypt($compact, $mk()), $enc_name);
+        // deprecations only: the JWK factory path has an unrelated pre-existing notice
+        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+            throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+        }, E_DEPRECATED | E_USER_DEPRECATED);
+
+        try {
+            foreach ($cases as [$secret_len, $enc_name]) {
+                $secret = str_repeat('k', $secret_len);
+                $mk = function () use ($secret) {
+                    $key = OctetSequenceJWKFactory::build(new OctetSequenceJWKSpecification($secret, JSONWebSignatureAndEncryptionAlgorithms::Dir));
+                    $key->setKeyUse(JSONWebKeyPublicKeyUseValues::Encryption)->setId('shared_key');
+                    return $key;
+                };
+                $alg = new StringOrURI(JSONWebSignatureAndEncryptionAlgorithms::Dir);
+                $enc = new StringOrURI($enc_name);
+                $compact = JWEFactory::build(new JWE_ParamsSpecification($mk(), $alg, $enc, 'hello'))->toCompactSerialization();
+
+                $this->assertEquals('hello', self::decrypt($compact, $mk()), sprintf('%d-byte secret / %s', $secret_len, $enc_name));
+            }
+        } finally {
+            restore_error_handler();
         }
     }
 
-    public function testShortOrOddLengthCEKIsRejectedAsBadTag()
+    public function testBadLengthCEKIsRejectedAsBadTag()
     {
         // RFC 7516 §11.5: a CEK shorter than the enc algorithm needs, or of odd length
         // (what a failed RSA1_5 unwrap hands back), must end in the same

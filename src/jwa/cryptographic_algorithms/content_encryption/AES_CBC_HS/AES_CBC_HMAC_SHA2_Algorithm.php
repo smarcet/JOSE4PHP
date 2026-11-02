@@ -51,7 +51,7 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
         if($this->getMinKeyLen() > ByteUtil::bitLength($key_len))
             throw new InvalidKeyLengthAlgorithmException;
 
-        $enc_key_len = $key_len / 2;
+        $enc_key_len = intdiv($key_len, 2);
         // ENC_KEY = final ENC_KEY_LEN octets of K
         $enc_key     = substr($key, $enc_key_len);
 
@@ -75,7 +75,7 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
     protected function calculateAuthenticationTag($cypher_text, $key, $iv, $aad)
     {
         // first octets of key
-        $t_len   = $mac_key_len = strlen($key) / 2;
+        $t_len   = $mac_key_len = intdiv(strlen($key), 2);
         // MAC_KEY = initial MAC_KEY_LEN octets of K
         $mac_key = substr($key, 0, $mac_key_len);
             /**
@@ -127,7 +127,7 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
         if(!$this->checkAuthenticationTag($cypher_text, $key, $iv, $aad, $tag))
             throw new InvalidAuthenticationTagException;
 
-        $enc_key_len = strlen($key) / 2;
+        $enc_key_len = intdiv(strlen($key), 2);
         // ENC_KEY = final ENC_KEY_LEN octets of K
         $enc_key = substr($key, $enc_key_len);
 
@@ -139,11 +139,12 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
     }
 
     /**
-     * A CEK shorter than the content encryption algorithm requires, or of odd length,
-     * can only come out of a failed key unwrap (e.g. RSA1_5 implicit rejection yields a
-     * random-length key). RFC 7516 §11.5 requires that failure to be indistinguishable
-     * from a bad tag, so instead of throwing we substitute a random key of the right
-     * size and let the tag check fail.
+     * A CEK shorter than the content encryption algorithm requires can only come out of
+     * a failed key unwrap (e.g. RSA1_5 implicit rejection yields a random-length key).
+     * RFC 7516 §11.5 requires that failure to be indistinguishable from a bad tag, so
+     * instead of throwing we substitute a random key of the right size and let the tag
+     * check fail. A longer key of any parity goes through the same intdiv() halving as
+     * encrypt() and fails the tag check on its own.
      *
      * A CEK longer than required is deliberately kept: encrypt() accepts it and splits
      * it in halves (MAC_KEY / ENC_KEY), and decrypt() must keep reading the tokens
@@ -157,7 +158,7 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
     private function enforceCEKLength($key)
     {
         $expected_len = (int)($this->getCEKSize() / 8);
-        if (is_string($key) && strlen($key) >= $expected_len && strlen($key) % 2 === 0)
+        if (is_string($key) && strlen($key) >= $expected_len)
             return $key;
         return ByteUtil::randomBytes($expected_len);
     }
