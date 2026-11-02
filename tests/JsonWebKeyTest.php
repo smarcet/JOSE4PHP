@@ -19,6 +19,7 @@ use jwk\impl\RSAJWK;
 use jwk\impl\RSAJWKFactory;
 use jwk\JSONWebKeyParameters;
 use jwk\RSAKeysParameters;
+use phpseclib3\Crypt\EC;
 use phpseclib3\Crypt\RSA\Formats\Keys\PKCS1;
 use security\rsa\exceptions\RSABadPEMFormat;
 use security\rsa\RSAPrivateKey;
@@ -278,18 +279,28 @@ JWK_SET;
         self::buildFromHeaders($headers);
     }
 
+    /**
+     * Generated per test instead of committed: a PEM private key in the repo, even a
+     * throwaway P-256 one, trips secret scanners.
+     * @return EC\PrivateKey
+     */
+    private static function ecKey(): EC\PrivateKey
+    {
+        return EC::createKey('secp256r1');
+    }
+
     public function testECPrivatePEMIsRejected()
     {
         $this->expectException(RSABadPEMFormat::class);
 
-        RSAFacade::getInstance()->buildPrivateKeyFromPEM(TestKeys::$ec_private_key_pem);
+        RSAFacade::getInstance()->buildPrivateKeyFromPEM(self::ecKey()->toString('PKCS8'));
     }
 
     public function testECPublicPEMIsRejected()
     {
         $this->expectException(RSABadPEMFormat::class);
 
-        RSAFacade::getInstance()->buildPublicKeyFromPEM(TestKeys::$ec_public_key_pem);
+        RSAFacade::getInstance()->buildPublicKeyFromPEM(self::ecKey()->getPublicKey()->toString('PKCS8'));
     }
 
     public function testDuplicateKeyIdInJWKSet()

@@ -132,20 +132,5 @@ FuAHFuZLmdBo/jLVji+WVZkWgvR7NYumBZo7gqo38fsBZZl8p+h2YQ==
 -----END RSA PRIVATE KEY-----
 PEM;
 
-    // P-256 EC key pair (test only): must be rejected wherever an RSA PEM is expected
-    public static $ec_private_key_pem = <<<PEM
------BEGIN PRIVATE KEY-----
-MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgJoH31ib1xoGYB3sF
-7s0UUneL/FHtjUDi5xmkzO0rWCKhRANCAASU85tWJzYX8LjGiMAue2QeirZ/sXnL
-1yXSMsrc2lH40CMfotNlTsELA6Wsi0T7SEu9L5sbZR+HOjlMuFGAvb2B
------END PRIVATE KEY-----
-PEM;
-
-    public static $ec_public_key_pem = <<<PEM
------BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAElPObVic2F/C4xojALntkHoq2f7F5
-y9cl0jLK3NpR+NAjH6LTZU7BCwOlrItE+0hLvS+bG2Ufhzo5TLhRgL29gQ==
------END PUBLIC KEY-----
-PEM;
 
 }
