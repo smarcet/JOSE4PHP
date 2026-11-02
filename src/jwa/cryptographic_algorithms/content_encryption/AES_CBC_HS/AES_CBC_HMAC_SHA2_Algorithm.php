@@ -122,6 +122,8 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
      */
     public function decrypt($cypher_text, $key, $iv, $aad, $tag)
     {
+        $key = $this->enforceCEKLength($key);
+
         if(!$this->checkAuthenticationTag($cypher_text, $key, $iv, $aad, $tag))
             throw new InvalidAuthenticationTagException;
 
@@ -134,6 +136,24 @@ abstract class AES_CBC_HMAC_SHA2_Algorithm implements ContentEncryptionAlgorithm
         $cipher->setIV($iv);
 
         return $cipher->decrypt($cypher_text);
+    }
+
+    /**
+     * RFC 7516 §5.2 step 10: the CEK MUST have the length the content encryption
+     * algorithm requires. A CEK of any other length can only come out of a failed key
+     * unwrap (e.g. RSA1_5 implicit rejection yields a random-length key), and RFC 7516
+     * §11.5 requires that failure to be indistinguishable from a bad tag, so instead of
+     * throwing we substitute a random key of the right size and let the tag check fail.
+     *
+     * @param string $key
+     * @return string
+     */
+    private function enforceCEKLength($key)
+    {
+        $expected_len = (int)($this->getCEKSize() / 8);
+        if (is_string($key) && strlen($key) === $expected_len)
+            return $key;
+        return ByteUtil::randomBytes($expected_len);
     }
 
     /**

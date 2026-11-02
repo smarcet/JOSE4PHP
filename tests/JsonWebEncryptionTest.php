@@ -35,6 +35,7 @@ use utils\json_types\JsonValue;
 use jwk\impl\OctetSequenceJWKSpecification;
 use jwk\impl\OctetSequenceJWKFactory;
 use jwe\exceptions\JWEInvalidCompactFormatException;
+use jwa\cryptographic_algorithms\ContentEncryptionAlgorithms_Registry;
 use jwa\cryptographic_algorithms\exceptions\InvalidAuthenticationTagException;
 use jwk\IJWK;
 use utils\Base64UrlRepresentation;
@@ -1129,6 +1130,32 @@ final class JsonWebEncryptionTest extends \PHPUnit\Framework\TestCase
             $this->fail('decryption with the wrong key must not succeed');
         } catch (InvalidAuthenticationTagException | \RuntimeException $ex) {
             $this->assertTrue(true);
+        }
+    }
+
+    public function testWrongLengthCEKIsRejectedAsBadTag()
+    {
+        // RFC 7516 §5.2 step 10 / §11.5: a CEK that is not exactly the size the enc
+        // algorithm needs (what a failed RSA1_5 unwrap hands back) must end in the same
+        // InvalidAuthenticationTagException as any other bad key, with no PHP notices
+        // from splitting an odd-length key into float-sized halves.
+        $enc = ContentEncryptionAlgorithms_Registry::getInstance()->get(JSONWebSignatureAndEncryptionAlgorithms::A128CBC_HS256);
+
+        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+            throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+        }, E_ALL);
+
+        try {
+            foreach ([31, 33, 64] as $wrong_len) {
+                try {
+                    $enc->decrypt(random_bytes(16), random_bytes($wrong_len), random_bytes(16), 'aad', random_bytes(16));
+                    $this->fail(sprintf('a %d-byte CEK must not decrypt A128CBC-HS256', $wrong_len));
+                } catch (InvalidAuthenticationTagException $ex) {
+                    $this->assertTrue(true);
+                }
+            }
+        } finally {
+            restore_error_handler();
         }
     }
 
